@@ -1,0 +1,494 @@
+<!doctype html>
+<html>
+<head>
+<style type="text/css">
+	body {
+		margin:0;
+		padding:0;
+		font-family:Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;
+		color:#222;
+		overflow:hidden;
+		
+	}
+	#mainContainer {
+		width:100%;
+		height:100%;
+		margin:0;
+		padding:0;
+	}
+	#headerFrame {
+		width:100%;
+		background:#666;
+		height:90px;
+		color:#FFF;
+		text-align:center;
+		float:left;
+		padding-top:5px;
+		padding-bottom:5px;
+	}
+	#videoFrame {
+		background:#000;
+		width:50%;
+		border:1px solid #666;
+		float:left;
+	}
+	#subtitleFrame {
+		border:1px solid #666;
+		float:left;
+		overflow:hidden;
+	}
+	#subtitleToolbar {
+		float:left;
+		width:100%;
+		background:#CCC;
+		min-height:24px;
+		padding-top:10px;
+		padding-bottom:10px;
+		font-weight:bold;
+	}
+	#subtitleTextArea {
+		//width:100%;
+		padding:0;
+		margin:0;
+		border:0px;
+		resize:none;
+		overflow:hidden;
+	}
+	#waveformFrame {
+		float:left;
+		width:100%;
+		padding:0;
+		margin:0;
+		border-top:1px solid #666;
+		height:100%;
+		background:#131;
+		color:#FFF;
+	}
+	.imgButton {
+		float:left;
+		text-align:center;
+		width:100px;
+		margin-left:10px;
+		margin-right:10px;
+	}
+	.imgButton:hover {
+		opacity:0.7;
+	}
+	.imgButton:active {
+		opacity:1;
+		filter:brightness(50%);
+		-webkit-filter:brightness(50%);
+    	-moz-filter:brightness(50%);
+    	filter: url(#brightness);
+	}
+	 .selected_li {
+	 	background:#F99;
+ 	}
+ 	.subtitle_li {
+	 list-style:none;
+	 text-align:center;
+	 color:#FFF;
+ }
+	#subtitleLineCount {
+	 float:left;
+	 width:50px;
+	 background:#000;
+	 color:#FFF;
+ }
+ .subtitleElements {
+	 font-size:12px;
+	 margin:0;
+	 padding:0;
+	 border:0;
+	 line-height:1.5;
+ }
+ #subtitleFormContainer {
+	 width:100%
+	 margin:0;
+	 padding:0;
+	 border:0;
+	 overflow-y:scroll;
+	 overflow-x: hidden;
+	 float:left;
+ }
+</style>
+<!-- Including -->
+<!--<script src="inc/wavesurfer.min.js"></script>-->
+<script src="inc/wavesurfer_src/wavesurfer.js"></script>
+<script src="inc/wavesurfer_src/util.js"></script>
+
+
+<script src="inc/wavesurfer_src/webaudio.js"></script>
+
+<script src="inc/wavesurfer_src/drawer.js"></script>
+<script src="inc/wavesurfer_src/drawer.canvas.js"></script>
+<script src="inc/wavesurfer_src/mediaelement.js"></script>
+
+<!-- SP line -->
+<script src="inc/wavesurfer.timeline.js"></script>
+<script src="inc/wavesurfer.regions.js"></script>
+<script>
+//functions from internet
+function textareaScrollTo(line)
+{
+  var ta = document.getElementById("subtitleTextArea");
+  var lineHeight = ta.scrollHeight / (document.getElementById("subtitleTextArea").value.split('\n').length+1);
+  var jump = (line + 4 ) * lineHeight-document.getElementById("subtitleFormContainer").offsetHeight;
+  document.getElementById("subtitleFormContainer").scrollTop = jump;
+}
+</script>
+<script>
+	//Object definition
+	function currentStatusObject() {
+		this.videoFile = "";
+		this.videoIsPlaying = false,
+		this.lineNo = 0;
+		this.buttonMapping = [];
+		this.savedChanges = false;
+	}
+	
+	function timeCodeObject() {
+		this.h = 0;
+		this.m = 0;
+		this.s = 0;
+		this.f = 0;
+		this.strVal = function() {
+			var result = "[" + zeroPad(this.h,2) + ":" + zeroPad(this.m,2) + ":" + zeroPad(this.s,2) + "." + zeroPad(this.f,2) + "]";
+			return result;
+		};
+		this.parseFromString = function(str) {
+			if ((str.charAt(0) == "[") && (str.charAt(3) == ":") && (str.charAt(6) == ":") && (str.charAt(9) == ".") && (str.charAt(12) == "]") &&
+			(/^\d+$/.test(str.charAt(1))) && (/^\d+$/.test(str.charAt(2))) && (/^\d+$/.test(str.charAt(4))) && (/^\d+$/.test(str.charAt(5))) && (/^\d+$/.test(str.charAt(7))) && (/^\d+$/.test(str.charAt(8))) && (/^\d+$/.test(str.charAt(10))) && (/^\d+$/.test(str.charAt(11)))) {
+				this.h = parseInt(str.charAt(1)+str.charAt(2));
+				this.m = parseInt(str.charAt(4)+str.charAt(5));
+				this.s = parseInt(str.charAt(7)+str.charAt(8));
+				this.f = parseInt(str.charAt(10)+str.charAt(11));
+				return true;	  			  
+		  } else {
+			  return false;
+		  }
+		}
+	}
+	
+	var current = new currentStatusObject;
+	var wavesurfer = Object.create(WaveSurfer);
+	
+</script>
+<script>	
+	function onLoad() {
+		setupKeystroke();
+		setupWaveform();
+		updateUI();
+		// Setup the dnd listeners.
+  var dropZone = document.getElementById('videoPlayer');
+  dropZone.addEventListener('dragover', handleDragOver, false);
+  dropZone.addEventListener('drop', handleFileSelect, false);
+  		
+		document.getElementById('videoPlayer').onplay = function(e) { current.videoIsPlaying = true; };
+		document.getElementById('videoPlayer').onpause = function(e) { current.videoIsPlaying = false; };
+		document.getElementById('videoPlayer').onended = function(e) { current.videoIsPlaying = false; };
+		
+		window.addEventListener("beforeunload", function (e) {
+    		var confirmationMessage = 'It looks like you have been editing something.';
+    		confirmationMessage += 'If you leave before saving, your changes will be lost.';
+
+    	if (!current.savedChanges) {
+			(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+   	 		return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+		}
+		});
+	}
+
+	function updateUI() {
+		var w = window,
+    		d = document,
+   			e = d.documentElement,
+   			g = d.getElementsByTagName('body')[0],
+			windowWidth = w.innerWidth || e.clientWidth || g.clientWidth,
+    		windowHeight = w.innerHeight|| e.clientHeight|| g.clientHeight;
+		document.getElementById('videoFrame').style.height = Math.round(document.getElementById('videoFrame').offsetWidth /16 *9) + "px";
+		document.getElementById('subtitleFrame').style.width = (windowWidth - document.getElementById('videoFrame').offsetWidth -2) + "px";
+		document.getElementById('subtitleFrame').style.height = document.getElementById('videoFrame').style.height;
+		document.getElementById('waveformFrame').style.height = (windowHeight-document.getElementById('videoFrame').offsetHeight-104)+"px";
+		document.getElementById("subtitleTextArea").style.width = (document.getElementById('subtitleFrame').offsetWidth - 69)+"px";
+		document.getElementById("subtitleTextArea").style.minHeight= (document.getElementById("subtitleFrame").offsetHeight-50)+"px";
+		document.getElementById('subtitleFormContainer').style.height = (document.getElementById('subtitleFrame').offsetHeight-30)+"px";
+		updateSubtitleFrame();
+		textareaScrollTo(current.lineNo);
+		
+		if (wavesurfer.getDuration() >0) {
+			wavesurfer.params.height=(document.getElementById("waveformFrame").offsetHeight-30);
+			wavesurfer.drawer.setHeight((document.getElementById("waveformFrame").offsetHeight-30));
+			wavesurfer.drawBuffer();
+		}
+
+	}
+	function updateSubtitleFrame() {
+		current.savedChanges = false;
+		document.getElementById("subtitleTextArea").style.height = "auto";
+		document.getElementById("subtitleLineCount").style.height = document.getElementById("subtitleTextArea").scrollHeight.toString() + "px";
+		document.getElementById("subtitleTextArea").style.height = document.getElementById("subtitleTextArea").scrollHeight.toString() + "px";
+		total = document.getElementById("subtitleTextArea").value.split('\n').length;
+		var resultHTML = "";
+		for(var i = 0;i < total;i++){
+			if (i == current.lineNo) {
+				resultHTML = resultHTML + '<li class="subtitle_li selected_li">'+ (i+1).toString() + '</li>';
+				} else {
+				 resultHTML = resultHTML + '<li class="subtitle_li">'+ (i+1).toString() + '</li>';
+				}
+		}
+		document.getElementById("subtitleLineCount_ui").innerHTML = resultHTML;
+	}
+	function changeFontSizeSlider() {
+		document.getElementById("fontSizeSpan").innerHTML = Math.round(document.getElementById("fontSizeSlider").value);
+		var subtitleElements =     document.getElementsByClassName('subtitleElements');
+  		for(i=0; i<subtitleElements.length; i++) {
+    		subtitleElements[i].style.fontSize = Math.round(document.getElementById("fontSizeSlider").value) + "px";
+  		}
+		updateUI();
+	}
+	function openMedia() {
+		current.videoIsPlaying = false;
+		document.getElementById("videoPlayer").src = current.videoFile;
+		drawWaveform();
+	}
+	function setupWaveform() {
+		wavesurfer.init({
+  			container     : document.getElementById('waveform'),
+        	waveColor     : "#000",
+       		progressColor : '#AFA',
+        	loaderColor   : 'purple',
+        	cursorColor   : 'yellow',
+			height			: 200
+	});
+	wavesurfer.setVolume(0);
+	wavesurfer.on('ready', function () {
+    var timeline = Object.create(WaveSurfer.Timeline);
+
+    timeline.init({
+        wavesurfer: wavesurfer,
+        container: document.getElementById("waveformFrame")
+    });
+	updateUI();
+	});
+	}
+	function setupVideoPlayer() {
+		//Setup Video Player
+		document.getElementById("videoPlayer").onpause = function(e) { pauseMedia(); };
+		document.getElementById("videoPlayer").onplay = function(e) { playMedia(); };
+	}
+	function playMedia() {
+		console.log(9);
+		wavesurfer.seekTo(document.getElementById("videoPlayer").currentTime/wavesurfer.backend.getDuration());
+		wavesurfer.play();
+	}
+	function pauseMedia() {
+		wavesurfer.pause();
+	}
+</script>
+<script>
+	function handleFileSelect(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+
+    var files = evt.dataTransfer.files;
+	loadFile("video",files);
+  }
+
+  function handleDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+  }	
+  
+  function setupKeystroke() {
+	  window.onkeyup = function(e) {
+		  if (document.activeElement != document.getElementById("subtitleTextArea")) {
+	   		var key = e.keyCode ? e.keyCode : e.which;
+			/*
+			8		BKSP
+			9		Tab
+			13		Enter
+			16		Shift
+			17		left-Ctrl
+			18		option/alt
+			32		Space
+			37		Left
+			38		Up
+			39		Right
+			40		Down
+			91		Cmd/Win(Left)
+			192		`
+			187		=
+			189		-
+			*/
+		   if (key == 32) {
+       			applyTimeCode();
+   			}
+			if (key == 187) {
+				zoomWaveform(10);
+			}
+			if (key == 189) {
+				zoomWaveform(-10);
+			}
+		  }
+	  }
+  }
+  
+  function zeroPad(num, places) {
+  var zero = places - num.toString().length + 1;
+  return Array(+(zero > 0 && zero)).join("0") + num;
+}
+
+  function calcTimeCode() {
+	  var input = document.getElementById("videoPlayer").currentTime;
+	  var frameBase = (1/30);
+	  var totalFrames = Math.round(input / frameBase);
+	  var timeCode = new timeCodeObject;
+	  timeCode.h = Math.floor(totalFrames/108000);
+	  timeCode.m = Math.floor(totalFrames%108000/1800);
+	  timeCode.s = Math.floor(totalFrames%1800/30);
+	  timeCode.f = Math.floor(totalFrames%30);
+	  var result = timeCode.strVal();
+	  
+	  return result;
+  }
+  
+  function readTimeCode(inputLine) {
+	  this.endTime = new timeCodeObject;
+	  this.startTime = new timeCodeObject;
+	  this.content = "";
+	  this.gotStart = false;
+	  this.gotEnd = false;
+	  
+	  if (inputLine.length >= 13) {
+		   this.gotStart = this.startTime.parseFromString(inputLine);
+		  if (inputLine.length >=26) {
+			  this.content = inputLine.substring(13,inputLine.length-13);
+			  inputLine = inputLine.substr(inputLine.length-13,13);
+			   this.gotEnd = this.endTime.parseFromString(inputLine);
+		  }
+		  //[00:01:13.22]aasdsa[00:01:13.23]
+		  //0123456789
+	  }
+	  
+	  var result = "";
+	  if (this.gotStart && this.gotEnd) {
+	  	result = "both";
+	  } else if (this.gotStart && !this.gotEnd) {
+		  result = "start";
+	  } else {
+		  result = "failed";
+	  }
+	  return result;
+  }
+  function applyTimeCode() {
+	  if (current.videoIsPlaying && current.lineNo > -1) {
+		  
+		  var subtitleTextAreaLines = document.getElementById("subtitleTextArea").value.split('\n');
+		  var resultTxt = "";
+		  // = document.getElementById("subtitleTextArea").innerHTML + "\n" + calcTimeCode();
+		  updateUI();
+		  if (readTimeCode(subtitleTextAreaLines[current.lineNo]) == "failed") {
+			  	subtitleTextAreaLines[current.lineNo] = calcTimeCode() + subtitleTextAreaLines[current.lineNo];			
+				} else if (readTimeCode(subtitleTextAreaLines[current.lineNo]) == "start") {
+					subtitleTextAreaLines[current.lineNo] = subtitleTextAreaLines[current.lineNo] + calcTimeCode();
+					current.lineNo++;
+				}
+		  for(var i = 0;i < subtitleTextAreaLines.length;i++){
+			  if (i < subtitleTextAreaLines.length-1) { resultTxt += subtitleTextAreaLines[i] + "\n"; } else { resultTxt += subtitleTextAreaLines[i]; }
+		  }
+		  document.getElementById("subtitleTextArea").value = resultTxt;
+		}
+  }
+  function updateCurrentLineNo() {
+	current.lineNo = document.getElementById("subtitleTextArea").value.substr(0, document.getElementById("subtitleTextArea").selectionStart).split("\n").length-1;
+  }
+
+	function selectFile(type) {
+		document.getElementById("fileLoader").click();
+		document.getElementById("fileLoader").onchange = function(e) {
+			files = e.target.files;
+			loadFile(type,files);
+		}
+			
+	}
+	
+	function loadFile(type,files) {
+		switch (type) {
+			case "video":
+				var URL = window.URL || window.webkitURL;
+    			current.videoFile = URL.createObjectURL(files[0]);
+				openMedia();
+			break;
+			case "text":
+				var reader = new FileReader();
+				reader.onloadend = function(evt) {
+					document.getElementById("subtitleTextArea").value = evt.target.result;
+				}
+				reader.readAsText(files[0]);
+			break;
+			default:
+		}	
+		
+	}
+	
+	function drawWaveform() {
+		wavesurfer.load(current.videoFile);
+	}
+	
+	function zoomWaveform(offset) {
+		if (wavesurfer.getDuration() > 0) {
+			var zoomTo = wavesurfer.params.minPxPerSec + offset;
+			if (zoomTo > 200) { zoomTo = 200; }
+			if (zoomTo < 1) { zoomTo = 1; }
+			wavesurfer.zoom(zoomTo);
+			return true;
+		} else { return false; }
+	}
+</script>
+
+</head>
+<body onLoad="javascript:onLoad();" onResize="javascript:updateUI();">
+<input type="file" hidden="true" id="fileLoader" />
+	<div id="mainContainer">
+		<div id="headerFrame">
+        	<span style="font-size:16px;">FiveLoadSub v0.1 by Wilson Luniz</span><br/>
+          <div style="text-align:left">
+           <div class="imgButton" onClick="selectFile('video');"><img src="img/importVideo.png" width="40" height="40"  alt=""/><br/>Import Video</div>
+           <div class="imgButton" onClick="selectFile('text');"><img src="img/importText.png" width="40" height="40"  alt=""/><br/>Import Text</div>
+        	<div class="imgButton"><img name="imageField" type="image" src="img/output.png" width="40" height="40"  alt=""/><br/>Make Subtitle</div>
+        	<div class="imgButton"><img name="imageField" type="image" src="img/settings.png" width="40" height="40"  alt=""/><br/>Settings</div>
+            </div>
+            <br/>
+            
+      </div>
+		<div id="videoFrame">
+        	<video id="videoPlayer" src="" width="100%" height="100%" onCanPlay="setupVideoPlayer();" controls ></video>
+        	<div id="drop_zone" style="width:inherit; height:inherit; float:none; left:0px; top:110px; position:absolute; visibility:hidden;">Drop files here</div>
+            
+       </div>
+		<div id="subtitleFrame">
+        	<div id="subtitleToolbar">
+            	<input id="fontSizeSlider" type="range" min="12" max="120" value="12" onChange="javascript:changeFontSizeSlider();" onMouseMove="javascript:changeFontSizeSlider();" onClick=""/> Font Size: <span id="fontSizeSpan">12</span>px
+           </div>
+           <div id="subtitleFormContainer">
+           	<div id="subtitleLineCount" class="subtitleElements" onLoad="updateSubtitleFrame()">
+				<ul class="subtitleElements" id="subtitleLineCount_ui"></ul>
+           	&nbsp;
+    			</div>
+    			<textarea class="subtitleElements" id="subtitleTextArea" onChange="updateCurrentLineNo();updateSubtitleFrame();" onkeyUp="updateCurrentLineNo();updateSubtitleFrame();" onMouseUp="updateCurrentLineNo();updateSubtitleFrame();" onSelect="updateCurrentLineNo();updateSubtitleFrame();"></textarea>
+       		</div>
+       </div>
+		<div id="waveformFrame">
+          <div id="waveform">
+                    <div class="progress progress-striped active" id="progress-bar">
+                        <div class="progress-bar progress-bar-info"></div>
+                    </div>
+                    <!-- Here be waveform -->
+                </div>
+            </div>
+	</div>
+
+</body>
+</html>
