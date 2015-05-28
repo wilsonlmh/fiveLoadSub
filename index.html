@@ -47,7 +47,7 @@
 		font-weight:bold;
 	}
 	#subtitleTextArea {
-		//width:100%;
+		width:100%;
 		padding:0;
 		margin:0;
 		border:0px;
@@ -103,7 +103,7 @@
 	 line-height:1.5;
  }
  #subtitleFormContainer {
-	 width:100%
+	 width:100%;
 	 margin:0;
 	 padding:0;
 	 border:0;
@@ -209,7 +209,7 @@ function textareaScrollTo(line)
 		document.getElementById('videoFrame').style.height = Math.round(document.getElementById('videoFrame').offsetWidth /16 *9) + "px";
 		document.getElementById('subtitleFrame').style.width = (windowWidth - document.getElementById('videoFrame').offsetWidth -2) + "px";
 		document.getElementById('subtitleFrame').style.height = document.getElementById('videoFrame').style.height;
-		document.getElementById('waveformFrame').style.height = (windowHeight-document.getElementById('videoFrame').offsetHeight-104)+"px";
+		document.getElementById('waveformFrame').style.height = (windowHeight-document.getElementById('videoFrame').offsetHeight-101)+"px";
 		document.getElementById("subtitleTextArea").style.width = (document.getElementById('subtitleFrame').offsetWidth - 69)+"px";
 		document.getElementById("subtitleTextArea").style.minHeight= (document.getElementById("subtitleFrame").offsetHeight-50)+"px";
 		document.getElementById('subtitleFormContainer').style.height = (document.getElementById('subtitleFrame').offsetHeight-30)+"px";
@@ -274,8 +274,10 @@ function textareaScrollTo(line)
 	}
 	function setupVideoPlayer() {
 		//Setup Video Player
-		document.getElementById("videoPlayer").onpause = function(e) { pauseMedia(); };
-		document.getElementById("videoPlayer").onplay = function(e) { playMedia(); };
+		document.getElementById("videoPlayer").addEventListener("play",function(e) { playMedia(); });
+		document.getElementById("videoPlayer").addEventListener("pause",function(e) { pauseMedia(); } );
+		//document.getElementById("videoPlayer").onpause = ;
+		//document.getElementById("videoPlayer").onplay;
 	}
 	function playMedia() {
 		console.log(9);
@@ -322,7 +324,9 @@ function textareaScrollTo(line)
 			187		=
 			189		-
 			*/
+			
 		   if (key == 32) {
+			   console.log("keyFire32");
        			applyTimeCode();
    			}
 			if (key == 187) {
