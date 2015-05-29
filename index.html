@@ -145,6 +145,8 @@ function textareaScrollTo(line)
 		this.lineNo = 0;
 		this.buttonMapping = [];
 		this.savedChanges = false;
+		this.disableWaveformSeekEvent = false;
+		this.disableVideoSeekEvent = false;
 	}
 	
 	function timeCodeObject() {
@@ -269,6 +271,7 @@ function textareaScrollTo(line)
         wavesurfer: wavesurfer,
         container: document.getElementById("waveformFrame")
     });
+	wavesurfer.on('seek',function() { current.disableVideoSeekEvent = true; seekMedia("waveform"); current.disableVideoSeekEvent = false;});
 	updateUI();
 	});
 	}
@@ -276,16 +279,29 @@ function textareaScrollTo(line)
 		//Setup Video Player
 		document.getElementById("videoPlayer").addEventListener("play",function(e) { playMedia(); });
 		document.getElementById("videoPlayer").addEventListener("pause",function(e) { pauseMedia(); } );
+		document.getElementById("videoPlayer").addEventListener("seeking",function(e) { current.disableWaveformSeekEvent = true; seekMedia("video"); current.disableWaveformSeekEvent = false;});
 		//document.getElementById("videoPlayer").onpause = ;
 		//document.getElementById("videoPlayer").onplay;
 	}
 	function playMedia() {
-		console.log(9);
+		current.disableWaveformSeekEvent = true;
 		wavesurfer.seekTo(document.getElementById("videoPlayer").currentTime/wavesurfer.backend.getDuration());
+		current.disableWaveformSeekEvent = false;
 		wavesurfer.play();
 	}
 	function pauseMedia() {
 		wavesurfer.pause();
+	}
+	function seekMedia(from) {
+		switch (from) {
+			case "video":
+				if (!current.disableVideoSeekEvent) { wavesurfer.seekTo(document.getElementById("videoPlayer").currentTime/wavesurfer.backend.getDuration());	}
+			break;
+			case "waveform":
+				if (!current.disableWaveformSeekEvent) { document.getElementById("videoPlayer").currentTime = wavesurfer.getCurrentTime(); }
+			break;
+		}
+		
 	}
 </script>
 <script>
@@ -326,7 +342,6 @@ function textareaScrollTo(line)
 			*/
 			
 		   if (key == 32) {
-			   console.log("keyFire32");
        			applyTimeCode();
    			}
 			if (key == 187) {
@@ -457,7 +472,7 @@ function textareaScrollTo(line)
 <input type="file" hidden="true" id="fileLoader" />
 	<div id="mainContainer">
 		<div id="headerFrame">
-        	<span style="font-size:16px;">FiveLoadSub v0.1 by Wilson Luniz</span><br/>
+        	<span style="font-size:16px;">FiveLoadSub v0.2 by Wilson Luniz</span><br/>
           <div style="text-align:left">
            <div class="imgButton" onClick="selectFile('video');"><img src="img/importVideo.png" width="40" height="40"  alt=""/><br/>Import Video</div>
            <div class="imgButton" onClick="selectFile('text');"><img src="img/importText.png" width="40" height="40"  alt=""/><br/>Import Text</div>
