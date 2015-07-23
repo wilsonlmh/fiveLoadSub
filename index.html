@@ -31,6 +31,7 @@
 		width:50%;
 		border:1px solid #666;
 		float:left;
+		position:relative;
 	}
 	#subtitleFrame {
 		border:1px solid #666;
@@ -111,6 +112,18 @@
 	 overflow-x: hidden;
 	 float:left;
  }
+ #subtitleOverlay {
+	 float:left;
+	 color:#FFF;
+	 position:absolute;
+	 background-color:rgba(0, 0, 0, 0.5);;
+	 bottom:5%;
+	 left:5%;
+	 min-height:20px;
+	 text-align:center;
+	 width:90%;
+	 font-size:24px;
+ }
 </style>
 <!-- Including -->
 <!--<script src="inc/wavesurfer.min.js"></script>-->
@@ -147,6 +160,7 @@ function textareaScrollTo(line)
 		this.savedChanges = false;
 		this.disableWaveformSeekEvent = false;
 		this.disableVideoSeekEvent = false;
+		this.timerID = 0;
 	}
 	
 	function timeCodeObject() {
@@ -158,6 +172,11 @@ function textareaScrollTo(line)
 			var result = "[" + zeroPad(this.h,2) + ":" + zeroPad(this.m,2) + ":" + zeroPad(this.s,2) + "." + zeroPad(this.f,2) + "]";
 			return result;
 		};
+		this.totalFrames = function() {
+			var result = 0;
+			result = this.f + this.s * 30 + this.m * 1800 + this.h * 108000;
+			return result;
+		}
 		this.parseFromString = function(str) {
 			if ((str.charAt(0) == "[") && (str.charAt(3) == ":") && (str.charAt(6) == ":") && (str.charAt(9) == ".") && (str.charAt(12) == "]") &&
 			(/^\d+$/.test(str.charAt(1))) && (/^\d+$/.test(str.charAt(2))) && (/^\d+$/.test(str.charAt(4))) && (/^\d+$/.test(str.charAt(5))) && (/^\d+$/.test(str.charAt(7))) && (/^\d+$/.test(str.charAt(8))) && (/^\d+$/.test(str.charAt(10))) && (/^\d+$/.test(str.charAt(11)))) {
@@ -171,9 +190,177 @@ function textareaScrollTo(line)
 		  }
 		}
 	}
+	function subtitleLineObject() {
+		this.begin = new timeCodeObject();
+		this.text = "";
+		this.end = new timeCodeObject();
+		this.empty = true;
+		this.parseFromString = function(str) {
+			var result = false;
+			if (str.length > 26) {
+				this.text = str.substring(13,str.length-13);
+				result = this.begin.parseFromString(str.substr(0,13)) && this.end.parseFromString(str.substr(str.length-13,13));
+			} else {
+				this.text = str;
+			}
+			this.empty = !result;
+			return result;
+		}
+		this.strVal = function() {
+			var result = "";
+			result += this.begin.strVal();
+			result += this.text;
+			result += this.end.strVal();
+			return result;
+		}
+	}
+	function subtitleDocObject() {
+		//This is the object to handle the whole subtitle document inside textarea.
+		//It also responsable to import/export/output/convert other format and provide a indexed sequeuence for displaying overlay subtitle.
+		//Basicly it will skip any line that is invalid(maybe still editing).
+		this.lines = []; //
+		this.linesSortedByBegin = [];
+		this.linesSortedByEnd = [];
+		this.cachedStr = "";
+		this.cachedQueue = [];
+		this.parseFromString = function(str,format) {
+			format = format || "native";
+			//Clear all of this...
+			if (str != this.cachedStr) {
+				this.lines = []; 
+				this.linesSortedByBegin = [];
+				this.linesSortedByEnd = [];
+				this.cachedQueue = [];
+				this.cachedStr = str;
+								
+				switch (format) {
+					case "native":
+						var array = str.split(/\n/);					
+						for (var i=0; i < array.length; i++) {
+							this.lines.push(new subtitleLineObject());
+							this.lines[this.lines.length-1].parseFromString(array[i]);
+						}
+					break;
+					default:
+						var array = str.split(/\n/);
+						for (var i=0; i < array.length; i++) {
+							this.lines.push(new subtitleLineObject());
+							this.lines[this.lines.length-1].parseFromString(array[i]);
+						}
+				}
+				this.linesSortedByBegin = this.sort();
+				this.linesSortedByEnd = this.sort("end");
+			}
+		}
+		this.strVal = function(format) {
+			format = format || "native";
+		}
+		this.getLineByLineNum = function(num) {
+			num = num || 0;
+			var result;
+			if (num > this.lines.length) {
+				result = false;
+			} else {
+				result = this.lines[num-1];
+			}
+			return result;
+		}
+		this.sort = function(by) {
+			by = by || "begin";
+			arrayToSort = [];
+			//pick out timecodes(in total number of frames)
+			switch (by) {
+			case "begin":
+				for (var i=0; i < this.lines.length; i++) {
+					var tmp = [];
+					tmp['index'] = i;
+					tmp['totalFrames'] = this.lines[i].begin.totalFrames();
+					if (this.lines[i].empty) tmp['totalFrames'] = -1;
+					arrayToSort.push(tmp);
+
+				}
+			break;
+			case "end":
+				for (var i=0; i < this.lines.length; i++) {
+					var tmp = [];
+					tmp['index'] = i;
+					tmp['totalFrames'] = this.lines[i].begin.totalFrames();
+					if (this.lines[i].empty) { tmp['totalFrames'] = -1; }
+					arrayToSort.push(tmp);
+				}
+			break;
+			default:
+				
+				for (var i=0; i < this.lines.length; i++) {
+					var tmp = [];
+					tmp['index'] = i;
+					tmp['totalFrames'] = this.lines[i].begin.totalFrames();
+					if (this.lines[i].empty) { tmp['totalFrames'] = -1; }
+					console.log(i);
+					arrayToSort.push(tmp);
+				}
+			}
+			//sorting now...
+			var i = 0; var offset = 1;
+			while (i+offset < arrayToSort.length) {
+				var a = arrayToSort[i];
+				var b = arrayToSort[i+offset];
+				if (a.totalFrames == -1) {
+					i++;
+				} else if (b.totalFrames == -1) {
+					offset++;
+				} else {
+					if ((a.totalFrames > b.totalFrames) && (b.totalFrames != -1) && (a.totalFrames != -1)) {
+						c = a;
+						a = b;
+						b = c;
+						arrayToSort[i] = a;
+						arrayToSort[i+offset] = b;
+					}
+					i++;//remember you SHOULD increment even no need to swap
+					offset = 1;
+				}
+			}
+			//Okay, push sorted result into array
+			var result = [];
+			for (var i=0; i < this.lines.length; i++) {
+				result.push(this.lines[arrayToSort[i].index]);
+			}
+			return result;
+		}
+		this.sortQueue = function() {
+			//Generate a sequeue for displaying subtitle overlay on video
+			//It is something like indexing. Search from this array will result a faster speed coz you don't need to search the this.lines[] and dig into every timecode object inside
+			//Use cache to boost performance. Only update if cache not available.
+			var result = [];
+			result = this.cachedQueue;
+			if (result.length == 0) {
+				var arraySortedByBegin = [];
+				var arraySortedByEnd = [];
+				for (var i=0; i < this.linesSortedByBegin.length; i++) {
+						var tmp = [];
+						tmp['index'] = i;
+						tmp['frames'] = this.linesSortedByBegin[i].begin.totalFrames();
+						if (this.lines[i].empty) tmp['frames'] = -1;
+						arraySortedByBegin.push(tmp);
+				}
+				for (var i=0; i < this.linesSortedByEnd.length; i++) {
+						var tmp = [];
+						tmp['index'] = i;
+						tmp['frames'] = this.linesSortedByBegin[i].end.totalFrames();
+						if (this.lines[i].empty) tmp['frames'] = -1;
+						arraySortedByEnd.push(tmp);
+				}
+				result['begin'] = arraySortedByBegin;
+				result['end'] = arraySortedByEnd;
+			}
+			return result;
+		}
+	}
 	
 	var current = new currentStatusObject;
 	var wavesurfer = Object.create(WaveSurfer);
+	var subtitleDocument = new subtitleDocObject();
 	
 </script>
 <script>	
@@ -288,9 +475,17 @@ function textareaScrollTo(line)
 		wavesurfer.seekTo(document.getElementById("videoPlayer").currentTime/wavesurfer.backend.getDuration());
 		current.disableWaveformSeekEvent = false;
 		wavesurfer.play();
+		clearInterval(current.timerID);
+		current.timerID = setInterval(function(){updateSubtitleOverlay();},20);
 	}
 	function pauseMedia() {
 		wavesurfer.pause();
+		clearInterval(current.timerID);
+		var interval_id = window.setInterval("", 9999); // Get a reference to the last
+                                                // interval +1
+for (var i = 1; i < interval_id; i++)
+        window.clearInterval(i);
+//for clearing all intervals
 	}
 	function seekMedia(from) {
 		switch (from) {
@@ -301,7 +496,29 @@ function textareaScrollTo(line)
 				if (!current.disableWaveformSeekEvent) { document.getElementById("videoPlayer").currentTime = wavesurfer.getCurrentTime(); }
 			break;
 		}
-		
+		updateSubtitleOverlay();
+	}
+	
+	function updateSubtitleDocumentObject() {
+		subtitleDocument.parseFromString(document.getElementById("subtitleTextArea").value);
+	}
+	
+	function updateSubtitleOverlay() {
+		var currentFrames = calcTimeCode().totalFrames();
+		var arrayNeedToDisplay = [];
+		var begin = subtitleDocument.sortQueue()['begin'];
+		var end = subtitleDocument.sortQueue()['end'];
+		var displayText = "&nbsp;";
+		for (var i=0; i < begin.length; i++) {
+			if ((currentFrames >= begin[i].frames) && (currentFrames <= end[i].frames) && (begin[i].frames != -1) && (end[i].frames != -1)) {
+				arrayNeedToDisplay.push(i+1);
+			}
+		}
+		for (var i=0; i < arrayNeedToDisplay.length; i++) {
+			if (i > 0) { displayText += "<br/>"; }
+			displayText += subtitleDocument.getLineByLineNum(arrayNeedToDisplay[i]).text;
+		}
+		document.getElementById("subtitleOverlay").innerHTML = displayText;
 	}
 </script>
 <script>
@@ -368,7 +585,7 @@ function textareaScrollTo(line)
 	  timeCode.m = Math.floor(totalFrames%108000/1800);
 	  timeCode.s = Math.floor(totalFrames%1800/30);
 	  timeCode.f = Math.floor(totalFrames%30);
-	  var result = timeCode.strVal();
+	  var result = timeCode;
 	  
 	  return result;
   }
@@ -406,12 +623,12 @@ function textareaScrollTo(line)
 		  
 		  var subtitleTextAreaLines = document.getElementById("subtitleTextArea").value.split('\n');
 		  var resultTxt = "";
-		  // = document.getElementById("subtitleTextArea").innerHTML + "\n" + calcTimeCode();
+		  // = document.getElementById("valu").innerHTML + "\n" + calcTimeCode();
 		  updateUI();
 		  if (readTimeCode(subtitleTextAreaLines[current.lineNo]) == "failed") {
-			  	subtitleTextAreaLines[current.lineNo] = calcTimeCode() + subtitleTextAreaLines[current.lineNo];			
+			  	subtitleTextAreaLines[current.lineNo] = calcTimeCode().strVal() + subtitleTextAreaLines[current.lineNo];			
 				} else if (readTimeCode(subtitleTextAreaLines[current.lineNo]) == "start") {
-					subtitleTextAreaLines[current.lineNo] = subtitleTextAreaLines[current.lineNo] + calcTimeCode();
+					subtitleTextAreaLines[current.lineNo] = subtitleTextAreaLines[current.lineNo] + calcTimeCode().strVal();
 					current.lineNo++;
 				}
 		  for(var i = 0;i < subtitleTextAreaLines.length;i++){
@@ -485,7 +702,7 @@ function textareaScrollTo(line)
 		<div id="videoFrame">
         	<video id="videoPlayer" src="" width="100%" height="100%" onCanPlay="setupVideoPlayer();" controls ></video>
         	<div id="drop_zone" style="width:inherit; height:inherit; float:none; left:0px; top:110px; position:absolute; visibility:hidden;">Drop files here</div>
-            
+           <div id="subtitleOverlay"></div>
        </div>
 		<div id="subtitleFrame">
         	<div id="subtitleToolbar">
@@ -496,7 +713,7 @@ function textareaScrollTo(line)
 				<ul class="subtitleElements" id="subtitleLineCount_ui"></ul>
            	&nbsp;
     			</div>
-    			<textarea class="subtitleElements" id="subtitleTextArea" onChange="updateCurrentLineNo();updateSubtitleFrame();" onkeyUp="updateCurrentLineNo();updateSubtitleFrame();" onMouseUp="updateCurrentLineNo();updateSubtitleFrame();" onSelect="updateCurrentLineNo();updateSubtitleFrame();"></textarea>
+    			<textarea class="subtitleElements" id="subtitleTextArea" onChange="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();" onkeyUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();" onMouseUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();" onSelect="updateCurrentLineNo();updateSubtitleFrame();"></textarea>
        		</div>
        </div>
 		<div id="waveformFrame">
