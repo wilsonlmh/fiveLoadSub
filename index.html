@@ -168,6 +168,7 @@ function textareaScrollTo(line)
 		this.m = 0;
 		this.s = 0;
 		this.f = 0;
+		this.empty = true;
 		this.strVal = function() {
 			var result = "[" + zeroPad(this.h,2) + ":" + zeroPad(this.m,2) + ":" + zeroPad(this.s,2) + "." + zeroPad(this.f,2) + "]";
 			return result;
@@ -184,8 +185,10 @@ function textareaScrollTo(line)
 				this.m = parseInt(str.charAt(4)+str.charAt(5));
 				this.s = parseInt(str.charAt(7)+str.charAt(8));
 				this.f = parseInt(str.charAt(10)+str.charAt(11));
+				this.empty = false;
 				return true;	  			  
 		  } else {
+			  this.empty = true;
 			  return false;
 		  }
 		}
@@ -197,9 +200,13 @@ function textareaScrollTo(line)
 		this.empty = true;
 		this.parseFromString = function(str) {
 			var result = false;
-			if (str.length > 26) {
+			if ((str.length > 13) && (str.length <=26)) {
+				this.text = str.substring(13,str.length);
+				result = this.begin.parseFromString(str.substr(0,13));
+			} else if (str.length > 26) {
 				this.text = str.substring(13,str.length-13);
-				result = this.begin.parseFromString(str.substr(0,13)) && this.end.parseFromString(str.substr(str.length-13,13));
+				this.end.parseFromString(str.substr(str.length-13,13));
+				result = this.begin.parseFromString(str.substr(0,13));
 			} else {
 				this.text = str;
 			}
@@ -341,14 +348,14 @@ function textareaScrollTo(line)
 						var tmp = [];
 						tmp['index'] = i;
 						tmp['frames'] = this.linesSortedByBegin[i].begin.totalFrames();
-						if (this.lines[i].empty) tmp['frames'] = -1;
+						if (this.lines[i].begin.empty) tmp['frames'] = -1;
 						arraySortedByBegin.push(tmp);
 				}
 				for (var i=0; i < this.linesSortedByEnd.length; i++) {
 						var tmp = [];
 						tmp['index'] = i;
 						tmp['frames'] = this.linesSortedByBegin[i].end.totalFrames();
-						if (this.lines[i].empty) tmp['frames'] = -1;
+						if (this.lines[i].end.empty) tmp['frames'] = -2;
 						arraySortedByEnd.push(tmp);
 				}
 				result['begin'] = arraySortedByBegin;
@@ -510,8 +517,9 @@ for (var i = 1; i < interval_id; i++)
 		var end = subtitleDocument.sortQueue()['end'];
 		var displayText = "&nbsp;";
 		for (var i=0; i < begin.length; i++) {
-			if ((currentFrames >= begin[i].frames) && (currentFrames <= end[i].frames) && (begin[i].frames != -1) && (end[i].frames != -1)) {
+			if ((currentFrames >= begin[i].frames) && ((currentFrames <= end[i].frames) || (end[i].frames==-2)) && (begin[i].frames != -1) && (end[i].frames != -1)) {
 				arrayNeedToDisplay.push(i+1);
+				console.log(end[i].empty);
 			}
 		}
 		for (var i=0; i < arrayNeedToDisplay.length; i++) {
@@ -560,6 +568,7 @@ for (var i = 1; i < interval_id; i++)
 			
 		   if (key == 32) {
        			applyTimeCode();
+				updateSubtitleDocumentObject();
    			}
 			if (key == 187) {
 				zoomWaveform(10);
@@ -619,6 +628,7 @@ for (var i = 1; i < interval_id; i++)
 	  return result;
   }
   function applyTimeCode() {
+	  
 	  if (current.videoIsPlaying && current.lineNo > -1) {
 		  
 		  var subtitleTextAreaLines = document.getElementById("subtitleTextArea").value.split('\n');
