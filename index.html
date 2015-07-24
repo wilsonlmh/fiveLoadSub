@@ -117,12 +117,13 @@
 	 color:#FFF;
 	 position:absolute;
 	 background-color:rgba(0, 0, 0, 0.5);;
-	 bottom:5%;
+	 bottom:50px;
 	 left:5%;
 	 min-height:20px;
 	 text-align:center;
 	 width:90%;
-	 font-size:24px;
+	 font-size:1.8vw;
+	 text-shadow:-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
  }
 </style>
 <!-- Including -->
@@ -303,7 +304,6 @@ function textareaScrollTo(line)
 					tmp['index'] = i;
 					tmp['totalFrames'] = this.lines[i].begin.totalFrames();
 					if (this.lines[i].empty) { tmp['totalFrames'] = -1; }
-					console.log(i);
 					arrayToSort.push(tmp);
 				}
 			}
@@ -519,7 +519,6 @@ for (var i = 1; i < interval_id; i++)
 		for (var i=0; i < begin.length; i++) {
 			if ((currentFrames >= begin[i].frames) && ((currentFrames <= end[i].frames) || (end[i].frames==-2)) && (begin[i].frames != -1) && (end[i].frames != -1)) {
 				arrayNeedToDisplay.push(i+1);
-				console.log(end[i].empty);
 			}
 		}
 		for (var i=0; i < arrayNeedToDisplay.length; i++) {
