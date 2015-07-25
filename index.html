@@ -10,6 +10,10 @@
 		overflow:hidden;
 		
 	}
+	a:link {
+   		color:inherit;
+		text-decoration: none;
+	}
 	#mainContainer {
 		width:100%;
 		height:100%;
@@ -334,6 +338,15 @@ function textareaScrollTo(line)
 							var end = zeroPad(this.linesSortedByBegin[i].end.h.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].end.m.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].end.s.toString(),2) + "," + (Math.round(parseInt(this.linesSortedByBegin[i].end.f)/30*1000)).toString();
 							result += j.toString() + '\n' + begin + ' --> ' + end + '\n' + this.linesSortedByBegin[i].text +'\n'+'\n';
 							j++;
+						}
+					}
+				break;
+				case "sbv":
+					for (var i=0; i < this.linesSortedByBegin.length; i++) {
+						if ((!this.linesSortedByBegin[i].begin.empty) && (!this.linesSortedByBegin[i].end.empty)) {
+							var begin = zeroPad(this.linesSortedByBegin[i].begin.h.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.m.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.s.toString(),2) + "." + (Math.round(parseInt(this.linesSortedByBegin[i].begin.f)/30*1000)).toString();
+							var end = zeroPad(this.linesSortedByBegin[i].end.h.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].end.m.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].end.s.toString(),2) + "." + (Math.round(parseInt(this.linesSortedByBegin[i].end.f)/30*1000)).toString();
+							result += begin + ',' + end + '\n' + this.linesSortedByBegin[i].text +'\n'+'\n';
 						}
 					}
 				break;
@@ -830,7 +843,12 @@ for (var i = 1; i < interval_id; i++)
 		e.target.className += " selectedSaveDialogChoiceBox";
 		current.saveFormat = format;
 		document.querySelector("#saveDialogTextarea").value = subtitleDocument.strVal(current.saveFormat);
+		var download = "data:text/plain;charset=utf-8," + encodeURIComponent(document.querySelector("#saveDialogTextarea").value);
+		var ext = format;
+		if (ext == "prxml") ext = "xml";
+		document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="color:#36F;" href="' + download + '" download="fiveLoadSub.' + ext + '">Save As...</a>';
 		document.querySelector("#saveDialogSaveButton").style.color = "#36F";
+		
 	}
 	function showSaveDialog() {
 		document.querySelector("#saveDialogContainer").style.display = "block";

@@ -16,6 +16,8 @@ HTML5/Javascript based, incredibly-easy subtitling software
 
   - 實時顯示字幕在影片上
 
+  - 輸出srt,sbv及fls(fiveLoadSub原生格式)字幕格式
+
 
 able to:
 
@@ -29,11 +31,10 @@ able to:
 
   - real time display overlay subtitle on video
 
+  - export srt, sbv and fls(fiveLoadSub native format)
 
 
-緝寫中的功能:
-
-  - 輸出srt或其他字幕格式(暫時只有srt可用)
+編寫中的功能:
 
   - 可自訂按盤
 
@@ -41,9 +42,7 @@ able to:
 
 
 
-working:
-
-  - export srt and other format 
+working: 
 
   - config keyboard mapping
 
