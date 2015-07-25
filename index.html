@@ -222,6 +222,8 @@ function textareaScrollTo(line)
 		this.disableVideoSeekEvent = false;
 		this.timerID = 0;
 		this.saveFormat = "";
+		this.editHistory = []; //Store 100 step of history
+		this.editHistoryIndex = -1;//Index number starting from 0, sames as the array index
 	}
 	
 	function timeCodeObject() {
@@ -621,6 +623,36 @@ for (var i = 1; i < interval_id; i++)
 		}
 		document.getElementById("subtitleOverlay").innerHTML = displayText;
 	}
+	function pushEditHistory(txt) {
+		if (txt != current.editHistory[current.editHistory.length-1]) {
+			for (var i=current.editHistoryIndex+1; i<current.editHistory.length; i++) {
+				current.editHistory.pop();
+			}
+			if (current.editHistory.length > 100) {
+				current.editHistory.shift();
+			}
+		
+			current.editHistory.push(txt);
+			current.editHistoryIndex++;
+		}
+		return true;
+	}
+	function undoEdit() {
+		if (current.editHistoryIndex >= 0) {
+			current.editHistoryIndex--;
+		}
+		document.querySelector("#subtitleTextArea").value = current.editHistory[current.editHistoryIndex];
+		
+	}
+	function redoEdit() {
+		if ((current.editHistoryIndex < 100) && (current.editHistoryIndex < current.editHistory.length-1)) {
+			current.editHistoryIndex++;
+		}
+		document.querySelector("#subtitleTextArea").value = current.editHistory[current.editHistoryIndex];
+	}
+	function updateEditHistory() {
+		pushEditHistory(document.querySelector("#subtitleTextArea").value);
+	}
 </script>
 <script>
 	function handleFileSelect(evt) {
@@ -687,6 +719,7 @@ for (var i = 1; i < interval_id; i++)
 	  timeCode.m = Math.floor(totalFrames%108000/1800);
 	  timeCode.s = Math.floor(totalFrames%1800/30);
 	  timeCode.f = Math.floor(totalFrames%30);
+	  timeCode.empty = false;
 	  var result = timeCode;
 	  
 	  return result;
@@ -723,10 +756,8 @@ for (var i = 1; i < interval_id; i++)
   function applyTimeCode() {
 	  
 	  if (current.videoIsPlaying && current.lineNo > -1) {
-		  
 		  var subtitleTextAreaLines = document.getElementById("subtitleTextArea").value.split('\n');
 		  var resultTxt = "";
-		  // = document.getElementById("valu").innerHTML + "\n" + calcTimeCode();
 		  updateUI();
 		  if (readTimeCode(subtitleTextAreaLines[current.lineNo]) == "failed") {
 			  	subtitleTextAreaLines[current.lineNo] = calcTimeCode().strVal() + subtitleTextAreaLines[current.lineNo];			
@@ -738,6 +769,7 @@ for (var i = 1; i < interval_id; i++)
 			  if (i < subtitleTextAreaLines.length-1) { resultTxt += subtitleTextAreaLines[i] + "\n"; } else { resultTxt += subtitleTextAreaLines[i]; }
 		  }
 		  document.getElementById("subtitleTextArea").value = resultTxt;
+		  pushEditHistory(resultTxt);
 		}
   }
   function updateCurrentLineNo() {
@@ -821,7 +853,7 @@ for (var i = 1; i < interval_id; i++)
 				<ul class="subtitleElements" id="subtitleLineCount_ui"></ul>
            	&nbsp;
     			</div>
-    			<textarea class="subtitleElements" id="subtitleTextArea" onChange="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();" onkeyUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();" onMouseUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();" onSelect="updateCurrentLineNo();updateSubtitleFrame();"></textarea>
+    			<textarea class="subtitleElements" id="subtitleTextArea" onChange="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();updateEditHistory();" onkeyUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();" onMouseUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();updateEditHistory();" onSelect="updateCurrentLineNo();updateSubtitleFrame();"></textarea>
        		</div>
        </div>
 		<div id="waveformFrame">
