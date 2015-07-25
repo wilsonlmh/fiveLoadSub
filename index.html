@@ -126,6 +126,61 @@
 	 text-shadow:-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
  }
 </style>
+<style>
+/* Save Dialog Style*/
+#saveDialog {
+	display:inline-block;
+	background-color:#FFF;
+	box-shadow:4px 4px 12px -2px rgba(20%,20%,20%,0.5);
+	border:#999 1px solid;
+	border-radius: 10px;
+	overflow: hidden;
+	vertical-align: middle;
+	line-height:normal;
+	padding:0px;
+	padding-bottom:10px;
+	min-width:500px;
+	min-height:150px;
+	z-index:11;
+
+}
+.dialogContainer {
+	display:none;
+	line-height:100vh;
+	width:100%;
+	margin:0;
+	padding:0;
+	height:100%;
+	position:fixed;
+	top:0;
+	left:0;
+	text-align:center;
+	background-color:rgba(0,0,0,0.3);
+	z-index:10;
+}
+.saveDialogChoiceBox {
+	display:inline-block;
+	border:#CCC 1px solid;
+	height:100px;
+	width:100px;
+	font-size:45px;
+	overflow:hidden;
+	text-align:center;
+	line-height:90px;
+	padding:0;
+	margin:5px;
+	vertical-align:central;
+}
+.saveDialogChoiceBox:hover {
+	background-color:#EEE;
+}
+.saveDialogChoiceBox:active {
+	background-color:#CCC;
+}
+.selectedSaveDialogChoiceBox {
+	background-color:#CCC;
+}
+</style>
 <!-- Including -->
 <!--<script src="inc/wavesurfer.min.js"></script>-->
 <script src="inc/wavesurfer_src/wavesurfer.js"></script>
@@ -162,6 +217,7 @@ function textareaScrollTo(line)
 		this.disableWaveformSeekEvent = false;
 		this.disableVideoSeekEvent = false;
 		this.timerID = 0;
+		this.saveFormat = "";
 	}
 	
 	function timeCodeObject() {
@@ -172,6 +228,7 @@ function textareaScrollTo(line)
 		this.empty = true;
 		this.strVal = function() {
 			var result = "[" + zeroPad(this.h,2) + ":" + zeroPad(this.m,2) + ":" + zeroPad(this.s,2) + "." + zeroPad(this.f,2) + "]";
+			if (this.empty) { result = ""; }
 			return result;
 		};
 		this.totalFrames = function() {
@@ -232,7 +289,7 @@ function textareaScrollTo(line)
 		this.cachedStr = "";
 		this.cachedQueue = [];
 		this.parseFromString = function(str,format) {
-			format = format || "native";
+			format = format || "fls";
 			//Clear all of this...
 			if (str != this.cachedStr) {
 				this.lines = []; 
@@ -242,7 +299,7 @@ function textareaScrollTo(line)
 				this.cachedStr = str;
 								
 				switch (format) {
-					case "native":
+					case "fls":
 						var array = str.split(/\n/);					
 						for (var i=0; i < array.length; i++) {
 							this.lines.push(new subtitleLineObject());
@@ -261,7 +318,31 @@ function textareaScrollTo(line)
 			}
 		}
 		this.strVal = function(format) {
-			format = format || "native";
+			format = format || "fls";
+			var result = "";
+			switch (format) {
+				case "fls":
+					for (var i=0; i < this.linesSortedByBegin.length; i++) {
+						result += this.linesSortedByBegin[i].strVal() + "\n";
+					}
+				break;
+				case "srt":
+					var j = 0;
+					for (var i=0; i < this.linesSortedByBegin.length; i++) {
+						if ((!this.linesSortedByBegin[i].begin.empty) && (!this.linesSortedByBegin[i].end.empty)) {
+							var begin = zeroPad(this.linesSortedByBegin[i].begin.h.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.m.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.s.toString(),2) + "," + (Math.round(parseInt(this.linesSortedByBegin[i].begin.f)/30*1000)).toString();
+							var end = zeroPad(this.linesSortedByBegin[i].end.h.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].end.m.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].end.s.toString(),2) + "," + (Math.round(parseInt(this.linesSortedByBegin[i].end.f)/30*1000)).toString();
+							result += j.toString() + '\n' + begin + ' --> ' + end + '\n' + this.linesSortedByBegin[i].text +'\n'+'\n';
+							j++;
+						}
+					}
+				break;
+				default:
+					for (var i=0; i < this.linesSortedByBegin.length; i++) {
+						result += this.linesSortedByBegin[i].strVal() + "\n";
+					}
+			}
+			return result;
 		}
 		this.getLineByLineNum = function(num) {
 			num = num || 0;
@@ -691,6 +772,11 @@ for (var i = 1; i < interval_id; i++)
 			return true;
 		} else { return false; }
 	}
+	
+	//Other
+	function zeroPad(num, n) { 
+		return (Array(n).join(0) + num).slice(-n); 
+	} 
 </script>
 
 </head>
@@ -698,11 +784,11 @@ for (var i = 1; i < interval_id; i++)
 <input type="file" hidden="true" id="fileLoader" />
 	<div id="mainContainer">
 		<div id="headerFrame">
-        	<span style="font-size:16px;">FiveLoadSub v0.2 by Wilson Luniz</span><br/>
+        	<span style="font-size:16px;">FiveLoadSub v0.4 by Wilson Luniz</span><br/>
           <div style="text-align:left">
            <div class="imgButton" onClick="selectFile('video');"><img src="img/importVideo.png" width="40" height="40"  alt=""/><br/>Import Video</div>
            <div class="imgButton" onClick="selectFile('text');"><img src="img/importText.png" width="40" height="40"  alt=""/><br/>Import Text</div>
-        	<div class="imgButton"><img name="imageField" type="image" src="img/output.png" width="40" height="40"  alt=""/><br/>Make Subtitle</div>
+        	<div class="imgButton" onClick="showSaveDialog();"><img name="imageField" type="image" src="img/output.png" width="40" height="40"  alt=""/><br/>Save Subtitle</div>
         	<div class="imgButton"><img name="imageField" type="image" src="img/settings.png" width="40" height="40"  alt=""/><br/>Settings</div>
             </div>
             <br/>
@@ -734,6 +820,37 @@ for (var i = 1; i < interval_id; i++)
                 </div>
             </div>
 	</div>
-
+<div class="dialogContainer" id="saveDialogContainer">
+<script>
+	function clickSaveFormatChoice(e,format) {
+		var allChoicesObject = document.getElementsByClassName("saveDialogChoiceBox");
+		for (i=0;i<allChoicesObject.length;i++) {
+			allChoicesObject.item(i).className = "saveDialogChoiceBox";
+		}
+		e.target.className += " selectedSaveDialogChoiceBox";
+		current.saveFormat = format;
+		document.querySelector("#saveDialogTextarea").value = subtitleDocument.strVal(current.saveFormat);
+		document.querySelector("#saveDialogSaveButton").style.color = "#36F";
+	}
+	function showSaveDialog() {
+		document.querySelector("#saveDialogContainer").style.display = "block";
+	}
+	function hideSaveDialog() {
+		document.querySelector("#saveDialogContainer").style.display = "none";
+	}
+</script>
+	<div id="saveDialog">
+    <div style="background:#777;color:#FFF; vertical-align:central; line-height:30px; font-size:16px;">Select format to save</div>
+    <div style="text-align:center">
+		<div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'fls');">.FLS</div>
+       <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'srt');">.SRT</div>
+       <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'sbv');">.SBV</div>
+       <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'prxml');"><div onclick="this.parentNode.click();event.stopPropagation();" style="display:inline-block;vertical-align: middle;"><div onclick="this.parentNode.click();event.stopPropagation();"  style="line-height:40px;">.XML</div><div onclick="this.parentNode.click(); event.stopPropagation();" style="font-size:10px;line-height:10px;display:block; vertical-align:middle;">for Premiere</div></div></div>
+     </div>
+     <div style="text-align:left;padding:0 10px;">Copy from here:<br/></div>
+		<textarea cols="60" rows="10" style="margin:0 5px;" id="saveDialogTextarea"></textarea>
+		<div style="text-align:right;padding:0 10px;"><span id="cancelSubtitleDialogCacnelButton" style="color:#36F;" onclick="hideSaveDialog();">Cacnel</span>&nbsp;&nbsp;&nbsp;<span id="saveDialogSaveButton">Save as...</span></div>
+	</div>
+</div>
 </body>
 </html>
