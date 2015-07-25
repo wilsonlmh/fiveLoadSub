@@ -33,7 +33,7 @@ able to:
 
 緝寫中的功能:
 
-  - 輸出srt或其他字幕格式(現可用fs2srt.html作轉換)
+  - 輸出srt或其他字幕格式(暫時只有srt可用)
 
   - 可自訂按盤
 
@@ -43,7 +43,7 @@ able to:
 
 working:
 
-  - export srt and other format (fs2srt.html can convert manually)
+  - export srt and other format 
 
   - config keyboard mapping
 
