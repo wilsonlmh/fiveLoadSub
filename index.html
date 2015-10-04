@@ -1,679 +1,1070 @@
 <!doctype html>
 <html>
+
 <head>
-<style type="text/css">
-	body {
-		margin:0;
-		padding:0;
-		font-family:Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;
-		color:#222;
-		overflow:hidden;
-		
-	}
-	a:link {
-   		color:inherit;
-		text-decoration: none;
-	}
-	#mainContainer {
-		width:100%;
-		height:100%;
-		margin:0;
-		padding:0;
-	}
-	#headerFrame {
-		width:100%;
-		background:#666;
-		height:90px;
-		color:#FFF;
-		text-align:center;
-		float:left;
-		padding-top:5px;
-		padding-bottom:5px;
-	}
-	#videoFrame {
-		background:#000;
-		width:50%;
-		border:1px solid #666;
-		float:left;
-		position:relative;
-	}
-	#subtitleFrame {
-		border:1px solid #666;
-		float:left;
-		overflow:hidden;
-	}
-	#subtitleToolbar {
-		float:left;
-		width:100%;
-		background:#CCC;
-		min-height:24px;
-		padding-top:10px;
-		padding-bottom:10px;
-		font-weight:bold;
-	}
-	#subtitleTextArea {
-		width:100%;
-		padding:0;
-		margin:0;
-		border:0px;
-		resize:none;
-		overflow:hidden;
-	}
-	#waveformFrame {
-		float:left;
-		width:100%;
-		padding:0;
-		margin:0;
-		border-top:1px solid #666;
-		height:100%;
-		background:#131;
-		color:#FFF;
-	}
-	.imgButton {
-		float:left;
-		text-align:center;
-		width:100px;
-		margin-left:10px;
-		margin-right:10px;
-	}
-	.imgButton:hover {
-		opacity:0.7;
-	}
-	.imgButton:active {
-		opacity:1;
-		filter:brightness(50%);
-		-webkit-filter:brightness(50%);
-    	-moz-filter:brightness(50%);
-    	filter: url(#brightness);
-	}
-	 .selected_li {
-	 	background:#F99;
- 	}
- 	.subtitle_li {
-	 list-style:none;
-	 text-align:center;
-	 color:#FFF;
- }
-	#subtitleLineCount {
-	 float:left;
-	 width:50px;
-	 background:#000;
-	 color:#FFF;
- }
- .subtitleElements {
-	 font-size:12px;
-	 margin:0;
-	 padding:0;
-	 border:0;
-	 line-height:1.5;
- }
- #subtitleFormContainer {
-	 width:100%;
-	 margin:0;
-	 padding:0;
-	 border:0;
-	 overflow-y:scroll;
-	 overflow-x: hidden;
-	 float:left;
- }
- #subtitleOverlay {
-	 float:left;
-	 color:#FFF;
-	 position:absolute;
-	 background-color:rgba(0, 0, 0, 0.5);;
-	 bottom:50px;
-	 left:5%;
-	 min-height:20px;
-	 text-align:center;
-	 width:90%;
-	 font-size:1.8vw;
-	 text-shadow:-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
- }
-</style>
-<style>
-/* Save Dialog Style*/
-#saveDialog {
-	display:inline-block;
-	background-color:#FFF;
-	box-shadow:4px 4px 12px -2px rgba(20%,20%,20%,0.5);
-	border:#999 1px solid;
-	border-radius: 10px;
-	overflow: hidden;
-	vertical-align: middle;
-	line-height:normal;
-	padding:0px;
-	padding-bottom:10px;
-	min-width:500px;
-	min-height:150px;
-	z-index:11;
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;
+            color: #222;
+            overflow: hidden;
+        }
+        
+        a:link {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        #mainContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #headerFrame {
+            width: 100%;
+            background: #666;
+            height: 90px;
+            color: #FFF;
+            text-align: center;
+            float: left;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+        
+        #videoFrame {
+            background: #000;
+            width: 50%;
+            border: 1px solid #666;
+            float: left;
+            position: relative;
+        }
+        
+        #subtitleFrame {
+            border: 1px solid #666;
+            float: left;
+            overflow: hidden;
+        }
+        
+        #subtitleToolbar {
+            float: left;
+            width: 100%;
+            background: #CCC;
+            min-height: 24px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        #subtitleTextArea {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            border: 0px;
+            resize: none;
+            overflow: hidden;
+        }
+        
+        #waveformFrame {
+            float: left;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            border-top: 1px solid #666;
+            height: 100%;
+            background: #131;
+            color: #FFF;
+        }
+        
+        .imgButton {
+            float: left;
+            text-align: center;
+            width: 100px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+        
+        .imgButton:hover {
+            opacity: 0.7;
+        }
+        
+        .imgButton:active {
+            opacity: 1;
+            filter: brightness(50%);
+            -webkit-filter: brightness(50%);
+            -moz-filter: brightness(50%);
+            filter: url(#brightness);
+        }
+        
+        .selected_li {
+            background: #F99;
+        }
+        
+        .subtitle_li {
+            list-style: none;
+            text-align: center;
+            color: #FFF;
+        }
+        
+        #subtitleLineCount {
+            float: left;
+            width: 50px;
+            background: #000;
+            color: #FFF;
+        }
+        
+        .subtitleElements {
+            font-size: 12px;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            line-height: 1.5;
+        }
+        
+        #subtitleFormContainer {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            float: left;
+        }
+        
+        #subtitleOverlay {
+            float: left;
+            color: #FFF;
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.5);
+            ;
+            bottom: 50px;
+            left: 5%;
+            min-height: 20px;
+            text-align: center;
+            width: 90%;
+            font-size: 1.8vw;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+    </style>
+    <style>
+        /* Save Dialog Style*/
+        
+        #saveDialog {
+            display: inline-block;
+            background-color: #FFF;
+            box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 20%, 0.5);
+            border: #999 1px solid;
+            border-radius: 10px;
+            overflow: hidden;
+            vertical-align: middle;
+            line-height: normal;
+            padding: 0px;
+            padding-bottom: 10px;
+            min-width: 500px;
+            min-height: 150px;
+            z-index: 11;
+        }
+        
+        .dialogContainer {
+            display: none;
+            line-height: 100vh;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+        
+        .saveDialogChoiceBox {
+            display: inline-block;
+            border: #CCC 1px solid;
+            height: 100px;
+            width: 100px;
+            font-size: 45px;
+            overflow: hidden;
+            text-align: center;
+            line-height: 90px;
+            padding: 0;
+            margin: 5px;
+            vertical-align: central;
+        }
+        
+        .saveDialogChoiceBox:hover {
+            background-color: #EEE;
+        }
+        
+        .saveDialogChoiceBox:active {
+            background-color: #CCC;
+        }
+        
+        .selectedSaveDialogChoiceBox {
+            background-color: #CCC;
+        }
+    </style>
+    <!-- Including -->
+    <!--<script src="inc/wavesurfer.min.js"></script>-->
+    <script src="inc/wavesurfer_src/wavesurfer.js"></script>
+    <script src="inc/wavesurfer_src/util.js"></script>
 
-}
-.dialogContainer {
-	display:none;
-	line-height:100vh;
-	width:100%;
-	margin:0;
-	padding:0;
-	height:100%;
-	position:fixed;
-	top:0;
-	left:0;
-	text-align:center;
-	background-color:rgba(0,0,0,0.3);
-	z-index:10;
-}
-.saveDialogChoiceBox {
-	display:inline-block;
-	border:#CCC 1px solid;
-	height:100px;
-	width:100px;
-	font-size:45px;
-	overflow:hidden;
-	text-align:center;
-	line-height:90px;
-	padding:0;
-	margin:5px;
-	vertical-align:central;
-}
-.saveDialogChoiceBox:hover {
-	background-color:#EEE;
-}
-.saveDialogChoiceBox:active {
-	background-color:#CCC;
-}
-.selectedSaveDialogChoiceBox {
-	background-color:#CCC;
-}
-</style>
-<!-- Including -->
-<!--<script src="inc/wavesurfer.min.js"></script>-->
-<script src="inc/wavesurfer_src/wavesurfer.js"></script>
-<script src="inc/wavesurfer_src/util.js"></script>
+
+    <script src="inc/wavesurfer_src/webaudio.js"></script>
+
+    <script src="inc/wavesurfer_src/drawer.js"></script>
+    <script src="inc/wavesurfer_src/drawer.canvas.js"></script>
+    <script src="inc/wavesurfer_src/mediaelement.js"></script>
+
+    <!-- SP line -->
+    <script src="inc/wavesurfer.timeline.js"></script>
+    <script src="inc/wavesurfer.regions.js"></script>
+
+    <script src="inc/jszip.min.js"></script>
+
+    <script>
+        //functions from internet
+        function textareaScrollTo(line) {
+            var ta = document.getElementById("subtitleTextArea");
+            var lineHeight = ta.scrollHeight / (document.getElementById("subtitleTextArea").value.split('\n').length + 1);
+            var jump = (line + 4) * lineHeight - document.getElementById("subtitleFormContainer").offsetHeight;
+            document.getElementById("subtitleFormContainer").scrollTop = jump;
+        }
+    </script>
+    <script>
+        /*store = new Array();
+                                                                                                                                                                                store.push({"url": "/img/icon.png","data-url": "dataurl:XXXXX"});
+                                                                                                                                                                                store.push({"url": "/img/icon1.png","data-url": "dataurl:XXXXX"});
+                                                                                                                                                                                //Object.defineProperty(HTMLImageElement.prototype,"src",{set: function() {console.log(123);this.set();}});
+                                                                                                                                                                                HTMLImageElement.prototype.addEventListener = function(eventName,func,flag) {
+                                                                                                                                                                                    if (eventName == "DOMAttrModified") {
+                                                                                                                                                                                        console.log(1);
+                                                                                                                                                                                    }
+                                                                                                                                                                                    console.log(2);
+                                                                                                                                                                                    this(arguments);
+                                                                                                                                                                                }
+                                                                                                                                                                                //HTMLImageElement.prototype.constructor
+                                                                                                                                                                                //item.addEventListener("DOMAttrModified", function(event) { console.log(event.target.getAttribute('src'));} );
+                                                                                                                                                                                //console.log(event.target.src);
+                                                                                                                                                                                function getResource(url) {
+                                                                                                                                                                                    var result = url;
+                                                                                                                                                                                    for (var row in store) {
+                                                                                                                                                                                        if (row.url == url) {
+                                                                                                                                                                                            result = row.data - url;
+                                                                                                                                                                                        }
+                                                                                                                                                                                    }
+                                                                                                                                                                                    return result;
+                                                                                                                                                                                }*/
+    </script>
+    <script>
+        //Object definition
+        function currentStatusObject() {
+            this.videoFile = "";
+            this.videoIsPlaying = false,
+                this.lineNo = 0;
+            this.buttonMapping = [];
+            this.savedChanges = false;
+            this.disableWaveformSeekEvent = false;
+            this.disableVideoSeekEvent = false;
+            this.timerID = 0;
+            this.saveFormat = "";
+            this.editHistory = []; //Store 100 step of history
+            this.editHistoryIndex = -1; //Index number starting from 0, sames as the array index
+        }
+
+        function settingsObject() {
+            //Cmd+Z and Shift+Cmd+Z will be hard-coded
+
+            function keyboardSettingsObject() {
+                this.sortSubtitle = "Command+/";
+                this.play = "Command+Enter";
+                this.lockTextarea = "Command+Shift+L";
+                this.gotoFirstLine = "Command+[";
+                this.goBackFiveSeconds = "Command+,";
+                this.goForwardFiveSeconds = "Command+.";
+                this.zoomInWaveform = "=";
+                this.zoomOutWaveform = "-";
+                this.zoomFullWaveform = "Command+0";
+                this.settings = "Command+,";
+                this.importText = "Command+Shift+T";
+                this.importVideo = "Command+Shift+I";
+                this.exportSubtitle = "Command+E";
+                this.timecodeNext = "Space";
+                this.timecodeIn = "Command+Left";
+                this.timecodeOut = "Command+Right";
+                this.timecodePeriod = "~";
+                this.gotoNextLine = "Command+Down";
+                this.gotoPreviousLine = "Command+Up";
+            }
+
+            this.key = new keyboardSettingsObject(); //key must be an object without methods/sub/functions because it's going to be store into localstorage using JSON.stringify()
+            this.init = function () {
+                var store = localStorage.getItem("info.luniz.fiveLoadSub-settings.key");
+                if (store != null) {
+                    if (JSON.stringify(store) != JSON.stringify(this.key)) {
+                        this.key = store;
+                    }
+                }
+            };
+
+            this.save = function () {
+                var store = JSON.stringify(this.key);
+                return localStorage.setItem("info.luniz.fiveLoadSub-settings.key", store);
+            };
+        }
+
+        function bufferObject() {
+            this.subtitleOverlayContent = "";
+        }
+
+        function timeCodeObject() {
+            this.h = 0;
+            this.m = 0;
+            this.s = 0;
+            this.f = 0;
+            this.empty = true;
+            this.strVal = function () {
+                var result = "[" + zeroPad(this.h, 2) + ":" + zeroPad(this.m, 2) + ":" + zeroPad(this.s, 2) + "." + zeroPad(this.f, 2) + "]";
+                if (this.empty) {
+                    result = "";
+                }
+                return result;
+            };
+            this.totalFrames = function () {
+                var result = 0;
+                result = this.f + this.s * 30 + this.m * 1800 + this.h * 108000;
+                return result;
+            }
+            this.parseFromString = function (str) {
+                if ((str.charAt(0) == "[") && (str.charAt(3) == ":") && (str.charAt(6) == ":") && (str.charAt(9) == ".") && (str.charAt(12) == "]") &&
+                    (/^\d+$/.test(str.charAt(1))) && (/^\d+$/.test(str.charAt(2))) && (/^\d+$/.test(str.charAt(4))) && (/^\d+$/.test(str.charAt(5))) && (/^\d+$/.test(str.charAt(7))) && (/^\d+$/.test(str.charAt(8))) && (/^\d+$/.test(str.charAt(10))) && (/^\d+$/.test(str.charAt(11)))) {
+                    this.h = parseInt(str.charAt(1) + str.charAt(2));
+                    this.m = parseInt(str.charAt(4) + str.charAt(5));
+                    this.s = parseInt(str.charAt(7) + str.charAt(8));
+                    this.f = parseInt(str.charAt(10) + str.charAt(11));
+                    this.empty = false;
+                    return true;
+                } else {
+                    this.empty = true;
+                    return false;
+                }
+            }
+        }
+
+        function subtitleLineObject() {
+            this.begin = new timeCodeObject();
+            this.text = "";
+            this.end = new timeCodeObject();
+            this.empty = true;
+            this.parseFromString = function (str) {
+                var result = false;
+                if ((str.length > 13) && (str.length <= 26)) {
+                    this.text = str.substring(13, str.length);
+                    result = this.begin.parseFromString(str.substr(0, 13));
+                } else if (str.length > 26) {
+
+                    this.text = str.substring(13, str.length - 13);
+                    if (!this.end.parseFromString(str.substr(str.length - 13, 13))) {
+                        this.text = str.substring(13, str.length);
+                    }
+                    result = this.begin.parseFromString(str.substr(0, 13));
+                } else {
+                    this.text = str;
+                }
+                this.empty = !result;
+                return result;
+            }
+            this.strVal = function () {
+                var result = "";
+                result += this.begin.strVal();
+                result += this.text;
+                result += this.end.strVal();
+                return result;
+            }
+        }
+
+        function subtitleDocObject() {
+            //This is the object to handle the whole subtitle document inside textarea.
+            //It also responsable to import/export/output/convert other format and provide a indexed sequeuence for displaying overlay subtitle.
+            //Basicly it will skip any line that is invalid(maybe still editing).
+            function prXmlObject() {
+                var video = {
+                    frameRate: 25,
+                    isNtsc: false,
+                    width: 0,
+                    height: 0,
+                    totalFrames: 0,
+                    timeCodeString: "00:00:00:00"
+
+                };
+                this.xml = "";
+                this.prtl = "";
+                this.prtlFiles = [];
+                this.download = "";
+                var ready = false;
+                var xmlHead = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE xmeml><xmeml version="4"><project><name>fiveLoadSubImport</name><children><sequence id="fiveLoadSubImport" TL.SQAudioVisibleBase="0" TL.SQVideoVisibleBase="0" TL.SQVisibleBaseTime="0" TL.SQHideShyTracks="0" Monitor.ProgramZoomIn="0" MZ.WorkInPoint="0"><uuid>{uuid}</uuid><duration>{video.totalFrames}</duration><rate><timebase>{video.frameRate}</timebase><ntsc>{video.isNtsc}</ntsc></rate><name>fiveLoadSubImport</name><media><video><format><samplecharacteristics><rate><timebase>{video.frameRate}</timebase><ntsc>{video.isNtsc}</ntsc></rate><width>{video.width}</width><height>{video.height}</height><anamorphic>FALSE</anamorphic><pixelaspectratio>square</pixelaspectratio><fielddominance>lower</fielddominance><colordepth>24</colordepth></samplecharacteristics></format>';
+                var xmlFooter = '</video></media><timecode><rate><timebase>{video.frameRate}</timebase><ntsc>{video.isNtsc}</ntsc></rate><string>{video.timeCodeString}</string><frame>0</frame><displayformat>NDF</displayformat></timecode></sequence></children></project></xmeml>';
+                this.get = function (str) {
+                    return video[str];
+                }
+
+                this.updatePrtl = function () {
+                    var prtlInput = document.getElementById('prtlInput');
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        this.prtl = reader.result;
+                        subtitleDocument.prXml.prtl = this.prtl;
+                        
+                        var parser = new DOMParser();
+                        var xmlDoc = parser.parseFromString(this.prtl, 'text/xml');
+
+                        video.width = xmlDoc.getElementsByTagName('pXPIXELS')[0].innerHTML || '0';
+                        video.width = parseInt(video.width);
+
+                        video.height = xmlDoc.getElementsByTagName('pYLINES')[0].innerHTML || '0';
+                        video.height = parseInt(video.height);
+
+                        video.aspectRatio = xmlDoc.getElementsByTagName('pSCREENAR')[0].innerHTML || '1';
+                        video.aspectRatio = parseInt(video.aspectRatio);
+
+                        video.width = video.width * video.aspectRatio;
+
+                        document.getElementById('saveDialogPrXml_width').value = video.width;
+                        document.getElementById('saveDialogPrXml_height').value = video.height;
+
+                    }
+                    reader.readAsText(prtlInput.files[0]);
+                    video.totalFrames = Math.round(document.getElementById('videoPlayer').duration) || 0;
+                    if (video.totalFrames > 0) {
+                        video.totalFrames = video.totalFrames + 900 * video.frameRate;
+                    }
+                }
+
+                this.updateConfig = function () {
+                    var width = parseInt(document.getElementById('saveDialogPrXml_width').value);
+                    var height = parseInt(document.getElementById('saveDialogPrXml_height').value);
+                    var frameRate = parseInt(document.getElementById('saveDialogPrXml_frameRate').value);
+                    if (width > 0) {
+                        video.width = width;
+                    }
+                    if (height > 0) {
+                        video.height = height;
+                    }
+                    if (frameRate > 0) {
+                        video.frameRate = frameRate;
+                    }
+                    if ((video.frameRate == 15) || (video.frameRate == 24) || (video.frameRate == 30) || (video.frameRate == 60)) {
+                        video.timeCodeString = "00;00;00;00";
+                        video.isNtsc = true;
+                    } else {
+                        video.timeCodeString = "00:00:00:00";
+                        video.isNtsc = false;
+                    }
+                    video.totalFrames = Math.round(document.getElementById('videoPlayer').duration) || 0;
+                    if (video.totalFrames > 0) {
+                        video.totalFrames = video.totalFrames + 900 * video.frameRate;
+                    }
+                }
+                this.genXML = function () {
+                    function guid() {
+                        function s4() {
+                            return Math.floor((1 + Math.random()) * 0x10000)
+                                .toString(16)
+                                .substring(1);
+                        }
+                        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                            s4() + '-' + s4() + s4() + s4();
+                    }
+                    xmlHead = xmlHead.replace(/\{video\.frameRate\}/gi, video.frameRate.toString());
+                    xmlHead = xmlHead.replace(/\{video\.isNtsc\}/gi, video.isNtsc.toString());
+                    xmlHead = xmlHead.replace(/\{video\.width\}/gi, video.width.toString());
+                    xmlHead = xmlHead.replace(/\{video\.height\}/gi, video.height.toString());
+                    xmlHead = xmlHead.replace(/\{video\.totalFrames\}/gi, video.totalFrames.toString());
+                    xmlHead = xmlHead.replace(/\{video\.timeCodeString\}/gi, video.timeCodeString);
+                    xmlHead = xmlHead.replace(/\{uuid\}/gi, guid());
+                    xmlFooter = xmlFooter.replace(/\{video\.frameRate\}/gi, video.frameRate.toString());
+                    xmlFooter = xmlFooter.replace(/\{video\.isNtsc\}/gi, video.isNtsc.toString());
+                    xmlFooter = xmlFooter.replace(/\{video\.width\}/gi, video.width.toString());
+                    xmlFooter = xmlFooter.replace(/\{video\.height\}/gi, video.height.toString());
+                    xmlFooter = xmlFooter.replace(/\{video\.totalFrames\}/gi, video.totalFrames.toString());
+                    xmlFooter = xmlFooter.replace(/\{video\.timeCodeString\}/gi, video.timeCodeString.toString());
+                    this.xml = xmlHead;
+                    this.xml += '{subtitleTracksReplacement}';
+                    this.xml += xmlFooter;
+                    return this.xml;
+
+                }
+            }
+
+            this.prXml = new prXmlObject();
+
+            this.lines = []; //
+            this.linesSortedByBegin = [];
+            this.linesSortedByEnd = [];
+            this.cachedStr = "";
+            this.cachedQueue = [];
+            this.parseFromString = function (str, format) {
+                format = format || "fls";
+                //Clear all of this...
+                if (str != this.cachedStr) {
+                    this.lines = [];
+                    this.linesSortedByBegin = [];
+                    this.linesSortedByEnd = [];
+                    this.cachedQueue = [];
+                    this.cachedStr = str;
+
+                    switch (format) {
+                    case "fls":
+                        var array = str.split(/\n/);
+                        for (var i = 0; i < array.length; i++) {
+                            this.lines.push(new subtitleLineObject());
+                            this.lines[this.lines.length - 1].parseFromString(array[i]);
+                        }
+                        break;
+                    default:
+                        var array = str.split(/\n/);
+                        for (var i = 0; i < array.length; i++) {
+                            this.lines.push(new subtitleLineObject());
+                            this.lines[this.lines.length - 1].parseFromString(array[i]);
+                        }
+                    }
+                    this.linesSortedByBegin = this.sort();
+                    this.linesSortedByEnd = this.sort("end");
+                }
+            }
+            this.strVal = function (format) {
+                format = format || "fls";
+                var result = "";
+                switch (format) {
+                case "fls":
+                    for (var i = 0; i < this.linesSortedByBegin.length; i++) {
+                        result += this.linesSortedByBegin[i].strVal() + "\n";
+                    }
+                    break;
+                case "srt":
+                    var j = 0;
+                    for (var i = 0; i < this.linesSortedByBegin.length; i++) {
+                        if ((!this.linesSortedByBegin[i].begin.empty) && (!this.linesSortedByBegin[i].end.empty)) {
+                            var begin = zeroPad(this.linesSortedByBegin[i].begin.h.toString(), 2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.m.toString(), 2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.s.toString(), 2) + "," + (Math.round(parseInt(this.linesSortedByBegin[i].begin.f) / 30 * 1000)).toString();
+                            var end = zeroPad(this.linesSortedByBegin[i].end.h.toString(), 2) + ":" + zeroPad(this.linesSortedByBegin[i].end.m.toString(), 2) + ":" + zeroPad(this.linesSortedByBegin[i].end.s.toString(), 2) + "," + (Math.round(parseInt(this.linesSortedByBegin[i].end.f) / 30 * 1000)).toString();
+                            result += j.toString() + '\n' + begin + ' --> ' + end + '\n' + this.linesSortedByBegin[i].text + '\n' + '\n';
+                            j++;
+                        }
+                    }
+                    break;
+                case "sbv":
+                    for (var i = 0; i < this.linesSortedByBegin.length; i++) {
+                        if ((!this.linesSortedByBegin[i].begin.empty) && (!this.linesSortedByBegin[i].end.empty)) {
+                            var begin = zeroPad(this.linesSortedByBegin[i].begin.h.toString(), 2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.m.toString(), 2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.s.toString(), 2) + "." + (Math.round(parseInt(this.linesSortedByBegin[i].begin.f) / 30 * 1000)).toString();
+                            var end = zeroPad(this.linesSortedByBegin[i].end.h.toString(), 2) + ":" + zeroPad(this.linesSortedByBegin[i].end.m.toString(), 2) + ":" + zeroPad(this.linesSortedByBegin[i].end.s.toString(), 2) + "." + (Math.round(parseInt(this.linesSortedByBegin[i].end.f) / 30 * 1000)).toString();
+                            result += begin + ',' + end + '\n' + this.linesSortedByBegin[i].text + '\n' + '\n';
+                        }
+                    }
+                    break;
+                case "prxml":
+
+                    if ((this.prXml.get('frameRate') > 0) && (this.prXml.get('width') > 0) && (this.prXml.get('height') > 0) && (this.prXml.get('totalFrames') > 0) && (this.prXml.prtl != '')) {
+                        var clipTmp = '<clipitem id="{sub[n].clipID}" frameBlend="FALSE"><name>{sub[n].fileName}</name><enabled>TRUE</enabled><duration>108000000</duration><start>{sub[n].in}</start><end>{sub[n].out}</end><in>89999</in><out>{sub[n].totalFrames}</out><alphatype>none</alphatype><pixelaspectratio>square</pixelaspectratio><anamorphic>FALSE</anamorphic><file id="{sub[n].fileID}"><name>{sub[n].fileName}</name><pathurl>{sub[n].fullPath}</pathurl><rate><timebase>{video.frameRate}</timebase><ntsc>{video.isNtsc}</ntsc></rate><timecode><rate><timebase>{video.frameRate}</timebase><ntsc>{video.isNtsc}</ntsc></rate><string>{video.timeCodeString}</string><frame>0</frame><displayformat>DF</displayformat><reel><name></name></reel></timecode><media><video><duration>18000</duration><samplecharacteristics><rate><timebase>{video.frameRate}</timebase><ntsc>{video.isNtsc}</ntsc></rate><width>{video.width}</width><height>{video.height}</height><anamorphic>FALSE</anamorphic><pixelaspectratio>square</pixelaspectratio><fielddominance>none</fielddominance></samplecharacteristics></video></media></file></clipitem>';
+                        var trackTmp = '<track TL.SQTrackShy="0" TL.SQTrackExpandedHeight="25" TL.SQTrackExpanded="0" MZ.TrackTargeted="0"><enabled>TRUE</enabled><locked>FALSE</locked>{subtitleClipsReplacement}</track>';
+                        var trackNo = 1;
+                        var tracks = [];
+                        var xml = '';
+                        var prtlFiles = {};
+                        var trackReplacement = '';
+                        var next = {};
+                        this.files = {};
+
+                        for (var i = 0; i < this.linesSortedByBegin.length; i++) {
+                            if ((!this.linesSortedByBegin[i].begin.empty) && (!this.linesSortedByBegin[i].end.empty)) {
+                                var sub = { in : 0,
+                                    out: 0,
+                                        totalFrames: 0,
+                                        fullPath: '/sub' + i.toString() + '.prtl',
+                                        fileName: 'sub' + i.toString() + '.prtl',
+                                        fileID: 'file-' + i.toString(),
+                                        clipID: 'clip-' + i.toString()
+                                };
+                                clipXml = clipTmp;
+                                sub.in = this.linesSortedByBegin[i].begin.h * 3600 * this.prXml.get('frameRate') + this.linesSortedByBegin[i].begin.m * 60 * this.prXml.get('frameRate') + this.linesSortedByBegin[i].begin.s * this.prXml.get('frameRate') + Math.round(this.linesSortedByBegin[i].begin.f / 30 * this.prXml.get('frameRate'));
+                                sub.out = this.linesSortedByBegin[i].end.h * 3600 * this.prXml.get('frameRate') + this.linesSortedByBegin[i].end.m * 60 * this.prXml.get('frameRate') + this.linesSortedByBegin[i].end.s * this.prXml.get('frameRate') + Math.round(this.linesSortedByBegin[i].end.f / 30 * this.prXml.get('frameRate'));
+                                sub.totalFrames = sub.out - sub.in;
+
+                                clipXml = clipXml.replace(/\{video\.frameRate\}/gi, this.prXml.get("frameRate").toString());
+                                clipXml = clipXml.replace(/\{video\.isNtsc\}/gi, this.prXml.get("isNtsc").toString());
+                                clipXml = clipXml.replace(/\{video\.width\}/gi, this.prXml.get("width").toString());
+                                clipXml = clipXml.replace(/\{video\.height\}/gi, this.prXml.get("height").toString());
+                                clipXml = clipXml.replace(/\{video\.totalFrames\}/gi, this.prXml.get("totalFrames").toString());
+                                clipXml = clipXml.replace(/\{video\.timeCodeString\}/gi, this.prXml.get("totalFrames").toString());
 
 
-<script src="inc/wavesurfer_src/webaudio.js"></script>
+                                clipXml = clipXml.replace(/\{sub\[n\]\.fileName\}/gi, sub.fileName);
+                                clipXml = clipXml.replace(/\{sub\[n\]\.fileID\}/gi, sub.fileID);
+                                clipXml = clipXml.replace(/\{sub\[n\]\.fullPath\}/gi, sub.fullPath);
+                                clipXml = clipXml.replace(/\{sub\[n\]\.in\}/gi, sub.in.toString());
+                                clipXml = clipXml.replace(/\{sub\[n\]\.out\}/gi, sub.out.toString());
+                                clipXml = clipXml.replace(/\{sub\[n\]\.clipID\}/gi, sub.clipID);
+                                clipXml = clipXml.replace(/\{sub\[n\]\.totalFrames\}/gi, (sub.totalFrames + 89999).toString());
 
-<script src="inc/wavesurfer_src/drawer.js"></script>
-<script src="inc/wavesurfer_src/drawer.canvas.js"></script>
-<script src="inc/wavesurfer_src/mediaelement.js"></script>
+                                if (this.linesSortedByBegin[i + 1] != undefined) {
+                                    var overlap = false;
+                                    if ((!this.linesSortedByBegin[i + 1].begin.empty) && (!this.linesSortedByBegin[i + 1].end.empty)) {
+                                        next.in = this.linesSortedByBegin[i + 1].begin.h * 3600 * this.prXml.get('frameRate') + this.linesSortedByBegin[i + 1].begin.m * 60 * this.prXml.get('frameRate') + this.linesSortedByBegin[i + 1].begin.s * this.prXml.get('frameRate') + Math.round(this.linesSortedByBegin[i + 1].begin.f / 30 * this.prXml.get('frameRate'));;
+                                        next.out = this.linesSortedByBegin[i + 1].end.h * 3600 * this.prXml.get('frameRate') + this.linesSortedByBegin[i + 1].end.m * 60 * this.prXml.get('frameRate') + this.linesSortedByBegin[i + 1].end.s * this.prXml.get('frameRate') + Math.round(this.linesSortedByBegin[i + 1].end.f / 30 * this.prXml.get('frameRate'));
+                                        if (((next.in >= sub.in) && (next.in <= sub.out)) || ((next.in <= sub.in) && (next.out >= sub.in))) {
+                                            overlap = true;
 
-<!-- SP line -->
-<script src="inc/wavesurfer.timeline.js"></script>
-<script src="inc/wavesurfer.regions.js"></script>
-<script>
-//functions from internet
-function textareaScrollTo(line)
-{
-  var ta = document.getElementById("subtitleTextArea");
-  var lineHeight = ta.scrollHeight / (document.getElementById("subtitleTextArea").value.split('\n').length+1);
-  var jump = (line + 4 ) * lineHeight-document.getElementById("subtitleFormContainer").offsetHeight;
-  document.getElementById("subtitleFormContainer").scrollTop = jump;
-}
-</script>
-<script>
-	//Object definition
-	function currentStatusObject() {
-		this.videoFile = "";
-		this.videoIsPlaying = false,
-		this.lineNo = 0;
-		this.buttonMapping = [];
-		this.savedChanges = false;
-		this.disableWaveformSeekEvent = false;
-		this.disableVideoSeekEvent = false;
-		this.timerID = 0;
-		this.saveFormat = "";
-		this.editHistory = []; //Store 100 step of history
-		this.editHistoryIndex = -1;//Index number starting from 0, sames as the array index
-	}
-	
-	function timeCodeObject() {
-		this.h = 0;
-		this.m = 0;
-		this.s = 0;
-		this.f = 0;
-		this.empty = true;
-		this.strVal = function() {
-			var result = "[" + zeroPad(this.h,2) + ":" + zeroPad(this.m,2) + ":" + zeroPad(this.s,2) + "." + zeroPad(this.f,2) + "]";
-			if (this.empty) { result = ""; }
-			return result;
-		};
-		this.totalFrames = function() {
-			var result = 0;
-			result = this.f + this.s * 30 + this.m * 1800 + this.h * 108000;
-			return result;
-		}
-		this.parseFromString = function(str) {
-			if ((str.charAt(0) == "[") && (str.charAt(3) == ":") && (str.charAt(6) == ":") && (str.charAt(9) == ".") && (str.charAt(12) == "]") &&
-			(/^\d+$/.test(str.charAt(1))) && (/^\d+$/.test(str.charAt(2))) && (/^\d+$/.test(str.charAt(4))) && (/^\d+$/.test(str.charAt(5))) && (/^\d+$/.test(str.charAt(7))) && (/^\d+$/.test(str.charAt(8))) && (/^\d+$/.test(str.charAt(10))) && (/^\d+$/.test(str.charAt(11)))) {
-				this.h = parseInt(str.charAt(1)+str.charAt(2));
-				this.m = parseInt(str.charAt(4)+str.charAt(5));
-				this.s = parseInt(str.charAt(7)+str.charAt(8));
-				this.f = parseInt(str.charAt(10)+str.charAt(11));
-				this.empty = false;
-				return true;	  			  
-		  } else {
-			  this.empty = true;
-			  return false;
-		  }
-		}
-	}
-	function subtitleLineObject() {
-		this.begin = new timeCodeObject();
-		this.text = "";
-		this.end = new timeCodeObject();
-		this.empty = true;
-		this.parseFromString = function(str) {
-			var result = false;
-			if ((str.length > 13) && (str.length <=26)) {
-				this.text = str.substring(13,str.length);
-				result = this.begin.parseFromString(str.substr(0,13));
-			} else if (str.length > 26) {
-				this.text = str.substring(13,str.length-13);
-				this.end.parseFromString(str.substr(str.length-13,13));
-				result = this.begin.parseFromString(str.substr(0,13));
-			} else {
-				this.text = str;
-			}
-			this.empty = !result;
-			return result;
-		}
-		this.strVal = function() {
-			var result = "";
-			result += this.begin.strVal();
-			result += this.text;
-			result += this.end.strVal();
-			return result;
-		}
-	}
-	function subtitleDocObject() {
-		//This is the object to handle the whole subtitle document inside textarea.
-		//It also responsable to import/export/output/convert other format and provide a indexed sequeuence for displaying overlay subtitle.
-		//Basicly it will skip any line that is invalid(maybe still editing).
-		this.lines = []; //
-		this.linesSortedByBegin = [];
-		this.linesSortedByEnd = [];
-		this.cachedStr = "";
-		this.cachedQueue = [];
-		this.parseFromString = function(str,format) {
-			format = format || "fls";
-			//Clear all of this...
-			if (str != this.cachedStr) {
-				this.lines = []; 
-				this.linesSortedByBegin = [];
-				this.linesSortedByEnd = [];
-				this.cachedQueue = [];
-				this.cachedStr = str;
-								
-				switch (format) {
-					case "fls":
-						var array = str.split(/\n/);					
-						for (var i=0; i < array.length; i++) {
-							this.lines.push(new subtitleLineObject());
-							this.lines[this.lines.length-1].parseFromString(array[i]);
-						}
-					break;
-					default:
-						var array = str.split(/\n/);
-						for (var i=0; i < array.length; i++) {
-							this.lines.push(new subtitleLineObject());
-							this.lines[this.lines.length-1].parseFromString(array[i]);
-						}
-				}
-				this.linesSortedByBegin = this.sort();
-				this.linesSortedByEnd = this.sort("end");
-			}
-		}
-		this.strVal = function(format) {
-			format = format || "fls";
-			var result = "";
-			switch (format) {
-				case "fls":
-					for (var i=0; i < this.linesSortedByBegin.length; i++) {
-						result += this.linesSortedByBegin[i].strVal() + "\n";
-					}
-				break;
-				case "srt":
-					var j = 0;
-					for (var i=0; i < this.linesSortedByBegin.length; i++) {
-						if ((!this.linesSortedByBegin[i].begin.empty) && (!this.linesSortedByBegin[i].end.empty)) {
-							var begin = zeroPad(this.linesSortedByBegin[i].begin.h.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.m.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.s.toString(),2) + "," + (Math.round(parseInt(this.linesSortedByBegin[i].begin.f)/30*1000)).toString();
-							var end = zeroPad(this.linesSortedByBegin[i].end.h.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].end.m.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].end.s.toString(),2) + "," + (Math.round(parseInt(this.linesSortedByBegin[i].end.f)/30*1000)).toString();
-							result += j.toString() + '\n' + begin + ' --> ' + end + '\n' + this.linesSortedByBegin[i].text +'\n'+'\n';
-							j++;
-						}
-					}
-				break;
-				case "sbv":
-					for (var i=0; i < this.linesSortedByBegin.length; i++) {
-						if ((!this.linesSortedByBegin[i].begin.empty) && (!this.linesSortedByBegin[i].end.empty)) {
-							var begin = zeroPad(this.linesSortedByBegin[i].begin.h.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.m.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.s.toString(),2) + "." + (Math.round(parseInt(this.linesSortedByBegin[i].begin.f)/30*1000)).toString();
-							var end = zeroPad(this.linesSortedByBegin[i].end.h.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].end.m.toString(),2) + ":" + zeroPad(this.linesSortedByBegin[i].end.s.toString(),2) + "." + (Math.round(parseInt(this.linesSortedByBegin[i].end.f)/30*1000)).toString();
-							result += begin + ',' + end + '\n' + this.linesSortedByBegin[i].text +'\n'+'\n';
-						}
-					}
-				break;
-				default:
-					for (var i=0; i < this.linesSortedByBegin.length; i++) {
-						result += this.linesSortedByBegin[i].strVal() + "\n";
-					}
-			}
-			return result;
-		}
-		this.getLineByLineNum = function(num) {
-			num = num || 0;
-			var result;
-			if (num > this.lines.length) {
-				result = false;
-			} else {
-				result = this.lines[num-1];
-			}
-			return result;
-		}
-		this.sort = function(by) {
-			by = by || "begin";
-			arrayToSort = [];
-			//pick out timecodes(in total number of frames)
-			switch (by) {
-			case "begin":
-				for (var i=0; i < this.lines.length; i++) {
-					var tmp = [];
-					tmp['index'] = i;
-					tmp['totalFrames'] = this.lines[i].begin.totalFrames();
-					if (this.lines[i].empty) tmp['totalFrames'] = -1;
-					arrayToSort.push(tmp);
+                                        }
+                                    }
+                                    if (overlap) {
+                                        trackNo++;
+                                    }
+                                }
+                                var parser = new DOMParser();
+                                var currentPrtl = parser.parseFromString(this.prXml.prtl, 'text/xml');
+                                var tmp = currentPrtl.getElementsByTagName('TRString');
+                                for (k = 0; k < tmp.length; k++) {
+                                    var child = tmp[k];
+                                    if (child.innerHTML.search('{fiveLoadSub.replacement\\\[' + trackNo.toString() + '\\\]}') > -1) { //Use search to avoid space problem
+                                        child.innerHTML = this.linesSortedByBegin[i].text;
+                                        child.parentNode.getElementsByTagName('RunLengthEncodedCharacterAttributes')[0].getElementsByTagName('CharacterAttributes')[0].setAttribute("RunCount", (this.linesSortedByBegin[i].text.length + 1).toString());
+                                        prtlFiles[sub.fileName] = '<?xml version="1.0" encoding="UTF-16" ?><Adobe_Root>' + currentPrtl.documentElement.innerHTML + '</Adobe_Root>';
+                                        tracks[trackNo] = tracks[trackNo] || "";
+                                        tracks[trackNo] += clipXml;
+                                    }
+                                }
 
-				}
-			break;
-			case "end":
-				for (var i=0; i < this.lines.length; i++) {
-					var tmp = [];
-					tmp['index'] = i;
-					tmp['totalFrames'] = this.lines[i].begin.totalFrames();
-					if (this.lines[i].empty) { tmp['totalFrames'] = -1; }
-					arrayToSort.push(tmp);
-				}
-			break;
-			default:
-				
-				for (var i=0; i < this.lines.length; i++) {
-					var tmp = [];
-					tmp['index'] = i;
-					tmp['totalFrames'] = this.lines[i].begin.totalFrames();
-					if (this.lines[i].empty) { tmp['totalFrames'] = -1; }
-					arrayToSort.push(tmp);
-				}
-			}
-			//sorting now...
-			var i = 0; var offset = 1;
-			while (i+offset < arrayToSort.length) {
-				var a = arrayToSort[i];
-				var b = arrayToSort[i+offset];
-				if (a.totalFrames == -1) {
-					i++;
-				} else if (b.totalFrames == -1) {
-					offset++;
-				} else {
-					if ((a.totalFrames > b.totalFrames) && (b.totalFrames != -1) && (a.totalFrames != -1)) {
-						c = a;
-						a = b;
-						b = c;
-						arrayToSort[i] = a;
-						arrayToSort[i+offset] = b;
-					}
-					i++;//remember you SHOULD increment even no need to swap
-					offset = 1;
-				}
-			}
-			//Okay, push sorted result into array
-			var result = [];
-			for (var i=0; i < this.lines.length; i++) {
-				result.push(this.lines[arrayToSort[i].index]);
-			}
-			return result;
-		}
-		this.sortQueue = function() {
-			//Generate a sequeue for displaying subtitle overlay on video
-			//It is something like indexing. Search from this array will result a faster speed coz you don't need to search the this.lines[] and dig into every timecode object inside
-			//Use cache to boost performance. Only update if cache not available.
-			var result = [];
-			result = this.cachedQueue;
-			if (result.length == 0) {
-				var arraySortedByBegin = [];
-				var arraySortedByEnd = [];
-				for (var i=0; i < this.linesSortedByBegin.length; i++) {
-						var tmp = [];
-						tmp['index'] = i;
-						tmp['frames'] = this.linesSortedByBegin[i].begin.totalFrames();
-						if (this.lines[i].begin.empty) tmp['frames'] = -1;
-						arraySortedByBegin.push(tmp);
-				}
-				for (var i=0; i < this.linesSortedByEnd.length; i++) {
-						var tmp = [];
-						tmp['index'] = i;
-						tmp['frames'] = this.linesSortedByBegin[i].end.totalFrames();
-						if (this.lines[i].end.empty) tmp['frames'] = -2;
-						arraySortedByEnd.push(tmp);
-				}
-				result['begin'] = arraySortedByBegin;
-				result['end'] = arraySortedByEnd;
-			}
-			return result;
-		}
-	}
-	
-	var current = new currentStatusObject;
-	var wavesurfer = Object.create(WaveSurfer);
-	var subtitleDocument = new subtitleDocObject();
-	
-</script>
-<script>	
-	function onLoad() {
-		setupKeystroke();
-		setupWaveform();
-		updateUI();
-		// Setup the dnd listeners.
-  var dropZone = document.getElementById('videoPlayer');
-  dropZone.addEventListener('dragover', handleDragOver, false);
-  dropZone.addEventListener('drop', handleFileSelect, false);
-  		
-		document.getElementById('videoPlayer').onplay = function(e) { current.videoIsPlaying = true; };
-		document.getElementById('videoPlayer').onpause = function(e) { current.videoIsPlaying = false; };
-		document.getElementById('videoPlayer').onended = function(e) { current.videoIsPlaying = false; };
-		
-		window.addEventListener("beforeunload", function (e) {
-    		var confirmationMessage = 'It looks like you have been editing something.';
-    		confirmationMessage += 'If you leave before saving, your changes will be lost.';
+                                /*if (tmp.search('{fiveLoadSub.replacement\\\[' + trackNo.toString() + '\\\]}') > -1) {
+                                    tmp = tmp.replace('{fiveLoadSub.replacement[' + trackNo.toString() + ']}', this.linesSortedByBegin[i].text);
+                                    tmp = tmp.replace('{fiveLoadSub.replacementCount[' + trackNo.toString() + ']}', (this.linesSortedByBegin[i].text.length+1).toString());
+                                    prtlFiles[sub.fileName] = tmp;
+                                    tracks[trackNo] = tracks[trackNo] || "";
+                                    tracks[trackNo] += clipXml;
 
-    	if (!current.savedChanges) {
-			(e || window.event).returnValue = confirmationMessage; //Gecko + IE
-   	 		return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
-		}
-		});
-	}
+                                }*/
+                                result = 'Click Save as...';
 
-	function updateUI() {
-		var w = window,
-    		d = document,
-   			e = d.documentElement,
-   			g = d.getElementsByTagName('body')[0],
-			windowWidth = w.innerWidth || e.clientWidth || g.clientWidth,
-    		windowHeight = w.innerHeight|| e.clientHeight|| g.clientHeight;
-		document.getElementById('videoFrame').style.height = Math.round(document.getElementById('videoFrame').offsetWidth /16 *9) + "px";
-		document.getElementById('subtitleFrame').style.width = (windowWidth - document.getElementById('videoFrame').offsetWidth -2) + "px";
-		document.getElementById('subtitleFrame').style.height = document.getElementById('videoFrame').style.height;
-		document.getElementById('waveformFrame').style.height = (windowHeight-document.getElementById('videoFrame').offsetHeight-101)+"px";
-		document.getElementById("subtitleTextArea").style.width = (document.getElementById('subtitleFrame').offsetWidth - 69)+"px";
-		document.getElementById("subtitleTextArea").style.minHeight= (document.getElementById("subtitleFrame").offsetHeight-50)+"px";
-		document.getElementById('subtitleFormContainer').style.height = (document.getElementById('subtitleFrame').offsetHeight-30)+"px";
-		updateSubtitleFrame();
-		textareaScrollTo(current.lineNo);
-		
-		if (wavesurfer.getDuration() >0) {
-			wavesurfer.params.height=(document.getElementById("waveformFrame").offsetHeight-30);
-			wavesurfer.drawer.setHeight((document.getElementById("waveformFrame").offsetHeight-30));
-			wavesurfer.drawBuffer();
-		}
+                            }
+                            trackNo = 1;
+                        }
 
-	}
-	function updateSubtitleFrame() {
-		current.savedChanges = false;
-		document.getElementById("subtitleTextArea").style.height = "auto";
-		document.getElementById("subtitleLineCount").style.height = document.getElementById("subtitleTextArea").scrollHeight.toString() + "px";
-		document.getElementById("subtitleTextArea").style.height = document.getElementById("subtitleTextArea").scrollHeight.toString() + "px";
-		total = document.getElementById("subtitleTextArea").value.split('\n').length;
-		var resultHTML = "";
-		for(var i = 0;i < total;i++){
-			if (i == current.lineNo) {
-				resultHTML = resultHTML + '<li class="subtitle_li selected_li">'+ (i+1).toString() + '</li>';
-				} else {
-				 resultHTML = resultHTML + '<li class="subtitle_li">'+ (i+1).toString() + '</li>';
-				}
-		}
-		document.getElementById("subtitleLineCount_ui").innerHTML = resultHTML;
-	}
-	function changeFontSizeSlider() {
-		document.getElementById("fontSizeSpan").innerHTML = Math.round(document.getElementById("fontSizeSlider").value);
-		var subtitleElements =     document.getElementsByClassName('subtitleElements');
-  		for(i=0; i<subtitleElements.length; i++) {
-    		subtitleElements[i].style.fontSize = Math.round(document.getElementById("fontSizeSlider").value) + "px";
-  		}
-		updateUI();
-	}
-	function openMedia() {
-		current.videoIsPlaying = false;
-		document.getElementById("videoPlayer").src = current.videoFile;
-		drawWaveform();
-	}
-	function setupWaveform() {
-		wavesurfer.init({
-  			container     : document.getElementById('waveform'),
-        	waveColor     : "#000",
-       		progressColor : '#AFA',
-        	loaderColor   : 'purple',
-        	cursorColor   : 'yellow',
-			height			: 200
-	});
-	wavesurfer.setVolume(0);
-	wavesurfer.on('ready', function () {
-    var timeline = Object.create(WaveSurfer.Timeline);
+                        for (track of tracks) {
+                            var tmp = trackTmp;
+                            tmp = tmp.replace('{subtitleClipsReplacement}', track);
+                            trackReplacement += tmp;
+                        }
 
-    timeline.init({
-        wavesurfer: wavesurfer,
-        container: document.getElementById("waveformFrame")
-    });
-	wavesurfer.on('seek',function() { current.disableVideoSeekEvent = true; seekMedia("waveform"); current.disableVideoSeekEvent = false;});
-	updateUI();
-	});
-	}
-	function setupVideoPlayer() {
-		//Setup Video Player
-		document.getElementById("videoPlayer").addEventListener("play",function(e) { playMedia(); });
-		document.getElementById("videoPlayer").addEventListener("pause",function(e) { pauseMedia(); } );
-		document.getElementById("videoPlayer").addEventListener("seeking",function(e) { current.disableWaveformSeekEvent = true; seekMedia("video"); current.disableWaveformSeekEvent = false;});
-		//document.getElementById("videoPlayer").onpause = ;
-		//document.getElementById("videoPlayer").onplay;
-	}
-	function playMedia() {
-		current.disableWaveformSeekEvent = true;
-		wavesurfer.seekTo(document.getElementById("videoPlayer").currentTime/wavesurfer.backend.getDuration());
-		current.disableWaveformSeekEvent = false;
-		wavesurfer.play();
-		clearInterval(current.timerID);
-		current.timerID = setInterval(function(){updateSubtitleOverlay();},20);
-	}
-	function pauseMedia() {
-		wavesurfer.pause();
-		clearInterval(current.timerID);
-		var interval_id = window.setInterval("", 9999); // Get a reference to the last
-                                                // interval +1
-for (var i = 1; i < interval_id; i++)
-        window.clearInterval(i);
-//for clearing all intervals
-	}
-	function seekMedia(from) {
-		switch (from) {
-			case "video":
-				if (!current.disableVideoSeekEvent) { wavesurfer.seekTo(document.getElementById("videoPlayer").currentTime/wavesurfer.backend.getDuration());	}
-			break;
-			case "waveform":
-				if (!current.disableWaveformSeekEvent) { document.getElementById("videoPlayer").currentTime = wavesurfer.getCurrentTime(); }
-			break;
-		}
-		updateSubtitleOverlay();
-	}
-	
-	function updateSubtitleDocumentObject() {
-		subtitleDocument.parseFromString(document.getElementById("subtitleTextArea").value);
-	}
-	
-	function updateSubtitleOverlay() {
-		var currentFrames = calcTimeCode().totalFrames();
-		var arrayNeedToDisplay = [];
-		var begin = subtitleDocument.sortQueue()['begin'];
-		var end = subtitleDocument.sortQueue()['end'];
-		var displayText = "&nbsp;";
-		for (var i=0; i < begin.length; i++) {
-			if ((currentFrames >= begin[i].frames) && ((currentFrames <= end[i].frames) || (end[i].frames==-2)) && (begin[i].frames != -1) && (end[i].frames != -1)) {
-				arrayNeedToDisplay.push(i+1);
-			}
-		}
-		for (var i=0; i < arrayNeedToDisplay.length; i++) {
-			if (i > 0) { displayText += "<br/>"; }
-			displayText += subtitleDocument.getLineByLineNum(arrayNeedToDisplay[i]).text;
-		}
-		document.getElementById("subtitleOverlay").innerHTML = displayText;
-	}
-	function pushEditHistory(txt) {
-		if (txt != current.editHistory[current.editHistory.length-1]) {
-			for (var i=current.editHistoryIndex+1; i<current.editHistory.length; i++) {
-				current.editHistory.pop();
-			}
-			if (current.editHistory.length > 100) {
-				current.editHistory.shift();
-			}
-		
-			current.editHistory.push(txt);
-			current.editHistoryIndex++;
-		}
-		return true;
-	}
-	function undoEdit() {
-		if (current.editHistoryIndex >= 0) {
-			current.editHistoryIndex--;
-		}
-		document.querySelector("#subtitleTextArea").value = current.editHistory[current.editHistoryIndex];
-		
-	}
-	function redoEdit() {
-		if ((current.editHistoryIndex < 100) && (current.editHistoryIndex < current.editHistory.length-1)) {
-			current.editHistoryIndex++;
-		}
-		document.querySelector("#subtitleTextArea").value = current.editHistory[current.editHistoryIndex];
-	}
-	function updateEditHistory() {
-		pushEditHistory(document.querySelector("#subtitleTextArea").value);
-	}
-</script>
-<script>
-	function handleFileSelect(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
+                        xml = this.prXml.genXML();
+                        xml = xml.replace('{subtitleTracksReplacement}', trackReplacement);
+                        var zip = new JSZip();
+                        zip.file("import.xml", xml);
+                        var sub = zip.folder("sub");
 
-    var files = evt.dataTransfer.files;
-	loadFile("video",files);
-  }
+                        function _arrayBufferToBase64(buffer) {
+                            var binary = '';
+                            var bytes = new Uint8Array(buffer);
+                            var len = bytes.byteLength;
+                            binary += String.fromCharCode(255); //UTF-16 magic
+                            binary += String.fromCharCode(254); //UTF-16 magic
+                            for (var i = 0; i < len; i++) {
+                                binary += String.fromCharCode(bytes[i]);
+                            }
+                            return window.btoa(binary);
+                        }
+                        textEncoder = new TextEncoder('UTF-16');
 
-  function handleDragOver(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-  }	
-  
-  function setupKeystroke() {
-	  window.onkeyup = function(e) {
-		  if (document.activeElement != document.getElementById("subtitleTextArea")) {
-	   		var key = e.keyCode ? e.keyCode : e.which;
-			/*
+                        for (var fileName in prtlFiles) {
+                            if (prtlFiles.hasOwnProperty(fileName)) {
+                                var arrayBuffer = textEncoder.encode(prtlFiles[fileName]);
+                                sub.file(fileName, _arrayBufferToBase64(arrayBuffer), {
+                                    base64: true
+                                })
+                            }
+                        }
+
+                        this.prXml.download = "data:application/zip;base64," + zip.generate();
+                    }
+
+                    break;
+                default:
+                    for (var i = 0; i < this.linesSortedByBegin.length; i++) {
+                        result += this.linesSortedByBegin[i].strVal() + "\n";
+                    }
+                }
+                return result;
+            }
+            this.getLineByLineNum = function (num) {
+                num = num || 0;
+                var result;
+                if (num > this.lines.length) {
+                    result = false;
+                } else {
+                    result = this.lines[num - 1];
+                }
+                return result;
+            }
+            this.sort = function (by) {
+                by = by || "begin";
+                arrayToSort = [];
+                //pick out timecodes(in total number of frames)
+                switch (by) {
+                case "begin":
+                    for (var i = 0; i < this.lines.length; i++) {
+                        var tmp = [];
+                        tmp['index'] = i;
+                        tmp['totalFrames'] = this.lines[i].begin.totalFrames();
+                        if (this.lines[i].empty) tmp['totalFrames'] = -1;
+                        arrayToSort.push(tmp);
+
+                    }
+                    break;
+                case "end":
+                    for (var i = 0; i < this.lines.length; i++) {
+                        var tmp = [];
+                        tmp['index'] = i;
+                        tmp['totalFrames'] = this.lines[i].begin.totalFrames();
+                        if (this.lines[i].empty) {
+                            tmp['totalFrames'] = -1;
+                        }
+                        arrayToSort.push(tmp);
+                    }
+                    break;
+                default:
+
+                    for (var i = 0; i < this.lines.length; i++) {
+                        var tmp = [];
+                        tmp['index'] = i;
+                        tmp['totalFrames'] = this.lines[i].begin.totalFrames();
+                        if (this.lines[i].empty) {
+                            tmp['totalFrames'] = -1;
+                        }
+                        arrayToSort.push(tmp);
+                    }
+                }
+                //sorting now...
+                var i = 0;
+                var offset = 1;
+                while (i + offset < arrayToSort.length) {
+                    var a = arrayToSort[i];
+                    var b = arrayToSort[i + offset];
+                    if (a.totalFrames == -1) {
+                        i++;
+                    } else if (b.totalFrames == -1) {
+                        offset++;
+                    } else {
+                        if ((a.totalFrames > b.totalFrames) && (b.totalFrames != -1) && (a.totalFrames != -1)) {
+                            c = a;
+                            a = b;
+                            b = c;
+                            arrayToSort[i] = a;
+                            arrayToSort[i + offset] = b;
+                        }
+                        i++; //remember you SHOULD increment even no need to swap
+                        offset = 1;
+                    }
+                }
+                //Okay, push sorted result into array
+                var result = [];
+                for (var i = 0; i < this.lines.length; i++) {
+                    result.push(this.lines[arrayToSort[i].index]);
+                }
+                return result;
+            }
+            this.sortQueue = function () {
+                //Generate a sequeue for displaying subtitle overlay on video
+                //It is something like indexing. Search from this array will result a faster speed coz you don't need to search the this.lines[] and dig into every timecode object inside
+                //Use cache to boost performance. Only update if cache not available.
+                var result = [];
+                result = this.cachedQueue;
+                if (result.length == 0) {
+                    var arraySortedByBegin = [];
+                    var arraySortedByEnd = [];
+                    for (var i = 0; i < this.linesSortedByBegin.length; i++) {
+                        var tmp = [];
+                        tmp['index'] = i;
+                        tmp['frames'] = this.linesSortedByBegin[i].begin.totalFrames();
+                        if (this.lines[i].begin.empty) tmp['frames'] = -1;
+                        arraySortedByBegin.push(tmp);
+                    }
+                    for (var i = 0; i < this.linesSortedByEnd.length; i++) {
+                        var tmp = [];
+                        tmp['index'] = i;
+                        tmp['frames'] = this.linesSortedByBegin[i].end.totalFrames();
+                        if (this.lines[i].end.empty) tmp['frames'] = -2;
+                        arraySortedByEnd.push(tmp);
+                    }
+                    result['begin'] = arraySortedByBegin;
+                    result['end'] = arraySortedByEnd;
+                }
+                return result;
+            }
+        }
+
+        var current = new currentStatusObject;
+        var wavesurfer = Object.create(WaveSurfer);
+        var subtitleDocument = new subtitleDocObject();
+        var buffer = new bufferObject();
+    </script>
+    <script>
+        function onLoad() {
+            setupKeystroke();
+            setupWaveform();
+            updateUI();
+            // Setup the dnd listeners.
+            var dropZone = document.getElementById('videoPlayer');
+            dropZone.addEventListener('dragover', handleDragOver, false);
+            dropZone.addEventListener('drop', handleFileSelect, false);
+
+            document.getElementById('videoPlayer').onplay = function (e) {
+                current.videoIsPlaying = true;
+            };
+            document.getElementById('videoPlayer').onpause = function (e) {
+                current.videoIsPlaying = false;
+            };
+            document.getElementById('videoPlayer').onended = function (e) {
+                current.videoIsPlaying = false;
+            };
+
+            window.addEventListener("beforeunload", function (e) {
+                var confirmationMessage = 'It looks like you have been editing something.';
+                confirmationMessage += 'If you leave before saving, your changes will be lost.';
+
+                if (!current.savedChanges) {
+                    (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+                    return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+                }
+            });
+        }
+
+        function updateUI() {
+            var w = window,
+                d = document,
+                e = d.documentElement,
+                g = d.getElementsByTagName('body')[0],
+                windowWidth = w.innerWidth || e.clientWidth || g.clientWidth,
+                windowHeight = w.innerHeight || e.clientHeight || g.clientHeight;
+            var videoFrame = document.getElementById('videoFrame');
+            var subtitleFrame = document.getElementById('subtitleFrame');
+            var waveformFrame = document.getElementById('waveformFrame');
+            var subtitleTextArea = document.getElementById("subtitleTextArea");
+            var subtitleFormContainer = document.getElementById('subtitleFormContainer');
+
+            videoFrame.style.height = Math.round(videoFrame.offsetWidth / 16 * 9) + "px";
+            subtitleFrame.style.width = (windowWidth - videoFrame.offsetWidth - 2) + "px";
+            subtitleFrame.style.height = videoFrame.style.height;
+            waveformFrame.style.height = (windowHeight - videoFrame.offsetHeight - 101) + "px";
+            subtitleTextArea.style.width = (subtitleFrame.offsetWidth - 69) + "px";
+            subtitleTextArea.style.minHeight = (subtitleFrame.offsetHeight - 50) + "px";
+            subtitleFormContainer.style.height = (subtitleFrame.offsetHeight - 30) + "px";
+            updateSubtitleFrame();
+            textareaScrollTo(current.lineNo);
+
+            if (wavesurfer.getDuration() > 0) {
+                wavesurfer.params.height = (waveformFrame.offsetHeight - 30);
+                wavesurfer.drawer.setHeight((waveformFrame.offsetHeight - 30));
+                wavesurfer.drawBuffer();
+            }
+
+        }
+
+        function updateSubtitleFrame() {
+            current.savedChanges = false;
+            var subtitleTextArea = document.getElementById("subtitleTextArea");
+            subtitleTextArea.style.height = "auto";
+            document.getElementById("subtitleLineCount").style.height = subtitleTextArea.scrollHeight.toString() + "px";
+            subtitleTextArea.style.height = subtitleTextArea.scrollHeight.toString() + "px";
+            total = subtitleTextArea.value.split('\n').length;
+            var resultHTML = "";
+            for (var i = 0; i < total; i++) {
+                if (i == current.lineNo) {
+                    resultHTML = resultHTML + '<li class="subtitle_li selected_li">' + (i + 1).toString() + '</li>';
+                } else {
+                    resultHTML = resultHTML + '<li class="subtitle_li">' + (i + 1).toString() + '</li>';
+                }
+            }
+            document.getElementById("subtitleLineCount_ui").innerHTML = resultHTML;
+        }
+
+        function changeFontSizeSlider() {
+            var fontSizeSlider = document.getElementById("fontSizeSlider");
+            document.getElementById("fontSizeSpan").innerHTML = Math.round(fontSizeSlider.value);
+            var subtitleElements = document.getElementsByClassName('subtitleElements');
+            for (i = 0; i < subtitleElements.length; i++) {
+                subtitleElements[i].style.fontSize = Math.round(fontSizeSlider.value) + "px";
+            }
+            updateUI();
+        }
+
+        function openMedia() {
+            current.videoIsPlaying = false;
+            document.getElementById("videoPlayer").src = current.videoFile;
+            drawWaveform();
+        }
+
+        function setupWaveform() {
+            wavesurfer.init({
+                container: document.getElementById('waveform'),
+                waveColor: "#000",
+                progressColor: '#AFA',
+                loaderColor: 'purple',
+                cursorColor: 'yellow',
+                height: 200
+            });
+            wavesurfer.setVolume(0);
+            wavesurfer.on('ready', function () {
+                var timeline = Object.create(WaveSurfer.Timeline);
+
+                timeline.init({
+                    wavesurfer: wavesurfer,
+                    container: document.getElementById("waveformFrame")
+                });
+                wavesurfer.on('seek', function () {
+                    current.disableVideoSeekEvent = true;
+                    seekMedia("waveform");
+                    current.disableVideoSeekEvent = false;
+                });
+                updateUI();
+            });
+        }
+
+        function setupVideoPlayer() {
+            //Setup Video Player
+            document.getElementById("videoPlayer").addEventListener("play", function (e) {
+                playMedia();
+            });
+            document.getElementById("videoPlayer").addEventListener("pause", function (e) {
+                pauseMedia();
+            });
+            document.getElementById("videoPlayer").addEventListener("seeking", function (e) {
+                current.disableWaveformSeekEvent = true;
+                seekMedia("video");
+                current.disableWaveformSeekEvent = false;
+            });
+            //document.getElementById("videoPlayer").onpause = ;
+            //document.getElementById("videoPlayer").onplay;
+        }
+
+        function playMedia() {
+            current.disableWaveformSeekEvent = true;
+            wavesurfer.seekTo(document.getElementById("videoPlayer").currentTime / wavesurfer.backend.getDuration());
+            current.disableWaveformSeekEvent = false;
+            wavesurfer.play();
+            clearInterval(current.timerID);
+            current.timerID = setInterval(function () {
+                updateSubtitleOverlay();
+            }, 30);
+        }
+
+        function pauseMedia() {
+            wavesurfer.pause();
+            clearInterval(current.timerID);
+            var interval_id = window.setInterval("", 9999); // Get a reference to the last
+            // interval +1
+            for (var i = 1; i < interval_id; i++)
+                window.clearInterval(i);
+            //for clearing all intervals
+        }
+
+        function seekMedia(from) {
+            switch (from) {
+            case "video":
+                if (!current.disableVideoSeekEvent) {
+                    wavesurfer.seekTo(document.getElementById("videoPlayer").currentTime / wavesurfer.backend.getDuration());
+                }
+                break;
+            case "waveform":
+                if (!current.disableWaveformSeekEvent) {
+                    document.getElementById("videoPlayer").currentTime = wavesurfer.getCurrentTime();
+                }
+                break;
+            }
+            updateSubtitleOverlay();
+        }
+
+        function updateSubtitleDocumentObject() {
+            subtitleDocument.parseFromString(document.getElementById("subtitleTextArea").value);
+        }
+
+        function updateSubtitleOverlay() {
+            var currentFrames = calcTimeCode().totalFrames();
+            var arrayNeedToDisplay = [];
+            var begin = subtitleDocument.sortQueue()['begin'];
+            var end = subtitleDocument.sortQueue()['end'];
+            var displayText = "&nbsp;";
+            for (var i = 0; i < begin.length; i++) {
+                if ((currentFrames >= begin[i].frames) && ((currentFrames <= end[i].frames) || (end[i].frames == -2)) && (begin[i].frames != -1) && (end[i].frames != -1)) {
+                    arrayNeedToDisplay.push(i + 1);
+                }
+            }
+            for (var i = 0; i < arrayNeedToDisplay.length; i++) {
+                if (i > 0) {
+                    displayText += "<br/>";
+                }
+                displayText += subtitleDocument.getLineByLineNum(arrayNeedToDisplay[i]).text;
+            }
+            if (displayText != buffer.subtitleOverlayContent) {
+                buffer.subtitleOverlayContent = displayText;
+                document.getElementById("subtitleOverlay").innerHTML = displayText;
+            }
+        }
+
+        function pushEditHistory(txt) {
+            if (txt != current.editHistory[current.editHistory.length - 1]) {
+                for (var i = current.editHistoryIndex + 1; i < current.editHistory.length; i++) {
+                    current.editHistory.pop();
+                }
+                if (current.editHistory.length > 100) {
+                    current.editHistory.shift();
+                }
+
+                current.editHistory.push(txt);
+                current.editHistoryIndex++;
+            }
+            return true;
+        }
+
+        function undoEdit() {
+            if (current.editHistoryIndex >= 0) {
+                current.editHistoryIndex--;
+            }
+            document.querySelector("#subtitleTextArea").value = current.editHistory[current.editHistoryIndex];
+
+        }
+
+        function redoEdit() {
+            if ((current.editHistoryIndex < 100) && (current.editHistoryIndex < current.editHistory.length - 1)) {
+                current.editHistoryIndex++;
+            }
+            document.querySelector("#subtitleTextArea").value = current.editHistory[current.editHistoryIndex];
+        }
+
+        function updateEditHistory() {
+            pushEditHistory(document.querySelector("#subtitleTextArea").value);
+        }
+    </script>
+    <script>
+        function handleFileSelect(evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+
+            var files = evt.dataTransfer.files;
+            loadFile("video", files);
+        }
+
+        function handleDragOver(evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        }
+
+        function setupKeystroke() {
+            window.onkeyup = function (e) {
+                if (document.activeElement != document.getElementById("subtitleTextArea")) {
+                    var key = e.keyCode ? e.keyCode : e.which;
+                    /*
 			8		BKSP
 			9		Tab
 			13		Enter
@@ -690,217 +1081,273 @@ for (var i = 1; i < interval_id; i++)
 			187		=
 			189		-
 			*/
-			
-		   if (key == 32) {
-       			applyTimeCode();
-				updateSubtitleDocumentObject();
-   			}
-			if (key == 187) {
-				zoomWaveform(10);
-			}
-			if (key == 189) {
-				zoomWaveform(-10);
-			}
-		  }
-	  }
-  }
-  
-  function zeroPad(num, places) {
-  var zero = places - num.toString().length + 1;
-  return Array(+(zero > 0 && zero)).join("0") + num;
-}
 
-  function calcTimeCode() {
-	  var input = document.getElementById("videoPlayer").currentTime;
-	  var frameBase = (1/30);
-	  var totalFrames = Math.round(input / frameBase);
-	  var timeCode = new timeCodeObject;
-	  timeCode.h = Math.floor(totalFrames/108000);
-	  timeCode.m = Math.floor(totalFrames%108000/1800);
-	  timeCode.s = Math.floor(totalFrames%1800/30);
-	  timeCode.f = Math.floor(totalFrames%30);
-	  timeCode.empty = false;
-	  var result = timeCode;
-	  
-	  return result;
-  }
-  
-  function readTimeCode(inputLine) {
-	  this.endTime = new timeCodeObject;
-	  this.startTime = new timeCodeObject;
-	  this.content = "";
-	  this.gotStart = false;
-	  this.gotEnd = false;
-	  
-	  if (inputLine.length >= 13) {
-		   this.gotStart = this.startTime.parseFromString(inputLine);
-		  if (inputLine.length >=26) {
-			  this.content = inputLine.substring(13,inputLine.length-13);
-			  inputLine = inputLine.substr(inputLine.length-13,13);
-			   this.gotEnd = this.endTime.parseFromString(inputLine);
-		  }
-		  //[00:01:13.22]aasdsa[00:01:13.23]
-		  //0123456789
-	  }
-	  
-	  var result = "";
-	  if (this.gotStart && this.gotEnd) {
-	  	result = "both";
-	  } else if (this.gotStart && !this.gotEnd) {
-		  result = "start";
-	  } else {
-		  result = "failed";
-	  }
-	  return result;
-  }
-  function applyTimeCode() {
-	  
-	  if (current.videoIsPlaying && current.lineNo > -1) {
-		  var subtitleTextAreaLines = document.getElementById("subtitleTextArea").value.split('\n');
-		  var resultTxt = "";
-		  updateUI();
-		  if (readTimeCode(subtitleTextAreaLines[current.lineNo]) == "failed") {
-			  	subtitleTextAreaLines[current.lineNo] = calcTimeCode().strVal() + subtitleTextAreaLines[current.lineNo];			
-				} else if (readTimeCode(subtitleTextAreaLines[current.lineNo]) == "start") {
-					subtitleTextAreaLines[current.lineNo] = subtitleTextAreaLines[current.lineNo] + calcTimeCode().strVal();
-					current.lineNo++;
-				}
-		  for(var i = 0;i < subtitleTextAreaLines.length;i++){
-			  if (i < subtitleTextAreaLines.length-1) { resultTxt += subtitleTextAreaLines[i] + "\n"; } else { resultTxt += subtitleTextAreaLines[i]; }
-		  }
-		  document.getElementById("subtitleTextArea").value = resultTxt;
-		  pushEditHistory(resultTxt);
-		}
-  }
-  function updateCurrentLineNo() {
-	current.lineNo = document.getElementById("subtitleTextArea").value.substr(0, document.getElementById("subtitleTextArea").selectionStart).split("\n").length-1;
-  }
+                    if (key == 32) {
+                        applyTimeCode();
+                        updateSubtitleDocumentObject();
+                    }
+                    if (key == 187) {
+                        zoomWaveform(10);
+                    }
+                    if (key == 189) {
+                        zoomWaveform(-10);
+                    }
+                }
+            }
+        }
 
-	function selectFile(type) {
-		document.getElementById("fileLoader").click();
-		document.getElementById("fileLoader").onchange = function(e) {
-			files = e.target.files;
-			loadFile(type,files);
-		}
-			
-	}
-	
-	function loadFile(type,files) {
-		switch (type) {
-			case "video":
-				var URL = window.URL || window.webkitURL;
-    			current.videoFile = URL.createObjectURL(files[0]);
-				openMedia();
-			break;
-			case "text":
-				var reader = new FileReader();
-				reader.onloadend = function(evt) {
-					document.getElementById("subtitleTextArea").value = evt.target.result;
-				}
-				reader.readAsText(files[0]);
-			break;
-			default:
-		}	
-		
-	}
-	
-	function drawWaveform() {
-		wavesurfer.load(current.videoFile);
-	}
-	
-	function zoomWaveform(offset) {
-		if (wavesurfer.getDuration() > 0) {
-			var zoomTo = wavesurfer.params.minPxPerSec + offset;
-			if (zoomTo > 200) { zoomTo = 200; }
-			if (zoomTo < 1) { zoomTo = 1; }
-			wavesurfer.zoom(zoomTo);
-			return true;
-		} else { return false; }
-	}
-	
-	//Other
-	function zeroPad(num, n) { 
-		return (Array(n).join(0) + num).slice(-n); 
-	} 
-</script>
+        function zeroPad(num, places) {
+            var zero = places - num.toString().length + 1;
+            return Array(+(zero > 0 && zero)).join("0") + num;
+        }
+
+        function calcTimeCode() {
+            var input = document.getElementById("videoPlayer").currentTime;
+            var frameBase = (1 / 30);
+            var totalFrames = Math.round(input / frameBase);
+            var timeCode = new timeCodeObject;
+            timeCode.h = Math.floor(totalFrames / 108000);
+            timeCode.m = Math.floor(totalFrames % 108000 / 1800);
+            timeCode.s = Math.floor(totalFrames % 1800 / 30);
+            timeCode.f = Math.floor(totalFrames % 30);
+            timeCode.empty = false;
+            var result = timeCode;
+
+            return result;
+        }
+
+        function readTimeCode(inputLine) {
+            this.endTime = new timeCodeObject;
+            this.startTime = new timeCodeObject;
+            this.content = "";
+            this.gotStart = false;
+            this.gotEnd = false;
+
+            if (inputLine.length >= 13) {
+                this.gotStart = this.startTime.parseFromString(inputLine);
+                if (inputLine.length >= 26) {
+                    this.content = inputLine.substring(13, inputLine.length - 13);
+                    inputLine = inputLine.substr(inputLine.length - 13, 13);
+                    this.gotEnd = this.endTime.parseFromString(inputLine);
+                }
+                //[00:01:13.22]aasdsa[00:01:13.23]
+                //0123456789
+            }
+
+            var result = "";
+            if (this.gotStart && this.gotEnd) {
+                result = "both";
+            } else if (this.gotStart && !this.gotEnd) {
+                result = "start";
+            } else {
+                result = "failed";
+            }
+            return result;
+        }
+
+        function applyTimeCode() {
+
+            if (current.videoIsPlaying && current.lineNo > -1) {
+                var subtitleTextAreaLines = document.getElementById("subtitleTextArea").value.split('\n');
+                var resultTxt = "";
+                updateSubtitleFrame();
+                if (readTimeCode(subtitleTextAreaLines[current.lineNo]) == "failed") {
+                    subtitleTextAreaLines[current.lineNo] = calcTimeCode().strVal() + subtitleTextAreaLines[current.lineNo];
+                } else if (readTimeCode(subtitleTextAreaLines[current.lineNo]) == "start") {
+                    subtitleTextAreaLines[current.lineNo] = subtitleTextAreaLines[current.lineNo] + calcTimeCode().strVal();
+                    current.lineNo++;
+                }
+                for (var i = 0; i < subtitleTextAreaLines.length; i++) {
+                    if (i < subtitleTextAreaLines.length - 1) {
+                        resultTxt += subtitleTextAreaLines[i] + "\n";
+                    } else {
+                        resultTxt += subtitleTextAreaLines[i];
+                    }
+                }
+                document.getElementById("subtitleTextArea").value = resultTxt;
+                pushEditHistory(resultTxt);
+            }
+        }
+
+        function updateCurrentLineNo() {
+            current.lineNo = document.getElementById("subtitleTextArea").value.substr(0, document.getElementById("subtitleTextArea").selectionStart).split("\n").length - 1;
+        }
+
+        function selectFile(type) {
+            document.getElementById("fileLoader").click();
+            document.getElementById("fileLoader").onchange = function (e) {
+                files = e.target.files;
+                loadFile(type, files);
+            }
+
+        }
+
+        function loadFile(type, files) {
+            switch (type) {
+            case "video":
+                var URL = window.URL || window.webkitURL;
+                current.videoFile = URL.createObjectURL(files[0]);
+                openMedia();
+                break;
+            case "text":
+                var reader = new FileReader();
+                reader.onloadend = function (evt) {
+                    document.getElementById("subtitleTextArea").value = evt.target.result;
+                }
+                reader.readAsText(files[0]);
+                break;
+            default:
+            }
+
+        }
+
+        function drawWaveform() {
+            wavesurfer.load(current.videoFile);
+        }
+
+        function zoomWaveform(offset) {
+            if (wavesurfer.getDuration() > 0) {
+                var zoomTo = wavesurfer.params.minPxPerSec + offset;
+                if (zoomTo > 200) {
+                    zoomTo = 200;
+                }
+                if (zoomTo < 1) {
+                    zoomTo = 1;
+                }
+                wavesurfer.zoom(zoomTo);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        //Other
+        function zeroPad(num, n) {
+            return (Array(n).join(0) + num).slice(-n);
+        }
+    </script>
 
 </head>
+
 <body onLoad="javascript:onLoad();" onResize="javascript:updateUI();">
-<input type="file" hidden="true" id="fileLoader" />
-	<div id="mainContainer">
-		<div id="headerFrame">
-        	<span style="font-size:16px;">FiveLoadSub v0.4 by Wilson Luniz</span><br/>
-          <div style="text-align:left">
-           <div class="imgButton" onClick="selectFile('video');"><img src="img/importVideo.png" width="40" height="40"  alt=""/><br/>Import Video</div>
-           <div class="imgButton" onClick="selectFile('text');"><img src="img/importText.png" width="40" height="40"  alt=""/><br/>Import Text</div>
-        	<div class="imgButton" onClick="showSaveDialog();"><img name="imageField" type="image" src="img/output.png" width="40" height="40"  alt=""/><br/>Save Subtitle</div>
-        	<div class="imgButton"><img name="imageField" type="image" src="img/settings.png" width="40" height="40"  alt=""/><br/>Settings</div>
+    <input type="file" hidden="true" id="fileLoader" />
+    <div id="mainContainer">
+        <div id="headerFrame">
+            <span style="font-size:16px;">FiveLoadSub v0.5 by Wilson Luniz</span>
+            <br/>
+            <div style="text-align:left">
+                <div class="imgButton" onClick="selectFile('video');"><img src="img/importVideo.png" width="40" height="40" alt="" />
+                    <br/>Import Video</div>
+                <div class="imgButton" onClick="selectFile('text');"><img src="img/importText.png" width="40" height="40" alt="" />
+                    <br/>Import Text</div>
+                <div class="imgButton" onClick="showSaveDialog();"><img name="imageField" type="image" src="img/output.png" width="40" height="40" alt="" />
+                    <br/>Save Subtitle</div>
+                <div class="imgButton"><img name="imageField" type="image" src="img/settings.png" width="40" height="40" alt="" />
+                    <br/>Settings</div>
             </div>
             <br/>
-            
-      </div>
-		<div id="videoFrame">
-        	<video id="videoPlayer" src="" width="100%" height="100%" onCanPlay="setupVideoPlayer();" controls ></video>
-        	<div id="drop_zone" style="width:inherit; height:inherit; float:none; left:0px; top:110px; position:absolute; visibility:hidden;">Drop files here</div>
-           <div id="subtitleOverlay"></div>
-       </div>
-		<div id="subtitleFrame">
-        	<div id="subtitleToolbar">
-            	<input id="fontSizeSlider" type="range" min="12" max="120" value="12" onChange="javascript:changeFontSizeSlider();" onMouseMove="javascript:changeFontSizeSlider();" onClick=""/> Font Size: <span id="fontSizeSpan">12</span>px
-           </div>
-           <div id="subtitleFormContainer">
-           	<div id="subtitleLineCount" class="subtitleElements" onLoad="updateSubtitleFrame()">
-				<ul class="subtitleElements" id="subtitleLineCount_ui"></ul>
-           	&nbsp;
-    			</div>
-    			<textarea class="subtitleElements" id="subtitleTextArea" onChange="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();updateEditHistory();" onkeyUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();" onMouseUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();updateEditHistory();" onSelect="updateCurrentLineNo();updateSubtitleFrame();"></textarea>
-       		</div>
-       </div>
-		<div id="waveformFrame">
-          <div id="waveform">
-                    <div class="progress progress-striped active" id="progress-bar">
-                        <div class="progress-bar progress-bar-info"></div>
+
+        </div>
+        <div id="videoFrame">
+            <video id="videoPlayer" src="" width="100%" height="100%" onCanPlay="setupVideoPlayer();" controls></video>
+            <div id="drop_zone" style="width:inherit; height:inherit; float:none; left:0px; top:110px; position:absolute; visibility:hidden;">Drop files here</div>
+            <div id="subtitleOverlay"></div>
+        </div>
+        <div id="subtitleFrame">
+            <div id="subtitleToolbar">
+                <input id="fontSizeSlider" type="range" min="12" max="120" value="12" onChange="javascript:changeFontSizeSlider();" onMouseMove="javascript:changeFontSizeSlider();" onClick="" /> Font Size: <span id="fontSizeSpan">12</span>px
+            </div>
+            <div id="subtitleFormContainer">
+                <div id="subtitleLineCount" class="subtitleElements" onLoad="updateSubtitleFrame()">
+                    <ul class="subtitleElements" id="subtitleLineCount_ui"></ul>
+                    &nbsp;
+                </div>
+                <textarea class="subtitleElements" id="subtitleTextArea" onChange="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();updateEditHistory();" onkeyUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();" onMouseUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();updateEditHistory();" onSelect="updateCurrentLineNo();updateSubtitleFrame();"></textarea>
+            </div>
+        </div>
+        <div id="waveformFrame">
+            <div id="waveform">
+                <div class="progress progress-striped active" id="progress-bar">
+                    <div class="progress-bar progress-bar-info"></div>
+                </div>
+                <!-- Here be waveform -->
+            </div>
+        </div>
+    </div>
+    <div class="dialogContainer" id="saveDialogContainer">
+        <script>
+            function clickSaveFormatChoice(e, format) {
+                var allChoicesObject = document.getElementsByClassName("saveDialogChoiceBox");
+                for (i = 0; i < allChoicesObject.length; i++) {
+                    allChoicesObject.item(i).className = "saveDialogChoiceBox";
+                }
+                e.target.className += " selectedSaveDialogChoiceBox";
+                current.saveFormat = format;
+                document.querySelector("#saveDialogTextarea").value = subtitleDocument.strVal(current.saveFormat);
+                document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="">Save As...</a>';
+                document.querySelector("#saveDialogSaveButton").style.color = "#000";
+                switch (format) {
+                case 'prxml':
+                    document.getElementById('saveDialogPrXmlDiv').style.display = 'block';
+                    if (subtitleDocument.prXml.download != '') {
+                        document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="color:#36F;" href="' + subtitleDocument.prXml.download + '" download="fiveLoadSub.zip">Save As...</a>';
+                        document.querySelector("#saveDialogSaveButton").style.color = "#36F";
+                    }
+                    break;
+
+                default:
+                    document.getElementById('saveDialogPrXmlDiv').style.display = 'none';
+                    var download = "data:text/plain;charset=utf-8," + encodeURIComponent(document.querySelector("#saveDialogTextarea").value);
+                    var ext = format;
+                    document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="color:#36F;" href="' + download + '" download="fiveLoadSub.' + ext + '">Save As...</a>';
+                    document.querySelector("#saveDialogSaveButton").style.color = "#36F";
+                }
+
+            }
+
+            function showSaveDialog() {
+                document.querySelector("#saveDialogContainer").style.display = "block";
+            }
+
+            function hideSaveDialog() {
+                document.querySelector("#saveDialogContainer").style.display = "none";
+            }
+        </script>
+        <div id="saveDialog">
+            <div style="background:#777;color:#FFF; vertical-align:central; line-height:30px; font-size:16px;">Select format to save</div>
+            <div style="text-align:center">
+                <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'fls');">.FLS</div>
+                <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'srt');">.SRT</div>
+                <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'sbv');">.SBV</div>
+                <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'prxml');">
+                    <div onclick="this.parentNode.click();event.stopPropagation();" style="display:inline-block;vertical-align: middle;">
+                        <div onclick="this.parentNode.click();event.stopPropagation();" style="line-height:40px;">.XML</div>
+                        <div onclick="this.parentNode.click(); event.stopPropagation();" style="font-size:10px;line-height:10px;display:block; vertical-align:middle;">for Premiere</div>
                     </div>
-                    <!-- Here be waveform -->
                 </div>
             </div>
-	</div>
-<div class="dialogContainer" id="saveDialogContainer">
-<script>
-	function clickSaveFormatChoice(e,format) {
-		var allChoicesObject = document.getElementsByClassName("saveDialogChoiceBox");
-		for (i=0;i<allChoicesObject.length;i++) {
-			allChoicesObject.item(i).className = "saveDialogChoiceBox";
-		}
-		e.target.className += " selectedSaveDialogChoiceBox";
-		current.saveFormat = format;
-		document.querySelector("#saveDialogTextarea").value = subtitleDocument.strVal(current.saveFormat);
-		var download = "data:text/plain;charset=utf-8," + encodeURIComponent(document.querySelector("#saveDialogTextarea").value);
-		var ext = format;
-		if (ext == "prxml") ext = "xml";
-		document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="color:#36F;" href="' + download + '" download="fiveLoadSub.' + ext + '">Save As...</a>';
-		document.querySelector("#saveDialogSaveButton").style.color = "#36F";
-		
-	}
-	function showSaveDialog() {
-		document.querySelector("#saveDialogContainer").style.display = "block";
-	}
-	function hideSaveDialog() {
-		document.querySelector("#saveDialogContainer").style.display = "none";
-	}
-</script>
-	<div id="saveDialog">
-    <div style="background:#777;color:#FFF; vertical-align:central; line-height:30px; font-size:16px;">Select format to save</div>
-    <div style="text-align:center">
-		<div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'fls');">.FLS</div>
-       <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'srt');">.SRT</div>
-       <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'sbv');">.SBV</div>
-       <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'prxml');"><div onclick="this.parentNode.click();event.stopPropagation();" style="display:inline-block;vertical-align: middle;"><div onclick="this.parentNode.click();event.stopPropagation();"  style="line-height:40px;">.XML</div><div onclick="this.parentNode.click(); event.stopPropagation();" style="font-size:10px;line-height:10px;display:block; vertical-align:middle;">for Premiere</div></div></div>
-     </div>
-     <div style="text-align:left;padding:0 10px;">Copy from here:<br/></div>
-		<textarea cols="60" rows="10" style="margin:0 5px;" id="saveDialogTextarea"></textarea>
-		<div style="text-align:right;padding:0 10px;"><span id="cancelSubtitleDialogCacnelButton" style="color:#36F;" onclick="hideSaveDialog();">Cacnel</span>&nbsp;&nbsp;&nbsp;<span id="saveDialogSaveButton">Save as...</span></div>
-	</div>
-</div>
+            <div id="saveDialogPrXmlDiv" style="display:none;">
+                <br/> Choose Premiere Title Template(.prtl):
+                <br/>
+                <input type="file" id="prtlInput" onchange="subtitleDocument.prXml.updatePrtl();" />
+                <br/>
+                <br/> Fill some info of your video:<br/>
+                Width:
+                <input type="text" id="saveDialogPrXml_width" size="7" onchange="subtitleDocument.prXml.updateConfig();" />px &nbsp;Height:
+                <input type="text" id="saveDialogPrXml_height" size="7" onchange="subtitleDocument.prXml.updateConfig();" />px &nbsp;FrameRate:
+                <input type="text" id="saveDialogPrXml_frameRate" size="7" onchange="subtitleDocument.prXml.updateConfig();" />fps
+                <br/>
+                <br/>
+                <input type="button" value="OK" onclick="clickSaveFormatChoice(event,'prxml');" />
+            </div>
+            <div style="text-align:left;padding:0 10px;">Copy from here:
+                <br/>
+            </div>
+            <textarea cols="60" rows="10" style="margin:0 5px;" id="saveDialogTextarea"></textarea>
+            <div style="text-align:right;padding:0 10px;"><span id="cancelSubtitleDialogCacnelButton" style="color:#36F;" onclick="hideSaveDialog();">Cacnel</span>&nbsp;&nbsp;&nbsp;<span id="saveDialogSaveButton">Save as...</span>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
