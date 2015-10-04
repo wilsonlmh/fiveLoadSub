@@ -16,7 +16,7 @@ HTML5/Javascript based, incredibly-easy subtitling software
 
   - 實時顯示字幕在影片上
 
-  - 輸出srt,sbv及fls(fiveLoadSub原生格式)字幕格式
+  - 輸出srt,sbv及fls(fiveLoadSub原生格式)字幕格式, 亦能輸出至Adobe Premiere(通過FCPXML)
 
 
 able to:
@@ -31,7 +31,7 @@ able to:
 
   - real time display overlay subtitle on video
 
-  - export srt, sbv and fls(fiveLoadSub native format)
+  - export srt, sbv, fls(fiveLoadSub native format) and Adobe Premiere(via FCPXML)
 
 
 編寫中的功能:
@@ -53,9 +53,9 @@ working:
 
   - Chrome:完全無問題
 
-  - Firefox:有小問題, 但不影響使用
+  - Firefox:完全無問題
 
-  - Safari:完全無問題
+  - Safari:Premiere XML尚有問題
 
   - IE:無計劃支援
 
@@ -64,8 +64,8 @@ browser support:
 
   - chrome/good
 
-  - firefox/minor issue
+  - firefox/good
 
-  - safari/good
+  - safari/good(Premiere XML still has issue)
 
   - ie/no plan to support
