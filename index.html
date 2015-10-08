@@ -1,0 +1,543 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>fiveLoadSub</title>
+    <script>
+        function parse(val) {
+            var result = undefined,
+                tmp = [];
+            location.search
+                //.replace ( "?", "" ) 
+                // this is better, there might be a question mark inside
+                .substr(1)
+                .split("&")
+                .forEach(function (item) {
+                    tmp = item.split("=");
+                    if (tmp[0] === val) result = decodeURIComponent(tmp[1]);
+                });
+            return result;
+        }
+
+        var config = {
+            localizeTablePath: './localizeTable.csv',
+            localizeAliasPath: './localizeAlias.csv',
+            currentLanguage: parse('lang') || navigator.language || navigator.userLanguage || "en-US",
+            failBackLanguage: 'en-US',
+        }
+
+        var localizeTable = {};
+        var localizeAlias = {};
+        var stopMonitorMainScrolling = false;
+        var lastMainScrollTo = 0;
+        var slide3Stop = false;
+
+        function parseLocalizeTable(csv) {
+            var lines = csv.split("\n");
+            var result = {};
+            var headers = lines[0].split(",");
+
+            for (var i = 1; i < lines.length; i++) {
+                var currentline = lines[i].split(",");
+
+                for (var j = 1; j < currentline.length; j++) {
+                    result[headers[j]] = result[headers[j]] || {};
+                    result[headers[j]][currentline[0]] = currentline[j];
+
+                }
+            }
+            return result;
+        }
+
+        function parseLocalizeAlias(csv) {
+            var lines = csv.split("\n");
+            var result = {};
+            for (var i = 1; i < lines.length; i++) {
+                var currentline = lines[i].split(",");
+                currentline[1] = currentline[1] || "";
+                result[currentline[0]] = currentline[1];
+                
+            }
+            console.log(lines.length);
+            return result;
+        }
+
+        function localizedText(str) {
+            str = str || "";
+            result = "";
+            if (str != "") {
+
+                if (localizeTable != {}) {
+                    if (config.currentLanguage in localizeTable) {
+                        if (localizeTable[config.currentLanguage][str] != "") {
+                            result = localizeTable[config.currentLanguage][str];
+                            console.log('direct');
+                        }
+                    } else if (localizeAlias[config.currentLanguage] in localizeTable) {
+                        if (localizeTable[localizeAlias[config.currentLanguage]][str] != "") {
+                            result = localizeTable[localizeAlias[config.currentLanguage]][str];
+                            console.log('redirect1');
+                        }
+                    } else if (localizeAlias[localizeAlias[config.currentLanguage]] in localizeTable) {
+                        if (localizeTable[localizeAlias[localizeAlias[config.currentLanguage]]][str] != "") {
+                            result = localizeTable[localizeAlias[localizeAlias[config.currentLanguage]]][str];
+                            console.log('redirect2');
+                        }
+                    } else if (localizeTable[config.failBackLanguage][str] != "") {
+                        result = localizeTable[config.failBackLanguage][str];
+                        console.log('failback');
+                    }
+
+                }
+                //console.log(localizeAlias[config.currentLanguage]);
+                //console.log(localizeAlias[localizeAlias[config.currentLanguage]]);
+            }
+
+            return result;
+        }
+
+        function replaceLocalizedText() {
+            var doc = document.body;
+            for (key in localizeTable['en-US']) {
+                doc.innerHTML = doc.innerHTML.replace(new RegExp('\{' + key + '\}', 'g'), localizedText(key));
+            }
+
+        }
+
+        function init() {
+            var tableRequest = new XMLHttpRequest();
+            var aliasRequest = new XMLHttpRequest();
+            tableRequest.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    localizeTable = parseLocalizeTable(this.responseText.replace(/\r/gi, '\n'));
+                    aliasRequest.send();
+                }
+            };
+            tableRequest.open("GET", config.localizeTablePath);
+            tableRequest.send();
+            aliasRequest.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    localizeAlias = parseLocalizeAlias(this.responseText.replace(/\r/gi, '\n'));
+                    replaceLocalizedText();
+                }
+            };
+            aliasRequest.open("GET", config.localizeAliasPath);
+
+        }
+        init();
+
+        function scrolling() {
+            updateSlide();
+            var main = document.getElementById('mainContent');
+            var s = main.scrollLeft;
+            if (s % 900 == 0) {
+                stopMonitorMainScrolling = false;
+            }
+            if (!stopMonitorMainScrolling) {
+
+                //Left -> Right
+                if ((s > lastMainScrollTo) && (s % 900 > (0.4 * 900)) && (s % 900 < (0.5 * 900))) {
+
+                    stopMonitorMainScrolling = true;
+                    scrollTo(main, s - (s % 900) + 900, 300, true, function () {
+                        stopMonitorMainScrolling = false;
+                        scrolling();
+
+                    });
+
+                }
+
+                //Right -> Left
+                if ((s < lastMainScrollTo) && (s % 900 < (0.6 * 900)) && (s % 900 > (0.5 * 900))) {
+                    stopMonitorMainScrolling = true;
+                    scrollTo(main, s - (s % 900), 600, false, function () {
+                        stopMonitorMainScrolling = false;
+                        scrolling();
+                    });
+
+                }
+
+                lastMainScrollTo = s;
+            }
+        }
+
+        function scrollTo(element, to, duration, isLeftToRight, finishCallBack) {
+
+            if (duration < 0) return;
+            var difference = to - element.scrollLeft;
+            var perTick = difference / duration * 10;
+
+            setTimeout(function () {
+
+                element.scrollLeft = element.scrollLeft + perTick;
+                if ((isLeftToRight) && (element.scrollLeft >= to)) {
+
+                    finishCallBack();
+                    return;
+                } else if ((!isLeftToRight) && (element.scrollLeft <= to)) {
+                    finishCallBack();
+                    return;
+                }
+                scrollTo(element, to, duration - 10, isLeftToRight, finishCallBack);
+            }, 10);
+        }
+
+        function updateSlide() {
+            var main = document.getElementById('mainContent');
+            var s = main.scrollLeft;
+
+            //Slide 1
+            document.getElementById('slide1_2_2').style.left = Math.round((s % 900 / 1.7) - 340) + 'px';
+            document.getElementById('slide1_2_1').style.left = Math.round((s % 900 / 1.7) - 370) + 'px';
+            document.getElementById('slide1_1_2').style.left = Math.round((s % 900 / 1.6) - 140) + 'px';
+            document.getElementById('slide1_1_1').style.left = Math.round((s % 900 / 1.6) - 250) + 'px';
+
+            //Slide 2
+            document.getElementById('slide2_0').style.left = Math.round(300 - (s % 1800 / 3)) + 'px';
+            if (s % 1800 < 700) {
+                document.getElementById('slide2_2').style.transform = "scale(1)";
+            }
+            if (s % 1800 >= 700) {
+                document.getElementById('slide2_2').style.transform = "scale(" + (((1 - (s % 1800 - 700) / 200) * 0.3) + 0.7) + ")";
+            }
+            if (s % 1800 < 900) {
+                document.getElementById('slide2_1').style.display = "none";
+            }
+            if (s % 1800 >= 900) {
+                document.getElementById('slide2_1').style.display = "block";
+            }
+
+            //Slide 3
+
+
+
+            if (s < 1500) {
+
+                document.getElementById('slide3_6').style.display = "none";
+
+            }
+
+            if (s >= 1800) {
+                slide3();
+            }
+
+            function slide3() {
+                var buttonDown = function () {
+                    document.getElementById('slide3_7_2').style.display = "block";
+                    document.getElementById('slide3_7_1').style.display = "none";
+                }
+                var buttonUp = function () {
+                    document.getElementById('slide3_7_2').style.display = "none";
+                    document.getElementById('slide3_7_1').style.display = "block";
+                }
+                var step1 = function () {
+                    document.getElementById('slide3_1').style.display = "block";
+
+                    buttonDown();
+                    setTimeout(buttonUp, 500);
+                }
+
+                var step2 = function () {
+                    document.getElementById('slide3_1').style.display = "none";
+                    document.getElementById('slide3_2').style.display = "block";
+
+                    buttonDown();
+                    setTimeout(buttonUp, 500);
+                }
+
+                var step3 = function () {
+
+                    document.getElementById('slide3_2').style.display = "none";
+                    document.getElementById('slide3_3').style.display = "block";
+
+                    buttonDown();
+                    setTimeout(buttonUp, 500);
+                }
+
+                var step4 = function () {
+                    document.getElementById('slide3_3').style.display = "none";
+                    document.getElementById('slide3_4').style.display = "block";
+
+                    buttonDown();
+                    setTimeout(buttonUp, 500);
+                }
+
+                var step5 = function () {
+                    document.getElementById('slide3_4').style.display = "none";
+                    document.getElementById('slide3_5').style.display = "block";
+
+                    buttonDown();
+                    setTimeout(buttonUp, 500);
+                }
+
+                var step6 = function () {
+                    document.getElementById('slide3_5').style.display = "none";
+                    document.getElementById('slide3_6').style.display = "block";
+
+                    buttonDown();
+                    setTimeout(buttonUp, 500);
+                    slide3Stop = false;
+
+                }
+
+                if (!slide3Stop) {
+                    slide3Stop = true;
+                    document.getElementById('slide3_6').style.display = "none";
+                    setTimeout(step1, 0);
+                    setTimeout(step2, 800);
+                    setTimeout(step3, 1600);
+                    setTimeout(step4, 2400);
+                    setTimeout(step5, 3200);
+                    setTimeout(step6, 4000);
+                    setTimeout(slide3, 6000);
+                }
+            }
+        }
+
+        function onload() {
+            var main = document.getElementById('mainContent');
+
+            var step1 = function () {
+                stopMonitorMainScrolling = true;
+                scrollTo(main, 900, 600, true, function () {
+                    stopMonitorMainScrolling = false;
+                    scrolling();
+
+                });
+            }
+            var step2 = function () {
+                stopMonitorMainScrolling = true;
+                scrollTo(main, 1800, 600, true, function () {
+                    stopMonitorMainScrolling = false;
+                    scrolling();
+
+                });
+            }
+            var step3 = function () {
+                stopMonitorMainScrolling = true;
+                scrollTo(main, 0, 600, false, function () {
+                    stopMonitorMainScrolling = false;
+                    scrolling();
+                });
+                onload();
+            }
+
+            setTimeout(step1, 5000);
+            setTimeout(step2, 10000);
+            setTimeout(step3, 15000);
+        }
+    </script>
+    <style>
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        html,
+        body {
+            background-color: #F5F5F5;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: sans-serif;
+        }
+        
+        #header {
+            width: 100%;
+            height: 100px;
+            text-align: center;
+            line-height: 100px;
+            vertical-align: middle;
+        }
+        
+        #headerContent {
+            display: inline-block;
+            width: 900px;
+            height: 100%;
+            text-align: left;
+            font-size: 36px;
+        }
+        
+        #main {
+            width: 100%;
+            text-align: center;
+            background: #DDD;
+            min-height: 500px;
+            height: 70%;
+            -webkit-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.2);
+            -moz-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.2);
+            box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.2);
+        }
+        
+        #mainContent {
+            display: inline-block;
+            width: 900px;
+            text-align: center;
+            height: 100%;
+            overflow-x: scroll;
+            white-space: nowrap;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #softwareNameDiv {
+            display: inline-block;
+        }
+        
+        #menuDiv {
+            display: block;
+            float: right;
+            text-align: right;
+        }
+        
+        .menuItem {
+            color: darkolivegreen;
+            font-size: 20px;
+            display: inline-block;
+            min-width: 120px;
+        }
+        
+        .slides {
+            height: 550px;
+            width: 800px;
+            margin: 30px 50px;
+            padding: 0;
+            display: inline-block;
+            overflow: hidden;
+            position: relative;
+            color: firebrick;
+        }
+        
+        .slideDescription {
+            position: absolute;
+            width: 100%;
+            bottom: 10px;
+        }
+        
+        .dialogDiv {
+            display: inline-block;
+            background-color: #FFF;
+            box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 20%, 0.5);
+            border: #999 1px solid;
+            border-radius: 10px;
+            overflow: hidden;
+            vertical-align: middle;
+            line-height: normal;
+            padding: 0px;
+            padding-bottom: 10px;
+            min-width: 500px;
+            min-height: 150px;
+            z-index: 100;
+        }
+        
+        .dialogContainerDiv {
+            display: none;
+            line-height: 100vh;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.3);
+            z-index: 90;
+        }
+    </style>
+
+</head>
+
+<body onload="onload();">
+    <div id="header">
+        <div id="headerContent">
+            <div id="softwareNameDiv">
+                {appName}
+            </div>
+            <div id="menuDiv">
+                <div class="menuItem"><a href="https://github.com/wilsonlmh/fiveLoadSub/archive/master.zip" target="_blank">{menu.download}</a></div>
+                <div class="menuItem"><a href="http://github.com/wilsonlmh/fiveLoadSub/" target="_blank">{menu.github}</a></div>
+                <div class="menuItem"><a href="http://github.com/wilsonlmh/fiveLoadSub/wiki/" target="_blank">{menu.wiki}</a></div>
+                <div class="menuItem" onclick="document.getElementById('donationDialogContainer').style.display = 'block';">{menu.donation}</div>
+            </div>
+        </div>
+    </div>
+    <div id="main">
+        <div id="mainContent" onscroll="scrolling();">
+
+            <div id="slide1" class="slides">
+                <img id="slide1_2_2" src="img/slides/slide1_2_2.png" style="z-index:10;position:absolute;left:-330px;top:0;" />
+                <img id="slide1_2_1" src="img/slides/slide1_2_1.png" style="z-index:9;position:absolute;left:-360px;top:0;" />
+                <img id="slide1_1_2" src="img/slides/slide1_1_2.png" style="z-index:8;position:absolute;left:-140px;top:0;" />
+                <img id="slide1_1_1" src="img/slides/slide1_1_1.png" style="z-index:7;position:absolute;left:-250px;top:0;" />
+                <img id="slide1_0" src="img/slides/slide1_0.png" style="z-index:6;position:absolute;left:0;top:0;" />
+                <div class="slideDescription">{slide1.description}</div>
+            </div>
+
+            <div id="slide2" class="slides">
+                <img id="slide2_0" src="img/slides/slide2_0.png" style="z-index:8;position:absolute;left:300px;top:0;" />
+                <img id="slide2_1" src="img/slides/slide2_1.png" style="z-index:10;position:absolute;left:0;top:0;display:none;" />
+                <img id="slide2_2" src="img/slides/slide2_2.png" style="z-index:9;position:absolute;left:-50px;top:-30px;" />
+                <div class="slideDescription">{slide2.description}</div>
+            </div>
+
+            <div id="slide3" class="slides">
+                <img id="slide3_0" src="img/slides/slide3_0.png" style="z-index:2;position:absolute;left:0;top:0;" />
+                <img id="slide3_1" src="img/slides/slide3_1.png" style="z-index:3;position:absolute;left:0;top:0;display:none;" />
+                <img id="slide3_2" src="img/slides/slide3_2.png" style="z-index:4;position:absolute;left:0;top:0;display:none;" />
+                <img id="slide3_3" src="img/slides/slide3_3.png" style="z-index:5;position:absolute;left:0;top:0;display:none;" />
+                <img id="slide3_4" src="img/slides/slide3_4.png" style="z-index:5;position:absolute;left:0;top:0;display:none;" />
+                <img id="slide3_5" src="img/slides/slide3_5.png" style="z-index:5;position:absolute;left:0;top:0;display:none;" />
+                <img id="slide3_6" src="img/slides/slide3_6.png" style="z-index:5;position:absolute;left:0;top:0;display:none;" />
+                <img id="slide3_7_1" src="img/slides/slide3_7_1.png" style="z-index:6;position:absolute;left:0;top:0;" />
+                <img id="slide3_7_2" src="img/slides/slide3_7_2.png" style="z-index:7;position:absolute;left:0;top:0;display:none;" />
+                <div class="slideDescription">{slide3.description}</div>
+            </div>
+
+        </div>
+    </div>
+    <div class="dialogContainerDiv" id="donationDialogContainer">
+        <div id="donationDialog" class="dialogDiv">
+            <div style="background:#777;color:#FFF; vertical-align:central; line-height:30px; font-size:16px;">{donationDialog.title}</div>
+
+            <div style="text-align:center;">
+                <table style="text-align:center;" align="center">
+                    <tr>
+                        <td>
+                            {donationDialog.alipay}
+                        </td>
+                        <td style="width:50px;">&nbsp;</td>
+                        <td>{donationDialog.paypal}</td>
+                    </tr>
+                    <tr>
+
+                        <td>
+                            <img src="img/alipay_qrcode.png" width="200px" height="200px" />
+                            <br/> lu6ni4z-ali@yahoo.com.hk
+                        </td>
+                        <td style="width:50px;">&nbsp;</td>
+                        <td>
+                            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                                <input type="hidden" name="cmd" value="_s-xclick">
+                                <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIHfwYJKoZIhvcNAQcEoIIHcDCCB2wCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYAEx4GDB8wKP9Wb2QT0Fpfkv/Ls1xhqXuBqFm9xs9VNi2hmlxbtHKIAMopwIShs8qVJivldLa2kL/063Ta5edyi7ClfDCe/BOXISBL43pBcn4Z8kaS8i7r5PMqaiAoJ90UMWZZRVzL991f25ZAMcz47JCDzUb3+EBSVzuKmidyWVTELMAkGBSsOAwIaBQAwgfwGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQI6Ut94BpovK6AgdhMG+xgCsY3c9HTqV6pTnckVXwGQkNi89DEzJQTexGMAigZFd8dJ5kpdEzt6bceEkKU/nWXWyA88WaiQpypvHvw2tBv43Sji9mr5CVQmVEmvwnlTXwjw3K4oR4EL65txf+g9WI3Ids0CbU4xCj1rlFPXrQkmNmoz9tG/ZikxLV3HabnqpqzHhmcs4zsqdvehqgFZMK8Oi5lEFfMkNXIJ3ZgCYFPoXFTqVNi3+ZIDwYhQzcx1UEMfa/sNHS8CLcP/6FzbBl2/juMtFPXN0/73BXK98o90XtHG42gggOHMIIDgzCCAuygAwIBAgIBADANBgkqhkiG9w0BAQUFADCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20wHhcNMDQwMjEzMTAxMzE1WhcNMzUwMjEzMTAxMzE1WjCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMFHTt38RMxLXJyO2SmS+Ndl72T7oKJ4u4uw+6awntALWh03PewmIJuzbALScsTS4sZoS1fKciBGoh11gIfHzylvkdNe/hJl66/RGqrj5rFb08sAABNTzDTiqqNpJeBsYs/c2aiGozptX2RlnBktH+SUNpAajW724Nv2Wvhif6sFAgMBAAGjge4wgeswHQYDVR0OBBYEFJaffLvGbxe9WT9S1wob7BDWZJRrMIG7BgNVHSMEgbMwgbCAFJaffLvGbxe9WT9S1wob7BDWZJRroYGUpIGRMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbYIBADAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4GBAIFfOlaagFrl71+jq6OKidbWFSE+Q4FqROvdgIONth+8kSK//Y/4ihuE4Ymvzn5ceE3S/iBSQQMjyvb+s2TWbQYDwcp129OPIbD9epdr4tJOUNiSojw7BHwYRiPh58S1xGlFgHFXwrEBb3dgNbMUa+u4qectsMAXpVHnD9wIyfmHMYIBmjCCAZYCAQEwgZQwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tAgEAMAkGBSsOAwIaBQCgXTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0xNTEwMDgxNTUzMTFaMCMGCSqGSIb3DQEJBDEWBBTS3Nltx8neus2EpJdKy+l7Ooz3VjANBgkqhkiG9w0BAQEFAASBgD95M5og96/MZckO0+5mkPC1LBM1yQ2pdjPJVdqQSSAjNMC8OfmdMmwPum0f2ioODhV5O3/Zq1+1g89BzUkJRa29OetrEn1RJpOqf7h0F8G14HYh5sic1bOSWx22xbgHFXe3AUgy5Bu7Gu+dXGFqkyT94PEiH3vmT9lqB0BeVdap-----END PKCS7-----
+">
+                                <input type="image" src="https://www.paypalobjects.com/en_US/C2/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                                <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+                            </form>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+
+
+            <div style="text-align:right;padding:0 10px;"><span id="dialogCacnelButton" style="color:#36F;" onclick="document.getElementById('donationDialogContainer').style.display = 'none'; ">OK</span>&nbsp;&nbsp;&nbsp;
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
