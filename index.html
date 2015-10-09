@@ -416,10 +416,11 @@
             color: darkolivegreen;
             font-size: 20px;
             display: inline-block;
-            min-width: 120px;
+            margin: 0 10px;
+            text-align: center;
         }
         
-        .slides {
+        .slides {   
             height: 550px;
             width: 800px;
             margin: 10px 50px;
@@ -465,10 +466,14 @@
             text-align: center;
             background-color: rgba(0, 0, 0, 0.3);
             z-index: 90;
+            
         }
         
         #bottomBar {
             text-align: center;
+        }
+        #softwareNameDiv {
+            line-height: 70px;
         }
     </style>
 
@@ -478,12 +483,14 @@
     <div id="header">
         <div id="headerContent">
             <div id="softwareNameDiv">
+                <img src="img/logo.png" width="70px" height="70px" style="float:left;vertical-align: middle; margin-right:5px;" />
                 {appName}
             </div>
             <div id="menuDiv">
+                <div class="menuItem"><a href="https://rawgit.com/wilsonlmh/fiveLoadSub/master/index.html" target="_blank">{menu.live}</a></div>
                 <div class="menuItem"><a href="https://github.com/wilsonlmh/fiveLoadSub/archive/master.zip" target="_blank">{menu.download}</a></div>
-                <div class="menuItem"><a href="http://github.com/wilsonlmh/fiveLoadSub/" target="_blank">{menu.github}</a></div>
-                <div class="menuItem"><a href="http://github.com/wilsonlmh/fiveLoadSub/wiki/" target="_blank">{menu.wiki}</a></div>
+                <div class="menuItem"><a href="https://github.com/wilsonlmh/fiveLoadSub/" target="_blank">{menu.github}</a></div>
+                <div class="menuItem"><a href="https://github.com/wilsonlmh/fiveLoadSub/wiki/" target="_blank">{menu.wiki}</a></div>
                 <div class="menuItem" onclick="document.getElementById('donationDialogContainer').style.display = 'block';">{menu.donation}</div>
             </div>
         </div>
@@ -573,6 +580,7 @@
     <div id="bottomBar">
         <br/> {bottomBar.resoltuion}&nbsp; 1280x800.
         <br/> (c)Wilson Luniz @ Previous Production
+        <br/> {bottomBar.license}
     </div>
 </body>
 

@@ -1,6 +1,7 @@
 nth,en-US,zh-HK,zh-CN,fr
 appName,fiveLoadSub,fiveLoadSub,fiveLoadSub,fiveLoadSub
 menu.github,GitHub,GitHub,GitHub,GitHub
+menu.live,Try Now!,在瀏覽器使用,在浏览器使用,Try Now!
 menu.download,Download,下載,下载,Télécharger
 menu.donation,Donation,贊助,赞助,Donation
 menu.changeLog,Change Log,更新紀錄,更新纪录,Change Log
@@ -13,3 +14,4 @@ slide1.description,Pure HTML+Javascript open source subtitlier,純HTML+Javascrip
 slide2.description,Drag 'n' Drop Integration,把你的影片...拉入去就是!,把你的影片...拉入去就是!,Drag 'n' Drop Intégration
 slide3.description,Probably the easiest subtitling software in the world!,可能是世上最易使用的字幕軟件,可能是世上最易使用的字幕軟件,Probably the easiest subtitling software in the world!
 bottomBar.resoltuion,Design for screen with minmium resolution:,建議顯示器最小解像度:,建议显示器最小解析度:,
+bottomBar.license,Release under GNU Public License v3,根據GNU公共許可證第三版發行,根据GNU公共许可证第三版发行,Sortie sous GNU Public License v3
