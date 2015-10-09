@@ -1,13 +1,15 @@
-nth,en-US,zh-HK,fr
-appName,fiveLoadSub,fiveLoadSub,fiveLoadSub
-menu.github,GitHub,GitHub,GitHub
-menu.download,Download,下載,
-menu.donation,Donation,贊助,
-menu.changeLog,Change Log,更新紀錄,
-menu.wiki,Wiki,維基,Wiki
-donationDialog.title,Buy me a cup of coffee,如果你會贊助就實在太好了,
-donationDialog.alipay,Alipay,支付寶,Alipay
-donationDialog.paypal,PayPal,PayPal,PayPal
-slide1.description,Pure HTML+Javascript open source subtitlier,純HTML+Javascript開源字幕軟件,
-slide2.description,Drag 'n' Drop Integration,你想要的...拉入去就是,
-slide3.description,Probably the easiest subtitling software in the world!,可能是世上最易使用的字幕軟件,
+nth,en-US,zh-HK,zh-CN,fr
+appName,fiveLoadSub,fiveLoadSub,fiveLoadSub,fiveLoadSub
+menu.github,GitHub,GitHub,GitHub,GitHub
+menu.download,Download,下載,下载,Télécharger
+menu.donation,Donation,贊助,赞助,Donation
+menu.changeLog,Change Log,更新紀錄,更新纪录,Change Log
+menu.wiki,Wiki,維基,维基,Wiki
+donationDialog.title,Buy me a cup of coffee:),你的贊助會令fiveLoadSub更臻完美,有你的支持会让fiveLoadSub更臻完美,
+donationDialog.alipay,Alipay,支付寶,支付宝,Alipay
+donationDialog.paypal,PayPal,PayPal,PayPal,PayPal
+donationDialog.wechat,WeChat,微信紅包,微信紅包,WeChat
+slide1.description,Pure HTML+Javascript open source subtitlier,純HTML+Javascript開源字幕軟件,纯HTML+Javascript开源字幕软体,
+slide2.description,Drag 'n' Drop Integration,把你的影片...拉入去就是!,把你的影片...拉入去就是!,Drag 'n' Drop Intégration
+slide3.description,Probably the easiest subtitling software in the world!,可能是世上最易使用的字幕軟件,可能是世上最易使用的字幕軟件,Probably the easiest subtitling software in the world!
+bottomBar.resoltuion,Design for screen with minmium resolution:,建議顯示器最小解像度:,建议显示器最小解析度:,

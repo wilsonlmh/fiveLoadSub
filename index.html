@@ -56,7 +56,7 @@
                 var currentline = lines[i].split(",");
                 currentline[1] = currentline[1] || "";
                 result[currentline[0]] = currentline[1];
-                
+
             }
             console.log(lines.length);
             return result;
@@ -71,21 +71,21 @@
                     if (config.currentLanguage in localizeTable) {
                         if (localizeTable[config.currentLanguage][str] != "") {
                             result = localizeTable[config.currentLanguage][str];
-                            console.log('direct');
+
                         }
                     } else if (localizeAlias[config.currentLanguage] in localizeTable) {
                         if (localizeTable[localizeAlias[config.currentLanguage]][str] != "") {
                             result = localizeTable[localizeAlias[config.currentLanguage]][str];
-                            console.log('redirect1');
+
                         }
                     } else if (localizeAlias[localizeAlias[config.currentLanguage]] in localizeTable) {
                         if (localizeTable[localizeAlias[localizeAlias[config.currentLanguage]]][str] != "") {
                             result = localizeTable[localizeAlias[localizeAlias[config.currentLanguage]]][str];
-                            console.log('redirect2');
+
                         }
                     } else if (localizeTable[config.failBackLanguage][str] != "") {
                         result = localizeTable[config.failBackLanguage][str];
-                        console.log('failback');
+
                     }
 
                 }
@@ -326,8 +326,28 @@
             setTimeout(step2, 10000);
             setTimeout(step3, 15000);
         }
+
+        function updateUI() {
+            var selects = document.getElementsByClassName('slides');
+            var mainContent = document.getElementById('mainContent');
+            var height = mainContent.clientHeight;
+            height = (height - 550) / 2;
+            for (var i = 0, il = selects.length; i < il; i++) {
+
+                selects[i].style.marginTop = height + "px";
+                selects[i].style.marginBottom = height + "px";
+            }
+        }
     </script>
     <style>
+        @font-face {
+            font-family: 'OpenSans';
+            src: url('fonts/OpenSans-Regular.eot');
+            src: local('☺'), url('fonts/OpenSans-Regular.woff') format('woff'), url('fonts/OpenSans-Regular.ttf') format('truetype'), url('fonts/OpenSans-Regular.svg') format('svg');
+            font-weight: normal;
+            font-style: normal;
+        }
+        
         a {
             color: inherit;
             text-decoration: none;
@@ -335,6 +355,7 @@
         
         html,
         body {
+            font-family: 'OpenSans';
             background-color: #F5F5F5;
             margin: 0;
             padding: 0;
@@ -345,9 +366,9 @@
         
         #header {
             width: 100%;
-            height: 100px;
+            height: 80px;
             text-align: center;
-            line-height: 100px;
+            line-height: 80px;
             vertical-align: middle;
         }
         
@@ -363,7 +384,7 @@
             width: 100%;
             text-align: center;
             background: #DDD;
-            min-height: 500px;
+            min-height: 550px;
             height: 70%;
             -webkit-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.2);
             -moz-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.2);
@@ -401,7 +422,7 @@
         .slides {
             height: 550px;
             width: 800px;
-            margin: 30px 50px;
+            margin: 10px 50px;
             padding: 0;
             display: inline-block;
             overflow: hidden;
@@ -445,11 +466,15 @@
             background-color: rgba(0, 0, 0, 0.3);
             z-index: 90;
         }
+        
+        #bottomBar {
+            text-align: center;
+        }
     </style>
 
 </head>
 
-<body onload="onload();">
+<body onload="onload();updateUI();" onresize="updateUI();">
     <div id="header">
         <div id="headerContent">
             <div id="softwareNameDiv">
@@ -464,6 +489,7 @@
         </div>
     </div>
     <div id="main">
+
         <div id="mainContent" onscroll="scrolling();">
 
             <div id="slide1" class="slides">
@@ -497,6 +523,8 @@
 
         </div>
     </div>
+
+    </div>
     <div class="dialogContainerDiv" id="donationDialogContainer">
         <div id="donationDialog" class="dialogDiv">
             <div style="background:#777;color:#FFF; vertical-align:central; line-height:30px; font-size:16px;">{donationDialog.title}</div>
@@ -509,6 +537,8 @@
                         </td>
                         <td style="width:50px;">&nbsp;</td>
                         <td>{donationDialog.paypal}</td>
+                        <td style="width:50px;">&nbsp;</td>
+                        <td>{donationDialog.wechat}</td>
                     </tr>
                     <tr>
 
@@ -526,7 +556,9 @@
                                 <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
                             </form>
                         </td>
+                        <td style="width:50px;">&nbsp;</td>
                         <td>
+                            <img src="img/wechat_qrcode.png" height="200px" width="200px" />
                         </td>
                     </tr>
 
@@ -537,6 +569,10 @@
             <div style="text-align:right;padding:0 10px;"><span id="dialogCacnelButton" style="color:#36F;" onclick="document.getElementById('donationDialogContainer').style.display = 'none'; ">OK</span>&nbsp;&nbsp;&nbsp;
             </div>
         </div>
+    </div>
+    <div id="bottomBar">
+        <br/> {bottomBar.resoltuion}&nbsp; 1280x800.
+        <br/> (c)Wilson Luniz @ Previous Production
     </div>
 </body>
 
