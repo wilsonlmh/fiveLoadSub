@@ -546,7 +546,7 @@
                     }
                     break;
                 case "srt":
-                    var j = 0;
+                    var j = 1;
                     for (var i = 0; i < this.linesSortedByBegin.length; i++) {
                         if ((!this.linesSortedByBegin[i].begin.empty) && (!this.linesSortedByBegin[i].end.empty)) {
                             var begin = zeroPad(this.linesSortedByBegin[i].begin.h.toString(), 2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.m.toString(), 2) + ":" + zeroPad(this.linesSortedByBegin[i].begin.s.toString(), 2) + "," + (Math.round(parseInt(this.linesSortedByBegin[i].begin.f) / 30 * 1000)).toString();
