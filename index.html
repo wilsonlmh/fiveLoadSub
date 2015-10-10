@@ -237,28 +237,28 @@
     </script>
     <script>
         /*store = new Array();
-                                                                                                                                                                                        store.push({"url": "/img/icon.png","data-url": "dataurl:XXXXX"});
-                                                                                                                                                                                        store.push({"url": "/img/icon1.png","data-url": "dataurl:XXXXX"});
-                                                                                                                                                                                        //Object.defineProperty(HTMLImageElement.prototype,"src",{set: function() {console.log(123);this.set();}});
-                                                                                                                                                                                        HTMLImageElement.prototype.addEventListener = function(eventName,func,flag) {
-                                                                                                                                                                                            if (eventName == "DOMAttrModified") {
-                                                                                                                                                                                                console.log(1);
-                                                                                                                                                                                            }
-                                                                                                                                                                                            console.log(2);
-                                                                                                                                                                                            this(arguments);
-                                                                                                                                                                                        }
-                                                                                                                                                                                        //HTMLImageElement.prototype.constructor
-                                                                                                                                                                                        //item.addEventListener("DOMAttrModified", function(event) { console.log(event.target.getAttribute('src'));} );
-                                                                                                                                                                                        //console.log(event.target.src);
-                                                                                                                                                                                        function getResource(url) {
-                                                                                                                                                                                            var result = url;
-                                                                                                                                                                                            for (var row in store) {
-                                                                                                                                                                                                if (row.url == url) {
-                                                                                                                                                                                                    result = row.data - url;
+                                                                                                                                                                                                store.push({"url": "/img/icon.png","data-url": "dataurl:XXXXX"});
+                                                                                                                                                                                                store.push({"url": "/img/icon1.png","data-url": "dataurl:XXXXX"});
+                                                                                                                                                                                                //Object.defineProperty(HTMLImageElement.prototype,"src",{set: function() {console.log(123);this.set();}});
+                                                                                                                                                                                                HTMLImageElement.prototype.addEventListener = function(eventName,func,flag) {
+                                                                                                                                                                                                    if (eventName == "DOMAttrModified") {
+                                                                                                                                                                                                        console.log(1);
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                    console.log(2);
+                                                                                                                                                                                                    this(arguments);
                                                                                                                                                                                                 }
-                                                                                                                                                                                            }
-                                                                                                                                                                                            return result;
-                                                                                                                                                                                        }*/
+                                                                                                                                                                                                //HTMLImageElement.prototype.constructor
+                                                                                                                                                                                                //item.addEventListener("DOMAttrModified", function(event) { console.log(event.target.getAttribute('src'));} );
+                                                                                                                                                                                                //console.log(event.target.src);
+                                                                                                                                                                                                function getResource(url) {
+                                                                                                                                                                                                    var result = url;
+                                                                                                                                                                                                    for (var row in store) {
+                                                                                                                                                                                                        if (row.url == url) {
+                                                                                                                                                                                                            result = row.data - url;
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                    return result;
+                                                                                                                                                                                                }*/
     </script>
     <script>
         //Object definition
@@ -577,7 +577,16 @@
 
 
                 this.genXML = function (lines) {
-                    this.output = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE fcpxml><fcpxml version="1.4"><resources></resources><library location="file:///Users/User/Movies/fiveLoadSub.fcpbundle/"><event name="fiveLoadSubImport" uid="69E23564-C30B-4097-BAAC-893817A4EEAF"><project name="fiveLoadSubImportSequence" uid="1C0B2AF7-FA57-4E8F-A93D-5F6A46BF6E59"></project></event></library></fcpxml>';
+                    function guid() {
+                        function s4() {
+                            return Math.floor((1 + Math.random()) * 0x10000)
+                                .toString(16)
+                                .substring(1);
+                        }
+                        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                            s4() + '-' + s4() + s4() + s4();
+                    }
+                    this.output = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE fcpxml><fcpxml version="1.4"><resources></resources><library location="file:///Users/User/Movies/fiveLoadSub.fcpbundle/"><event name="fiveLoadSubImport" uid="' + guid() +'"><project name="fiveLoadSubImportSequence" uid="' + guid() +'"></project></event></library></fcpxml>';
                     this.outputDoc = parser.parseFromString(this.output, 'text/xml');
                     if ((video.width > 0) && (video.height > 0) && (video.frameRate > 0) && (video.totalFrames > 0)) {
                         var template;
@@ -1384,7 +1393,7 @@
     <input type="file" hidden="true" id="fileLoader" />
     <div id="mainContainer">
         <div id="headerFrame">
-            <span style="font-size:16px;">FiveLoadSub v0.6 by Wilson Luniz</span>
+            <span style="font-size:16px;">FiveLoadSub v0.6.1 by Wilson Luniz</span>
             <br/>
             <div style="text-align:left">
                 <div class="imgButton" onClick="selectFile('video');"><img src="img/importVideo.png" width="40" height="40" alt="" />
@@ -1504,7 +1513,7 @@
                     </div>
                 </div>
             </div>
-            <div id="saveDialogXmlDiv" style="display: block;">
+            <div id="saveDialogXmlDiv" style="display: none;">
                 <br>
                 <div id="xmlTemplateInputLabelDiv">Choose Final Cut Pro X Title Template(.fcpxml):</div>
                 <br>
@@ -1525,7 +1534,7 @@
             <textarea cols="60" rows="10" style="margin:0 5px;" id="saveDialogTextarea"></textarea>
             <div style="text-align:right;padding:0 10px;"><span id="cancelSubtitleDialogCacnelButton" style="color:#36F;" onclick="hideSaveDialog();">Cacnel</span>&nbsp;&nbsp;&nbsp;<span id="saveDialogSaveButton" style="color: rgb(51, 102, 255);"><a style="color:#36F;"  target="_blank">Save As...</a></span>
             </div>
-    </div>
+        </div>
 </body>
 
 </html>
