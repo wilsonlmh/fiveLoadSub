@@ -162,7 +162,7 @@
             line-height: normal;
             padding: 0px;
             padding-bottom: 10px;
-            min-width: 500px;
+            min-width: 360px;
             min-height: 150px;
             z-index: 11;
         }
@@ -236,29 +236,30 @@
         }
     </script>
     <script>
-        /*store = new Array();
-                                                                                                                                                                                                store.push({"url": "/img/icon.png","data-url": "dataurl:XXXXX"});
-                                                                                                                                                                                                store.push({"url": "/img/icon1.png","data-url": "dataurl:XXXXX"});
-                                                                                                                                                                                                //Object.defineProperty(HTMLImageElement.prototype,"src",{set: function() {console.log(123);this.set();}});
-                                                                                                                                                                                                HTMLImageElement.prototype.addEventListener = function(eventName,func,flag) {
-                                                                                                                                                                                                    if (eventName == "DOMAttrModified") {
-                                                                                                                                                                                                        console.log(1);
-                                                                                                                                                                                                    }
-                                                                                                                                                                                                    console.log(2);
-                                                                                                                                                                                                    this(arguments);
-                                                                                                                                                                                                }
-                                                                                                                                                                                                //HTMLImageElement.prototype.constructor
-                                                                                                                                                                                                //item.addEventListener("DOMAttrModified", function(event) { console.log(event.target.getAttribute('src'));} );
-                                                                                                                                                                                                //console.log(event.target.src);
-                                                                                                                                                                                                function getResource(url) {
-                                                                                                                                                                                                    var result = url;
-                                                                                                                                                                                                    for (var row in store) {
-                                                                                                                                                                                                        if (row.url == url) {
-                                                                                                                                                                                                            result = row.data - url;
-                                                                                                                                                                                                        }
-                                                                                                                                                                                                    }
-                                                                                                                                                                                                    return result;
-                                                                                                                                                                                                }*/
+        /*
+                                                                                        store = new Array();
+                                                                                        store.push({"url": "/img/icon.png","data-url": "dataurl:XXXXX"});
+                                                                                        store.push({"url": "/img/icon1.png","data-url": "dataurl:XXXXX"});
+                                                                                        //Object.defineProperty(HTMLImageElement.prototype,"src",{set: function() {console.log(123);this.set();}});
+                                                                                        HTMLImageElement.prototype.addEventListener = function(eventName,func,flag) {
+                                                                                                                                                                                                                                                                                                                    if (eventName == "DOMAttrModified") {
+                                                                                                                                                                                                                                                                                                                        console.log(1);
+                                                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                                                    console.log(2);
+                                                                                                                                                                                                                                                                                                                    this(arguments);
+                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                //HTMLImageElement.prototype.constructor
+                                                                                                                                                                                                                                                                                                                //item.addEventListener("DOMAttrModified", function(event) { console.log(event.target.getAttribute('src'));} );
+                                                                                                                                                                                                                                                                                                                //console.log(event.target.src);
+                                                                                                                                                                                                                                                                                                                function getResource(url) {
+                                                                                                                                                                                                                                                                                                                    var result = url;
+                                                                                                                                                                                                                                                                                                                    for (var row in store) {
+                                                                                                                                                                                                                                                                                                                        if (row.url == url) {
+                                                                                                                                                                                                                                                                                                                            result = row.data - url;
+                                                                                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                                                    return result;
+                                                                                                                                                                                                                                                                                                                }*/
     </script>
     <script>
         //Object definition
@@ -334,9 +335,10 @@
                 }
                 return result;
             };
-            this.totalFrames = function () {
+            this.totalFrames = function (frameRate) {
                 var result = 0;
-                result = this.f + this.s * 30 + this.m * 1800 + this.h * 108000;
+                frameRate = frameRate || 30;
+                result = Math.round((this.f / 30) * frameRate) + this.s * frameRate + this.m * 60 * frameRate + this.h * 3600 * frameRate;
                 return result;
             }
             this.parseFromString = function (str) {
@@ -438,7 +440,7 @@
 
                     }
                     reader.readAsText(templateInput.files[0]);
-                    video.totalFrames = Math.round(document.getElementById('videoPlayer').duration) || 0;
+                    video.totalFrames = subtitleDocument.endding.totalFrames();
                     if (video.totalFrames > 0) {
                         video.totalFrames = video.totalFrames + 900 * video.frameRate;
                     }
@@ -464,7 +466,7 @@
                         video.timeCodeString = "00:00:00:00";
                         video.isNtsc = false;
                     }
-                    video.totalFrames = Math.round(document.getElementById('videoPlayer').duration) || 0;
+                    video.totalFrames = subtitleDocument.endding.totalFrames();
                     if (video.totalFrames > 0) {
                         video.totalFrames = video.totalFrames + 900 * video.frameRate;
                     }
@@ -524,7 +526,7 @@
                     if (frameRate > 0) {
                         video.frameRate = frameRate;
                     }
-                    video.totalFrames = Math.round(document.getElementById('videoPlayer').duration) || 0;
+                    video.totalFrames = subtitleDocument.endding.totalFrames(video.frameRate);
                     if (video.totalFrames > 0) {
                         video.totalFrames = video.totalFrames + 900 * video.frameRate; //15mins
                     }
@@ -576,7 +578,8 @@
                 }
 
 
-                this.genXML = function (lines) {
+                this.genXML = function (lines, endding) {
+
                     function guid() {
                         function s4() {
                             return Math.floor((1 + Math.random()) * 0x10000)
@@ -586,24 +589,23 @@
                         return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
                             s4() + '-' + s4() + s4() + s4();
                     }
-                    this.output = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE fcpxml><fcpxml version="1.4"><resources></resources><library location="file:///Users/User/Movies/fiveLoadSub.fcpbundle/"><event name="fiveLoadSubImport" uid="' + guid() +'"><project name="fiveLoadSubImportSequence" uid="' + guid() +'"></project></event></library></fcpxml>';
+                    this.output = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE fcpxml><fcpxml version="1.4"><resources></resources><library location="file:///Users/User/Movies/fiveLoadSub.fcpbundle/"><event name="fiveLoadSubImport" uid="' + guid() + '"><project name="fiveLoadSubImportSequence" uid="' + guid() + '"></project></event></library></fcpxml>';
                     this.outputDoc = parser.parseFromString(this.output, 'text/xml');
-                    if ((video.width > 0) && (video.height > 0) && (video.frameRate > 0) && (video.totalFrames > 0)) {
+                    if ((video.width > 0) && (video.height > 0) && (video.frameRate > 0) && (endding.totalFrames() > 0)) {
                         var template;
                         template = this.inputDoc.getElementsByTagName('title')[0];
 
                         this.outputDoc.getElementsByTagName('resources')[0].innerHTML = this.inputDoc.getElementsByTagName('resources')[0].innerHTML;
                         this.outputDoc.getElementsByTagName('project')[0].appendChild(this.inputDoc.getElementsByTagName('sequence')[0].cloneNode(false));
-                        this.outputDoc.getElementsByTagName('sequence')[0].innerHTML = '<spine></spine>';
+                        this.outputDoc.getElementsByTagName('sequence')[0].innerHTML = '<spine><gap name="Gap" offset="0s" duration="' + fcpxframe(this.get('totalFrames')) + '" start="36000s"><spine lane="1" offset="36000s"></spine></gap></spine>';
 
                         this.outputDoc.getElementsByTagName('sequence')[0].setAttribute('duration', fcpxframe(video.totalFrames));
                         var lastEnd = -1;
                         for (var i = 0; i < lines.length; i++) {
                             var tmp = template.cloneNode(true);
-                            console.log(lines[i].text);
                             tmp.innerHTML = tmp.innerHTML.replace(/\{fiveLoadSub\.replacement\[1\]\}/g, lines[i].text);
-                            var begin = lines[i].begin.h * 3600 * this.get('frameRate') + lines[i].begin.m * 60 * this.get('frameRate') + lines[i].begin.s * this.get('frameRate') + Math.round(lines[i].begin.f / 30 * this.get('frameRate'));
-                            var end = lines[i].begin.h * 3600 * this.get('frameRate') + lines[i].end.m * 60 * this.get('frameRate') + lines[i].end.s * this.get('frameRate') + Math.round(lines[i].end.f / 30 * this.get('frameRate'));
+                            var begin = lines[i].begin.totalFrames(this.get('frameRate'));
+                            var end = lines[i].end.totalFrames(this.get('frameRate'));;
                             tmp.setAttribute('offset', fcpxframe(begin));
                             tmp.setAttribute('duration', fcpxframe(end - begin));
                             var j = 1;
@@ -624,10 +626,13 @@
                             }
                             if ((lastEnd > -1) && (lastEnd < begin)) {
                                 var gap = begin - lastEnd;
-                                this.outputDoc.getElementsByTagName('spine')[0].innerHTML = this.outputDoc.getElementsByTagName('spine')[0].innerHTML + '<gap offset="' + fcpxframe(lastEnd) + '" name="Gap" duration="' + fcpxframe(gap) + '" start="0s"/>';
+                                this.outputDoc.getElementsByTagName('spine')[1].innerHTML = this.outputDoc.getElementsByTagName('spine')[1].innerHTML + '<gap offset="' + fcpxframe(lastEnd) + '" name="Gap" duration="' + fcpxframe(gap) + '" start="0s"/>';
+                            } else if ((lastEnd == -1) && (begin > 0)) {
+                                this.outputDoc.getElementsByTagName('spine')[1].innerHTML = this.outputDoc.getElementsByTagName('spine')[1].innerHTML + '<gap offset="0s" name="Gap" duration="' + fcpxframe(begin) + '" start="0s"/>';
+
                             }
                             lastEnd = end;
-                            this.outputDoc.getElementsByTagName('spine')[0].appendChild(tmp);
+                            this.outputDoc.getElementsByTagName('spine')[1].appendChild(tmp);
                         }
 
                         function _arrayBufferToBase64(buffer) {
@@ -655,6 +660,7 @@
             this.lines = []; //
             this.linesSortedByBegin = [];
             this.linesSortedByEnd = [];
+            this.endding = {};
             this.cachedStr = "";
             this.cachedQueue = [];
             this.parseFromString = function (str, format) {
@@ -682,8 +688,28 @@
                             this.lines[this.lines.length - 1].parseFromString(array[i]);
                         }
                     }
+
                     this.linesSortedByBegin = this.sort();
                     this.linesSortedByEnd = this.sort("end");
+                    var enddingSort = this.sort('end', true);
+                    var enddingFound = false;
+                    var i = 0;
+
+                    if (enddingSort.length > 0) {
+                        while (!enddingFound) {
+                            if (!enddingSort[i].end.empty) {
+                                enddingFound = true;
+                                this.endding = enddingSort[i].end;
+                            }
+                            if ((!enddingFound) && (i == enddingSort.length-1)) {
+                                enddingFound = true;
+                                
+                                this.endding = enddingSort[i].end;
+                            }
+                            i++;
+
+                        }
+                    }
                 }
             }
             this.strVal = function (format) {
@@ -739,8 +765,8 @@
                                         clipID: 'clip-' + i.toString()
                                 };
                                 clipXml = clipTmp;
-                                sub.in = this.linesSortedByBegin[i].begin.h * 3600 * this.prXml.get('frameRate') + this.linesSortedByBegin[i].begin.m * 60 * this.prXml.get('frameRate') + this.linesSortedByBegin[i].begin.s * this.prXml.get('frameRate') + Math.round(this.linesSortedByBegin[i].begin.f / 30 * this.prXml.get('frameRate'));
-                                sub.out = this.linesSortedByBegin[i].end.h * 3600 * this.prXml.get('frameRate') + this.linesSortedByBegin[i].end.m * 60 * this.prXml.get('frameRate') + this.linesSortedByBegin[i].end.s * this.prXml.get('frameRate') + Math.round(this.linesSortedByBegin[i].end.f / 30 * this.prXml.get('frameRate'));
+                                sub.in = this.linesSortedByBegin[i].begin.totalFrames(this.prXml.get('frameRate'));
+                                sub.out = this.linesSortedByBegin[i].end.totalFrames(this.prXml.get('frameRate'));
                                 sub.totalFrames = sub.out - sub.in;
 
                                 clipXml = clipXml.replace(/\{video\.frameRate\}/gi, this.prXml.get("frameRate").toString());
@@ -762,8 +788,8 @@
                                 if (this.linesSortedByBegin[i + 1] != undefined) {
                                     var overlap = false;
                                     if ((!this.linesSortedByBegin[i + 1].begin.empty) && (!this.linesSortedByBegin[i + 1].end.empty)) {
-                                        next.in = this.linesSortedByBegin[i + 1].begin.h * 3600 * this.prXml.get('frameRate') + this.linesSortedByBegin[i + 1].begin.m * 60 * this.prXml.get('frameRate') + this.linesSortedByBegin[i + 1].begin.s * this.prXml.get('frameRate') + Math.round(this.linesSortedByBegin[i + 1].begin.f / 30 * this.prXml.get('frameRate'));;
-                                        next.out = this.linesSortedByBegin[i + 1].end.h * 3600 * this.prXml.get('frameRate') + this.linesSortedByBegin[i + 1].end.m * 60 * this.prXml.get('frameRate') + this.linesSortedByBegin[i + 1].end.s * this.prXml.get('frameRate') + Math.round(this.linesSortedByBegin[i + 1].end.f / 30 * this.prXml.get('frameRate'));
+                                        next.in = this.linesSortedByBegin[i+1].begin.totalFrames(this.prXml.get('frameRate'));
+                                        next.out = this.linesSortedByBegin[i+1].begin.totalFrames(this.prXml.get('frameRate'));
                                         if (((next.in >= sub.in) && (next.in <= sub.out)) || ((next.in <= sub.in) && (next.out >= sub.in))) {
                                             overlap = true;
 
@@ -795,7 +821,7 @@
                                     tracks[trackNo] += clipXml;
 
                                 }*/
-                                result = 'Click Save as...';
+                                result = 'Click Save as...\nYou browser may take up to 1-30mins for exporting very long subtitles.';
 
                             }
                             trackNo = 1;
@@ -844,9 +870,10 @@
 
                     break;
                 case 'fcpxxml':
-                    this.fcpxXml.genXML(this.linesSortedByBegin);
+                    this.fcpxXml.updateConfig();
+                    this.fcpxXml.genXML(this.linesSortedByBegin, this.endding);
                     if (this.fcpxXml.download != '') {
-                        result = 'Click Save as...';
+                        result = 'Click Save as..';
                     }
                     break;
                 default:
@@ -866,8 +893,9 @@
                 }
                 return result;
             }
-            this.sort = function (by) {
+            this.sort = function (by, isReverse) {
                 by = by || "begin";
+                isReverse = isReverse || false;
                 arrayToSort = [];
                 //pick out timecodes(in total number of frames)
                 switch (by) {
@@ -930,6 +958,13 @@
                 var result = [];
                 for (var i = 0; i < this.lines.length; i++) {
                     result.push(this.lines[arrayToSort[i].index]);
+                }
+                if (isReverse) {
+                    var tmpResult = [];
+                    for (j = result.length - 1; j >= 0; j--) {
+                        tmpResult.push(result[j]);
+                    }
+                    result = tmpResult;
                 }
                 return result;
             }
@@ -1393,7 +1428,7 @@
     <input type="file" hidden="true" id="fileLoader" />
     <div id="mainContainer">
         <div id="headerFrame">
-            <span style="font-size:16px;">FiveLoadSub v0.6.1 by Wilson Luniz</span>
+            <span style="font-size:16px;">FiveLoadSub v0.6.2 by Wilson Luniz</span>
             <br/>
             <div style="text-align:left">
                 <div class="imgButton" onClick="selectFile('video');"><img src="img/importVideo.png" width="40" height="40" alt="" />
@@ -1500,16 +1535,23 @@
                 <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'fls');">.FLS</div>
                 <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'srt');">.SRT</div>
                 <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'sbv');">.SBV</div>
+                <br/>
                 <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'prxml');">
                     <div onclick="this.parentNode.click();event.stopPropagation();" style="display:inline-block;vertical-align: middle;">
                         <div onclick="this.parentNode.click();event.stopPropagation();" style="line-height:40px;">.XML</div>
-                        <div onclick="this.parentNode.click(); event.stopPropagation();" style="font-size:10px;line-height:10px;display:block; vertical-align:middle;">for Premiere</div>
+                        <div onclick="this.parentNode.click(); event.stopPropagation();" style="font-size:10px;line-height:10px;display:block; vertical-align:middle;">for Adobe Premiere</div>
                     </div>
                 </div>
                 <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'fcpxxml');">
                     <div onclick="this.parentNode.click();event.stopPropagation();" style="display:inline-block;vertical-align: middle;">
                         <div onclick="this.parentNode.click();event.stopPropagation();" style="line-height:40px;">.XML</div>
-                        <div onclick="this.parentNode.click(); event.stopPropagation();" style="font-size:10px;line-height:10px;display:block; vertical-align:middle;">for FCP X</div>
+                        <div onclick="this.parentNode.click(); event.stopPropagation();" style="font-size:10px;line-height:10px;display:block; vertical-align:middle;">for Final Cut Pro X</div>
+                    </div>
+                </div>
+                <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'fcp7xml');">
+                    <div onclick="this.parentNode.click();event.stopPropagation();" style="display:inline-block;vertical-align: middle;">
+                        <div onclick="this.parentNode.click();event.stopPropagation();" style="line-height:40px;">.XML</div>
+                        <div onclick="this.parentNode.click(); event.stopPropagation();" style="font-size:10px;line-height:10px;display:block; vertical-align:middle;">for Final Cut Pro 7</div>
                     </div>
                 </div>
             </div>
@@ -1521,9 +1563,9 @@
                 <br>
                 <br> Fill some info of your video:
                 <br> Width:
-                <input type="text" id="saveDialogXml_width" size="7" onchange="subtitleDocument.prXml.updateConfig();">px &nbsp;Height:
-                <input type="text" id="saveDialogXml_height" size="7" onchange="subtitleDocument.prXml.updateConfig();">px &nbsp;FrameRate:
-                <input type="text" id="saveDialogXml_frameRate" size="7" onchange="subtitleDocument.prXml.updateConfig();">fps
+                <input type="text" id="saveDialogXml_width" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();">px &nbsp;Height:
+                <input type="text" id="saveDialogXml_height" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();">px &nbsp;FrameRate:
+                <input type="text" id="saveDialogXml_frameRate" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();">fps
                 <br>
                 <br>
                 <input id="xmlOkButton" type="button" value="OK" onclick="clickSaveFormatChoice(event,'prxml');" class=" selectedSaveDialogChoiceBox selectedSaveDialogChoiceBox selectedSaveDialogChoiceBox selectedSaveDialogChoiceBox selectedSaveDialogChoiceBox">
@@ -1531,7 +1573,7 @@
             <div style="text-align:left;padding:0 10px;">Copy from here:
                 <br>
             </div>
-            <textarea cols="60" rows="10" style="margin:0 5px;" id="saveDialogTextarea"></textarea>
+            <textarea cols="50" rows="10" style="margin:0 5px;" id="saveDialogTextarea"></textarea>
             <div style="text-align:right;padding:0 10px;"><span id="cancelSubtitleDialogCacnelButton" style="color:#36F;" onclick="hideSaveDialog();">Cacnel</span>&nbsp;&nbsp;&nbsp;<span id="saveDialogSaveButton" style="color: rgb(51, 102, 255);"><a style="color:#36F;"  target="_blank">Save As...</a></span>
             </div>
         </div>
