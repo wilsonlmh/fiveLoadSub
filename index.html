@@ -597,7 +597,7 @@
 
                         this.outputDoc.getElementsByTagName('resources')[0].innerHTML = this.inputDoc.getElementsByTagName('resources')[0].innerHTML;
                         this.outputDoc.getElementsByTagName('project')[0].appendChild(this.inputDoc.getElementsByTagName('sequence')[0].cloneNode(false));
-                        this.outputDoc.getElementsByTagName('sequence')[0].innerHTML = '<spine><gap name="Gap" offset="0s" duration="' + fcpxframe(this.get('totalFrames')) + '" start="36000s"><spine lane="1" offset="36000s"></spine></gap></spine>';
+                        this.outputDoc.getElementsByTagName('sequence')[0].innerHTML = '<spine><gap name="Gap" offset="0s" duration="' + fcpxframe(this.get('totalFrames')) + '" start="36000s"><spine lane="2" offset="36000s"></spine></gap></spine>';
 
                         this.outputDoc.getElementsByTagName('sequence')[0].setAttribute('duration', fcpxframe(video.totalFrames));
                         var lastEnd = -1;
