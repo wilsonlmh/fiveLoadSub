@@ -6,7 +6,7 @@ HTML5/Javascript based, incredibly-easy subtitling software
 
 特點:
 
-  - 用空白鍵切換字幕, 與國內某著名字幕軟件相似(你懂的)
+  - 用空白鍵切換字幕, 能1:1時間完成字幕工作
 
   - 直接Drag&Drop影片到播放器上
 
@@ -21,7 +21,7 @@ HTML5/Javascript based, incredibly-easy subtitling software
 
 able to:
 
-  - use space key to feed text(subtitles), similar to some other subtitling software in market
+  - use space key to feed text(subtitles), do subtitling in 1:1 time.
 
   - drag n drop(video file)
 
