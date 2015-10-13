@@ -237,29 +237,29 @@
     </script>
     <script>
         /*
-                                                                                        store = new Array();
-                                                                                        store.push({"url": "/img/icon.png","data-url": "dataurl:XXXXX"});
-                                                                                        store.push({"url": "/img/icon1.png","data-url": "dataurl:XXXXX"});
-                                                                                        //Object.defineProperty(HTMLImageElement.prototype,"src",{set: function() {console.log(123);this.set();}});
-                                                                                        HTMLImageElement.prototype.addEventListener = function(eventName,func,flag) {
-                                                                                                                                                                                                                                                                                                                    if (eventName == "DOMAttrModified") {
-                                                                                                                                                                                                                                                                                                                        console.log(1);
-                                                                                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                                                                                    console.log(2);
-                                                                                                                                                                                                                                                                                                                    this(arguments);
-                                                                                                                                                                                                                                                                                                                }
-                                                                                                                                                                                                                                                                                                                //HTMLImageElement.prototype.constructor
-                                                                                                                                                                                                                                                                                                                //item.addEventListener("DOMAttrModified", function(event) { console.log(event.target.getAttribute('src'));} );
-                                                                                                                                                                                                                                                                                                                //console.log(event.target.src);
-                                                                                                                                                                                                                                                                                                                function getResource(url) {
-                                                                                                                                                                                                                                                                                                                    var result = url;
-                                                                                                                                                                                                                                                                                                                    for (var row in store) {
-                                                                                                                                                                                                                                                                                                                        if (row.url == url) {
-                                                                                                                                                                                                                                                                                                                            result = row.data - url;
-                                                                                                                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                                                                                    return result;
-                                                                                                                                                                                                                                                                                                                }*/
+                                                                                                                                                                                                                                                        store = new Array();
+                                                                                                                                                                                                                                                        store.push({"url": "/img/icon.png","data-url": "dataurl:XXXXX"});
+                                                                                                                                                                                                                                                        store.push({"url": "/img/icon1.png","data-url": "dataurl:XXXXX"});
+                                                                                                                                                                                                                                                        //Object.defineProperty(HTMLImageElement.prototype,"src",{set: function() {console.log(123);this.set();}});
+                                                                                                                                                                                                                                                        HTMLImageElement.prototype.addEventListener = function(eventName,func,flag) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    if (eventName == "DOMAttrModified") {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        console.log(1);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    console.log(2);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    this(arguments);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //HTMLImageElement.prototype.constructor
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //item.addEventListener("DOMAttrModified", function(event) { console.log(event.target.getAttribute('src'));} );
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //console.log(event.target.src);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                function getResource(url) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    var result = url;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    for (var row in store) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        if (row.url == url) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            result = row.data - url;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    return result;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }*/
     </script>
     <script>
         //Object definition
@@ -502,6 +502,161 @@
                 }
             }
 
+            function fcp7XmlObject() {
+                this.input = "";
+                this.inputDoc = {};
+                this.inputItem = {};
+                this.output = "";
+                this.outputDoc = {};
+                this.download = '';
+                var outputTemplate = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><!DOCTYPE xmeml><xmeml version="5"><sequence id="fiveLoadSub Import"><uuid>{uuid}</uuid><updatebehavior>add</updatebehavior><name>fiveLoadSub Import</name><duration>{video.totalFrames}</duration><rate><ntsc>{video.isNtsc}</ntsc><timebase>{video.frameRate}</timebase></rate><timecode><rate><ntsc>{video.isNtsc}</ntsc><timebase>{video.frameRate}</timebase></rate><string>{video.timeCodeString}</string><frame>0</frame><source>source</source><displayformat>NDF</displayformat></timecode><in>-1</in><out>-1</out><media><video><format><samplecharacteristics><width>{video.width}</width><height>{video.height}</height><anamorphic>FALSE</anamorphic><pixelaspectratio>Square</pixelaspectratio><fielddominance>upper</fielddominance><rate><ntsc>{video.isNtsc}</ntsc><timebase>{video.frameRate}</timebase></rate><colordepth>24</colordepth><codec><name>Apple ProRes 422</name><appspecificdata><appname>Final Cut Pro</appname><appmanufacturer>Apple Inc.</appmanufacturer><appversion>7.0</appversion><data><qtcodec><codecname>Apple ProRes 422</codecname><codectypename>Apple ProRes 422</codectypename><codectypecode>apcn</codectypecode><codecvendorcode>appl</codecvendorcode><spatialquality>1024</spatialquality><temporalquality>0</temporalquality><keyframerate>0</keyframerate><datarate>0</datarate></qtcodec></data></appspecificdata></codec></samplecharacteristics><appspecificdata><appname>Final Cut Pro</appname><appmanufacturer>Apple Inc.</appmanufacturer><appversion>7.0</appversion><data><fcpimageprocessing><useyuv>TRUE</useyuv><usesuperwhite>FALSE</usesuperwhite><rendermode>Float10BPP</rendermode></fcpimageprocessing></data></appspecificdata></format><track><enabled>TRUE</enabled><locked>FALSE</locked></track></video></media></sequence></xmeml>';
+                var parser = new DOMParser();
+
+                var video = {
+                    width: 0,
+                    height: 0,
+                    frameRate: 0,
+                    isNtsc: false,
+                    timeCodeString: "00:00:00:00",
+                    totalFrames: 0
+                };
+
+                this.loadInput = function () {
+                    var templateInput = document.getElementById('templateInput');
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        subtitleDocument.fcp7Xml.input = reader.result;
+
+                        subtitleDocument.fcp7Xml.inputDoc = parser.parseFromString(subtitleDocument.fcp7Xml.input, 'text/xml');
+
+                        if (subtitleDocument.fcp7Xml.inputDoc) {
+                            video.width = parseInt(subtitleDocument.fcp7Xml.inputDoc.getElementsByTagName('samplecharacteristics')[0].getElementsByTagName('width')[0].innerHTML);
+                            video.height = parseInt(subtitleDocument.fcp7Xml.inputDoc.getElementsByTagName('samplecharacteristics')[0].getElementsByTagName('height')[0].innerHTML);
+                            video.frameRate = parseInt(subtitleDocument.fcp7Xml.inputDoc.getElementsByTagName('samplecharacteristics')[0].getElementsByTagName('timebase')[0].innerHTML);
+                            document.getElementById('saveDialogXml_width').value = video.width;
+                            document.getElementById('saveDialogXml_height').value = video.height;
+                            document.getElementById('saveDialogXml_width').value = video.width;
+                            document.getElementById('saveDialogXml_frameRate').value = video.frameRate;
+                        }
+                    }
+                    reader.readAsText(templateInput.files[0]);
+                };
+
+                this.updateConfig = function () {
+                    var width = parseInt(document.getElementById('saveDialogXml_width').value);
+                    var height = parseInt(document.getElementById('saveDialogXml_height').value);
+                    var frameRate = parseInt(document.getElementById('saveDialogXml_frameRate').value);
+                    if (width > 0) {
+                        video.width = width;
+                    }
+                    if (height > 0) {
+                        video.height = height;
+                    }
+                    if (frameRate > 0) {
+                        video.frameRate = frameRate;
+                    }
+                    video.totalFrames = subtitleDocument.endding.totalFrames(video.frameRate);
+                    if (video.totalFrames > 0) {
+                        video.totalFrames = video.totalFrames + 900 * video.frameRate; //15mins
+                    }
+                }
+
+                function guid() {
+                    function s4() {
+                        return Math.floor((1 + Math.random()) * 0x10000)
+                            .toString(16)
+                            .substring(1);
+                    }
+                    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                        s4() + '-' + s4() + s4() + s4();
+                }
+
+                this.genXML = function (lines, endding) {
+                    if ((video.width > 0) && (video.height > 0) && (video.frameRate > 0) && (endding.totalFrames() > 0)) {
+                        var foundElement = false;
+                        var template = {};
+
+                        this.download = '';
+
+                        if ((video.frameRate == 15) || (video.frameRate == 24) || (video.frameRate == 30) || (video.frameRate == 60)) {
+                            video.timeCodeString = "00;00;00;00";
+                            video.isNtsc = true;
+                        } else {
+                            video.timeCodeString = "00:00:00:00";
+                            video.isNtsc = false;
+                        }
+
+
+                        try {
+                            this.inputDoc = parser.parseFromString(this.input, 'text/xml');
+                        } finally {};
+
+                        var tmp = [];
+                        try {
+                            tmp = this.inputDoc.getElementsByTagName('generatoritem');
+                        } finally {};
+
+                        //->effect->effectcatrgory = "Spherico Text"
+
+                        for (i = 0; i <= tmp.length - 1; i++) {
+                            var tmp2 = tmp[i].getElementsByTagName('effect');
+                            for (j = 0; j <= tmp2.length - 1; j++) {
+                                if (tmp2[j].getElementsByTagName('effectcategory')[0].innerHTML == "Spherico Text") {
+                                    foundElement = true;
+                                    template = tmp[i];
+                                }
+                            }
+                        }
+
+                        if (foundElement) {
+
+                            this.output = outputTemplate;
+                            this.output = this.output.replace(/\{video\.frameRate\}/gi, video.frameRate.toString());
+                            this.output = this.output.replace(/\{video\.isNtsc\}/gi, video.isNtsc.toString());
+                            this.output = this.output.replace(/\{video\.width\}/gi, video.width.toString());
+                            this.output = this.output.replace(/\{video\.height\}/gi, video.height.toString());
+                            this.output = this.output.replace(/\{video\.totalFrames\}/gi, video.totalFrames.toString());
+                            this.output = this.output.replace(/\{video\.timeCodeString\}/gi, video.timeCodeString);
+                            this.output = this.output.replace(/\{uuid\}/gi, guid());
+                            this.outputDoc = parser.parseFromString(this.output, 'text/xml');
+                            for (line of lines) {
+                                if ((!line.begin.empty) && (!line.end.empty)) {
+                                    var subtitleTag = template.cloneNode(true);
+
+                                    subtitleTag.setAttribute('id', template.getAttribute('id') + '-' + i);
+                                    subtitleTag.getElementsByTagName('duration')[0].innerHTML = (line.end.totalFrames(video.frameRate) - line.begin.totalFrames(video.frameRate) + 101).toString();
+                                    subtitleTag.getElementsByTagName('in')[0].innerHTML = line.begin.totalFrames(video.frameRate).toString();
+                                    subtitleTag.getElementsByTagName('out')[0].innerHTML = line.end.totalFrames(video.frameRate).toString();
+                                    subtitleTag.getElementsByTagName('start')[0].innerHTML = (line.begin.totalFrames(video.frameRate) + 100).toString();
+                                    subtitleTag.getElementsByTagName('end')[0].innerHTML = (line.end.totalFrames(video.frameRate) + 100).toString();
+                                    subtitleTag.innerHTML = subtitleTag.innerHTML.replace(/\<rate\>(.*)\<\/rate\>/gi, '<rate><ntsc>' + video.isNtsc.toString() + '</ntsc><timebase>' + video.frameRate.toString() + '</timebase></rate>');
+                                    subtitleTag.innerHTML = subtitleTag.innerHTML.replace(/\{fiveLoadSub\.replacement\[1\]\}/g, line.text);
+                                    subtitleTag.innerHTML = subtitleTag.innerHTML.replace(/\<uuid\>(.*)\<\/uuid\>/g, '<uuid>' + guid() + '</uuid>');
+                                    this.outputDoc.getElementsByTagName('track')[0].appendChild(subtitleTag);
+                                }
+                            }
+
+                            function _arrayBufferToBase64(buffer) {
+                                var binary = '';
+                                var bytes = new Uint8Array(buffer);
+                                var len = bytes.byteLength;
+                                binary += String.fromCharCode(239); //UTF-8 magic
+                                binary += String.fromCharCode(187); //UTF-8 magic
+                                binary += String.fromCharCode(191); //UTF-8 magic
+                                for (var i = 0; i < len; i++) {
+                                    binary += String.fromCharCode(bytes[i]);
+                                }
+                                return window.btoa(binary);
+                            }
+                            var textEncoder = new TextEncoder('UTF-8');
+                            var arrayBuffer = textEncoder.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><!DOCTYPE xmeml><xmeml version="5">' + this.outputDoc.documentElement.innerHTML + '</xmeml>');
+                            this.download = "data:text/xml;base64," + _arrayBufferToBase64(arrayBuffer);
+
+                        }
+                    }
+                }
+
+            }
 
             function fcpxXmlObject() {
                 var video = {
@@ -657,6 +812,7 @@
 
             this.prXml = new prXmlObject();
             this.fcpxXml = new fcpxXmlObject();
+            this.fcp7Xml = new fcp7XmlObject();
 
             this.lines = []; //
             this.linesSortedByBegin = [];
@@ -702,9 +858,9 @@
                                 enddingFound = true;
                                 this.endding = enddingSort[i].end;
                             }
-                            if ((!enddingFound) && (i == enddingSort.length-1)) {
+                            if ((!enddingFound) && (i == enddingSort.length - 1)) {
                                 enddingFound = true;
-                                
+
                                 this.endding = enddingSort[i].end;
                             }
                             i++;
@@ -789,8 +945,8 @@
                                 if (this.linesSortedByBegin[i + 1] != undefined) {
                                     var overlap = false;
                                     if ((!this.linesSortedByBegin[i + 1].begin.empty) && (!this.linesSortedByBegin[i + 1].end.empty)) {
-                                        next.in = this.linesSortedByBegin[i+1].begin.totalFrames(this.prXml.get('frameRate'));
-                                        next.out = this.linesSortedByBegin[i+1].begin.totalFrames(this.prXml.get('frameRate'));
+                                        next.in = this.linesSortedByBegin[i + 1].begin.totalFrames(this.prXml.get('frameRate'));
+                                        next.out = this.linesSortedByBegin[i + 1].begin.totalFrames(this.prXml.get('frameRate'));
                                         if (((next.in >= sub.in) && (next.in <= sub.out)) || ((next.in <= sub.in) && (next.out >= sub.in))) {
                                             overlap = true;
 
@@ -874,6 +1030,13 @@
                     this.fcpxXml.updateConfig();
                     this.fcpxXml.genXML(this.linesSortedByBegin, this.endding);
                     if (this.fcpxXml.download != '') {
+                        result = 'Click Save as..';
+                    }
+                    break;
+                case 'fcp7xml':
+                    this.fcp7Xml.updateConfig();
+                    this.fcp7Xml.genXML(this.linesSortedByBegin, this.endding);
+                    if (this.fcp7Xml.download != '') {
                         result = 'Click Save as..';
                     }
                     break;
@@ -1429,7 +1592,7 @@
     <input type="file" hidden="true" id="fileLoader" />
     <div id="mainContainer">
         <div id="headerFrame">
-            <span style="font-size:16px;">FiveLoadSub v0.6.2 by Wilson Luniz</span>
+            <span style="font-size:16px;">FiveLoadSub v0.7 by Wilson Luniz</span>
             <br/>
             <div style="text-align:left">
                 <div class="imgButton" onClick="selectFile('video');"><img src="img/importVideo.png" width="40" height="40" alt="" />
@@ -1511,6 +1674,20 @@
                     };
                     document.getElementById('xmlTemplateInputLabelDiv').innerHTML = 'Choose Final Cut Pro X Title Template(.fcpxml):';
                     break;
+                case 'fcp7xml':
+                    document.getElementById('saveDialogXmlDiv').style.display = 'block';
+                    if (subtitleDocument.fcp7Xml.download != '') {
+                        document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="color:#36F;" href="' + subtitleDocument.fcp7Xml.download + '" download="fiveLoadSub.xml" target="_blank">Save As...</a>';
+                        document.querySelector("#saveDialogSaveButton").style.color = "#36F";
+                    }
+                    document.getElementById('templateInput').onchange = function onchange(event) {
+                        subtitleDocument.fcp7Xml.loadInput();
+                    };
+                    document.getElementById('xmlOkButton').onclick = function onclick(event) {
+                        clickSaveFormatChoice(event, 'fcp7xml');
+                    };
+                    document.getElementById('xmlTemplateInputLabelDiv').innerHTML = 'Choose Final Cut Pro 7 Title Template(.xml):';
+                    break;
                 default:
                     document.getElementById('saveDialogXmlDiv').style.display = 'none';
                     var download = "data:text/plain;charset=utf-8," + encodeURIComponent(document.querySelector("#saveDialogTextarea").value);
@@ -1560,13 +1737,13 @@
                 <br>
                 <div id="xmlTemplateInputLabelDiv">Choose Final Cut Pro X Title Template(.fcpxml):</div>
                 <br>
-                <input type="file" id="templateInput" onchange="subtitleDocument.prXml.updatePrtl();subtitleDocument.fcpxXml.loadInput();">
+                <input type="file" id="templateInput" onchange="subtitleDocument.prXml.updatePrtl();subtitleDocument.fcpxXml.loadInput();subtitleDocument.fcp7Xml.loadInput();">
                 <br>
                 <br> Fill some info of your video:
                 <br> Width:
-                <input type="text" id="saveDialogXml_width" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();">px &nbsp;Height:
-                <input type="text" id="saveDialogXml_height" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();">px &nbsp;FrameRate:
-                <input type="text" id="saveDialogXml_frameRate" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();">fps
+                <input type="text" id="saveDialogXml_width" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();subtitleDocument.fcp7Xml.updateConfig();">px &nbsp;Height:
+                <input type="text" id="saveDialogXml_height" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();subtitleDocument.fcp7Xml.updateConfig();">px &nbsp;FrameRate:
+                <input type="text" id="saveDialogXml_frameRate" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();subtitleDocument.fcp7Xml.updateConfig();">fps
                 <br>
                 <br>
                 <input id="xmlOkButton" type="button" value="OK" onclick="clickSaveFormatChoice(event,'prxml');" class=" selectedSaveDialogChoiceBox selectedSaveDialogChoiceBox selectedSaveDialogChoiceBox selectedSaveDialogChoiceBox selectedSaveDialogChoiceBox">
