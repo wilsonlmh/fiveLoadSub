@@ -234,6 +234,80 @@
             var jump = (line + 4) * lineHeight - document.getElementById("subtitleFormContainer").offsetHeight;
             document.getElementById("subtitleFormContainer").scrollTop = jump;
         }
+        var _appendBuffer = function(buffer1, buffer2) {
+            var tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
+            tmp.set(new Uint8Array(buffer1), 0);
+            tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
+            return tmp.buffer;
+        };
+        
+        function _arrayBufferToBase64(arrayBuffer,type) {
+            var type = type || "utf-8";
+            switch (type) {
+                    case 'utf-8':
+                    var append = new Uint8Array([239, 187, 191]);
+                    arrayBuffer = _appendBuffer(append,arrayBuffer);
+                    break;
+                case 'utf-16':
+                    var append = new Uint8Array([255, 254]);
+                    arrayBuffer = _appendBuffer(append,arrayBuffer);
+                    break;
+                default:
+                    var append = new Uint8Array([239, 187, 191]);
+                    arrayBuffer = _appendBuffer(append,arrayBuffer);
+                    
+            }
+            var base64    = ''
+            var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+
+            var bytes         = new Uint8Array(arrayBuffer)
+            var byteLength    = bytes.byteLength
+            var byteRemainder = byteLength % 3
+            var mainLength    = byteLength - byteRemainder
+
+  var a, b, c, d
+  var chunk
+
+  
+  // Main loop deals with bytes in chunks of 3
+  for (var i = 0; i < mainLength; i = i + 3) {
+    // Combine the three bytes into a single integer
+    chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
+
+    // Use bitmasks to extract 6-bit segments from the triplet
+    a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
+    b = (chunk & 258048)   >> 12 // 258048   = (2^6 - 1) << 12
+    c = (chunk & 4032)     >>  6 // 4032     = (2^6 - 1) << 6
+    d = chunk & 63               // 63       = 2^6 - 1
+
+    // Convert the raw binary segments to the appropriate ASCII encoding
+    base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d]
+  }
+
+  // Deal with the remaining bytes and padding
+  if (byteRemainder == 1) {
+    chunk = bytes[mainLength]
+
+    a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
+
+    // Set the 4 least significant bits to zero
+    b = (chunk & 3)   << 4 // 3   = 2^2 - 1
+
+    base64 += encodings[a] + encodings[b] + '=='
+  } else if (byteRemainder == 2) {
+    chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
+
+    a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
+    b = (chunk & 1008)  >>  4 // 1008  = (2^6 - 1) << 4
+
+    // Set the 2 least significant bits to zero
+    c = (chunk & 15)    <<  2 // 15    = 2^4 - 1
+
+    base64 += encodings[a] + encodings[b] + encodings[c] + '='
+  }
+  
+  return base64
+}
     </script>
     <script>
         /*
@@ -636,18 +710,7 @@
                                 }
                             }
 
-                            function _arrayBufferToBase64(buffer) {
-                                var binary = '';
-                                var bytes = new Uint8Array(buffer);
-                                var len = bytes.byteLength;
-                                binary += String.fromCharCode(239); //UTF-8 magic
-                                binary += String.fromCharCode(187); //UTF-8 magic
-                                binary += String.fromCharCode(191); //UTF-8 magic
-                                for (var i = 0; i < len; i++) {
-                                    binary += String.fromCharCode(bytes[i]);
-                                }
-                                return window.btoa(binary);
-                            }
+                            
                             var textEncoder = new TextEncoder('UTF-8');
                             var arrayBuffer = textEncoder.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><!DOCTYPE xmeml><xmeml version="5">' + this.outputDoc.documentElement.innerHTML + '</xmeml>');
                             this.download = "data:text/xml;base64," + _arrayBufferToBase64(arrayBuffer);
@@ -791,18 +854,6 @@
                             this.outputDoc.getElementsByTagName('spine')[1].appendChild(tmp);
                         }
 
-                        function _arrayBufferToBase64(buffer) {
-                            var binary = '';
-                            var bytes = new Uint8Array(buffer);
-                            var len = bytes.byteLength;
-                            binary += String.fromCharCode(239); //UTF-8 magic
-                            binary += String.fromCharCode(187); //UTF-8 magic
-                            binary += String.fromCharCode(191); //UTF-8 magic
-                            for (var i = 0; i < len; i++) {
-                                binary += String.fromCharCode(bytes[i]);
-                            }
-                            return window.btoa(binary);
-                        }
                         var textEncoder = new TextEncoder('UTF-8');
                         var arrayBuffer = textEncoder.encode('<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE fcpxml><fcpxml version="1.4">' + this.outputDoc.documentElement.innerHTML + '</fcpxml>');
                         this.download = "data:text/xml;base64," + _arrayBufferToBase64(arrayBuffer);
@@ -996,23 +1047,13 @@
                         zip.file("import.xml", xml);
                         var sub = zip.folder("sub");
 
-                        function _arrayBufferToBase64(buffer) {
-                            var binary = '';
-                            var bytes = new Uint8Array(buffer);
-                            var len = bytes.byteLength;
-                            binary += String.fromCharCode(255); //UTF-16 magic
-                            binary += String.fromCharCode(254); //UTF-16 magic
-                            for (var i = 0; i < len; i++) {
-                                binary += String.fromCharCode(bytes[i]);
-                            }
-                            return window.btoa(binary);
-                        }
+                        
                         textEncoder = new TextEncoder('UTF-16');
 
                         for (var fileName in prtlFiles) {
                             if (prtlFiles.hasOwnProperty(fileName)) {
                                 var arrayBuffer = textEncoder.encode(prtlFiles[fileName]);
-                                sub.file(fileName, _arrayBufferToBase64(arrayBuffer), {
+                                sub.file(fileName, _arrayBufferToBase64(arrayBuffer,"utf-16"), {
                                     base64: true
                                 })
                             }
@@ -1592,7 +1633,7 @@
     <input type="file" hidden="true" id="fileLoader" />
     <div id="mainContainer">
         <div id="headerFrame">
-            <span style="font-size:16px;">FiveLoadSub v0.7 by Wilson Luniz</span>
+            <span style="font-size:16px;">FiveLoadSub v0.7.1 by Wilson Luniz</span>
             <br/>
             <div style="text-align:left">
                 <div class="imgButton" onClick="selectFile('video');"><img src="img/importVideo.png" width="40" height="40" alt="" />
