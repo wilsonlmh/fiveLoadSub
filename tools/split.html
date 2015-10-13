@@ -1,0 +1,34 @@
+<html>
+<header>
+    <title>Text Processor</title>
+    <script>
+        function change() {
+            var text = document.getElementById('text').value;
+            var tmp = text.replace(/\n\n\n/gi,'\n');
+            tmp = tmp.replace(/\n\n/gi,'\n');
+            tmp  = tmp.split(/\n|\s|\r/);
+            var output = '';
+            for (pieces of tmp) {
+                output += pieces + '\n';
+            }
+            document.getElementById('output').value = output;
+        }
+    </script>
+</header>
+
+<body>
+    <h1>Lyrics Processor(split spaces to lines and remove empty lines)</h1>
+    <table width="100%">
+        <tr>
+            <td style="width:50%">
+                <textarea id="text" onchange="change();" style="width:100%" rows="30">></textarea>
+            </td>
+            <td style="width:50%">
+                <textarea id="output" style="width:100%" rows="30"></textarea>
+
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>
