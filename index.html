@@ -241,6 +241,31 @@
             return tmp.buffer;
         };
         
+        function _makeTextFile(text,type) {
+                                
+                                type = type || 'utf-8';
+                                if (text) {
+                                    var textEncoder = {};
+                                    var prefixBuffer;
+                                    
+                                    switch (type) {
+                                        case 'utf-16':
+                                            prefixBuffer = new Uint8Array([255, 254]);  //magic of UTF-16:0xFFFE
+                                            textEncoder = new TextEncoder('UTF-16');
+                                        break;
+                                        default:
+                                            prefixBuffer = new Uint8Array([239, 187, 191]); //magic of UTF-18:0xEFBBBF
+                                            textEncoder = new TextEncoder('UTF-8');
+                                    }
+                                    var arrayBuffer = textEncoder.encode(text);
+                                    arrayBuffer = _appendBuffer(prefixBuffer,arrayBuffer);
+                                    var downloadBlob = new Blob([arrayBuffer],{type:"text/plain"});
+                                    return window.URL.createObjectURL(downloadBlob);
+                                } else {
+                                    return false;
+                                }
+                            }
+        
         function _arrayBufferToBase64(arrayBuffer,type) {
             var type = type || "utf-8";
             switch (type) {
@@ -693,12 +718,13 @@
                             this.output = this.output.replace(/\{video\.timeCodeString\}/gi, video.timeCodeString);
                             this.output = this.output.replace(/\{uuid\}/gi, guid());
                             this.outputDoc = parser.parseFromString(this.output, 'text/xml');
-                            for (line of lines) {
+                            for (i=0;i<lines.length;i++) {
+                                var line = lines[i];
                                 if ((!line.begin.empty) && (!line.end.empty)) {
                                     var subtitleTag = template.cloneNode(true);
 
                                     subtitleTag.setAttribute('id', template.getAttribute('id') + '-' + i);
-                                    subtitleTag.getElementsByTagName('duration')[0].innerHTML = (line.end.totalFrames(video.frameRate) - line.begin.totalFrames(video.frameRate) + 101).toString();
+                                    subtitleTag.getElementsByTagName('duration')[0].innerHTML = (line.end.totalFrames(video.frameRate) + 101).toString();
                                     subtitleTag.getElementsByTagName('in')[0].innerHTML = line.begin.totalFrames(video.frameRate).toString();
                                     subtitleTag.getElementsByTagName('out')[0].innerHTML = line.end.totalFrames(video.frameRate).toString();
                                     subtitleTag.getElementsByTagName('start')[0].innerHTML = (line.begin.totalFrames(video.frameRate) + 100).toString();
@@ -711,9 +737,9 @@
                             }
 
                             
-                            var textEncoder = new TextEncoder('UTF-8');
-                            var arrayBuffer = textEncoder.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><!DOCTYPE xmeml><xmeml version="5">' + this.outputDoc.documentElement.innerHTML + '</xmeml>');
-                            this.download = "data:text/xml;base64," + _arrayBufferToBase64(arrayBuffer);
+                            
+                            this.download = _makeTextFile('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><!DOCTYPE xmeml><xmeml version="5">' + this.outputDoc.documentElement.innerHTML + '</xmeml>');
+                            //this.download = "data:text/xml;base64," + _arrayBufferToBase64(arrayBuffer);
 
                         }
                     }
@@ -853,10 +879,8 @@
                             tmp.removeAttribute('lane');
                             this.outputDoc.getElementsByTagName('spine')[1].appendChild(tmp);
                         }
-
-                        var textEncoder = new TextEncoder('UTF-8');
-                        var arrayBuffer = textEncoder.encode('<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE fcpxml><fcpxml version="1.4">' + this.outputDoc.documentElement.innerHTML + '</fcpxml>');
-                        this.download = "data:text/xml;base64," + _arrayBufferToBase64(arrayBuffer);
+ 
+                        this.download = _makeTextFile('<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE fcpxml><fcpxml version="1.4">' + this.outputDoc.documentElement.innerHTML + '</fcpxml>');
                     }
                 }
             }
@@ -1029,7 +1053,7 @@
                                     tracks[trackNo] += clipXml;
 
                                 }*/
-                                result = 'Click Save as...\nYou browser may take up to 1-30mins for exporting very long subtitles.';
+                                result = 'Click Save as...';
 
                             }
                             trackNo = 1;
@@ -1053,17 +1077,14 @@
                         for (var fileName in prtlFiles) {
                             if (prtlFiles.hasOwnProperty(fileName)) {
                                 var arrayBuffer = textEncoder.encode(prtlFiles[fileName]);
-                                sub.file(fileName, _arrayBufferToBase64(arrayBuffer,"utf-16"), {
-                                    base64: true
+                                sub.file(fileName, _appendBuffer(new Uint8Array([255, 254]),arrayBuffer), {
+                                    base64: false,
+                                    binary: true
                                 })
                             }
                         }
-
-                        this.prXml.download = "data:application/zip;base64," + zip.generate();
-
-
-
-
+                        
+                        this.prXml.download = window.URL.createObjectURL(new Blob([zip.generate({type:'arraybuffer'})],{type:"application/zip"}));                     
                     }
 
                     break;
@@ -1633,7 +1654,7 @@
     <input type="file" hidden="true" id="fileLoader" />
     <div id="mainContainer">
         <div id="headerFrame">
-            <span style="font-size:16px;">FiveLoadSub v0.7.1 by Wilson Luniz</span>
+            <span style="font-size:16px;">FiveLoadSub v0.7.2 by Wilson Luniz</span>
             <br/>
             <div style="text-align:left">
                 <div class="imgButton" onClick="selectFile('video');"><img src="img/importVideo.png" width="40" height="40" alt="" />
