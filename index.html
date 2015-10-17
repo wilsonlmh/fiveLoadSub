@@ -7,7 +7,7 @@
             margin: 0;
             padding: 0;
             font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;
-            color: #222;
+            background: #565656;
             overflow: hidden;
         }
         
@@ -25,7 +25,7 @@
         
         #headerFrame {
             width: 100%;
-            background: #666;
+            background: #333;
             height: 90px;
             color: #FFF;
             text-align: center;
@@ -51,7 +51,7 @@
         #subtitleToolbar {
             float: left;
             width: 100%;
-            background: #CCC;
+            background: #CDCDCD;
             min-height: 24px;
             padding-top: 10px;
             padding-bottom: 10px;
@@ -65,6 +65,8 @@
             border: 0px;
             resize: none;
             overflow: hidden;
+            background: #565656;
+            color: white;
         }
         
         #waveformFrame {
@@ -74,7 +76,7 @@
             margin: 0;
             border-top: 1px solid #666;
             height: 100%;
-            background: #131;
+            background: #144F3D;
             color: #FFF;
         }
         
@@ -209,22 +211,12 @@
         }
     </style>
     <!-- Including -->
-    <!--<script src="inc/wavesurfer.min.js"></script>-->
-    <script src="inc/wavesurfer_src/wavesurfer.js"></script>
-    <script src="inc/wavesurfer_src/util.js"></script>
 
+    <script src="./inc/wavesurfer.min.js"></script>
+    <script src="./inc/wavesurfer.timeline.min.js"></script>
+    <script src="./inc/wavesurfer.regions.min.js"></script>
 
-    <script src="inc/wavesurfer_src/webaudio.js"></script>
-
-    <script src="inc/wavesurfer_src/drawer.js"></script>
-    <script src="inc/wavesurfer_src/drawer.canvas.js"></script>
-    <script src="inc/wavesurfer_src/mediaelement.js"></script>
-
-    <!-- SP line -->
-    <script src="inc/wavesurfer.timeline.js"></script>
-    <script src="inc/wavesurfer.regions.js"></script>
-
-    <script src="inc/jszip.min.js"></script>
+    <script src="./inc/jszip.min.js"></script>
 
     <script>
         //functions from internet
@@ -234,131 +226,210 @@
             var jump = (line + 4) * lineHeight - document.getElementById("subtitleFormContainer").offsetHeight;
             document.getElementById("subtitleFormContainer").scrollTop = jump;
         }
-        var _appendBuffer = function(buffer1, buffer2) {
+        var _appendBuffer = function (buffer1, buffer2) {
             var tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
             tmp.set(new Uint8Array(buffer1), 0);
             tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
             return tmp.buffer;
         };
-        
-        function _makeTextFile(text,type) {
-                                
-                                type = type || 'utf-8';
-                                if (text) {
-                                    var textEncoder = {};
-                                    var prefixBuffer;
-                                    
-                                    switch (type) {
-                                        case 'utf-16':
-                                            prefixBuffer = new Uint8Array([255, 254]);  //magic of UTF-16:0xFFFE
-                                            textEncoder = new TextEncoder('UTF-16');
-                                        break;
-                                        default:
-                                            prefixBuffer = new Uint8Array([239, 187, 191]); //magic of UTF-18:0xEFBBBF
-                                            textEncoder = new TextEncoder('UTF-8');
-                                    }
-                                    var arrayBuffer = textEncoder.encode(text);
-                                    arrayBuffer = _appendBuffer(prefixBuffer,arrayBuffer);
-                                    var downloadBlob = new Blob([arrayBuffer],{type:"text/plain"});
-                                    return window.URL.createObjectURL(downloadBlob);
-                                } else {
-                                    return false;
-                                }
-                            }
-        
-        function _arrayBufferToBase64(arrayBuffer,type) {
-            var type = type || "utf-8";
-            switch (type) {
-                    case 'utf-8':
-                    var append = new Uint8Array([239, 187, 191]);
-                    arrayBuffer = _appendBuffer(append,arrayBuffer);
-                    break;
+
+        function _makeTextFile(text, type) {
+
+            type = type || 'utf-8';
+            if (text) {
+                var textEncoder = {};
+                var prefixBuffer;
+
+                switch (type) {
                 case 'utf-16':
-                    var append = new Uint8Array([255, 254]);
-                    arrayBuffer = _appendBuffer(append,arrayBuffer);
+                    prefixBuffer = new Uint8Array([255, 254]); //magic of UTF-16:0xFFFE
+                    textEncoder = new TextEncoder('UTF-16');
                     break;
                 default:
-                    var append = new Uint8Array([239, 187, 191]);
-                    arrayBuffer = _appendBuffer(append,arrayBuffer);
-                    
+                    prefixBuffer = new Uint8Array([239, 187, 191]); //magic of UTF-18:0xEFBBBF
+                    textEncoder = new TextEncoder('UTF-8');
+                }
+                var arrayBuffer = textEncoder.encode(text);
+                arrayBuffer = _appendBuffer(prefixBuffer, arrayBuffer);
+                var downloadBlob = new Blob([arrayBuffer], {
+                    type: "text/plain"
+                });
+                return window.URL.createObjectURL(downloadBlob);
+            } else {
+                return false;
             }
-            var base64    = ''
+        }
+
+        function _arrayBufferToBase64(arrayBuffer, type) {
+            var type = type || "utf-8";
+            switch (type) {
+            case 'utf-8':
+                var append = new Uint8Array([239, 187, 191]);
+                arrayBuffer = _appendBuffer(append, arrayBuffer);
+                break;
+            case 'utf-16':
+                var append = new Uint8Array([255, 254]);
+                arrayBuffer = _appendBuffer(append, arrayBuffer);
+                break;
+            default:
+                var append = new Uint8Array([239, 187, 191]);
+                arrayBuffer = _appendBuffer(append, arrayBuffer);
+
+            }
+            var base64 = ''
             var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
-            var bytes         = new Uint8Array(arrayBuffer)
-            var byteLength    = bytes.byteLength
+            var bytes = new Uint8Array(arrayBuffer)
+            var byteLength = bytes.byteLength
             var byteRemainder = byteLength % 3
-            var mainLength    = byteLength - byteRemainder
+            var mainLength = byteLength - byteRemainder
 
-  var a, b, c, d
-  var chunk
+            var a, b, c, d
+            var chunk
 
-  
-  // Main loop deals with bytes in chunks of 3
-  for (var i = 0; i < mainLength; i = i + 3) {
-    // Combine the three bytes into a single integer
-    chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
 
-    // Use bitmasks to extract 6-bit segments from the triplet
-    a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
-    b = (chunk & 258048)   >> 12 // 258048   = (2^6 - 1) << 12
-    c = (chunk & 4032)     >>  6 // 4032     = (2^6 - 1) << 6
-    d = chunk & 63               // 63       = 2^6 - 1
+            // Main loop deals with bytes in chunks of 3
+            for (var i = 0; i < mainLength; i = i + 3) {
+                // Combine the three bytes into a single integer
+                chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
 
-    // Convert the raw binary segments to the appropriate ASCII encoding
-    base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d]
-  }
+                // Use bitmasks to extract 6-bit segments from the triplet
+                a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
+                b = (chunk & 258048) >> 12 // 258048   = (2^6 - 1) << 12
+                c = (chunk & 4032) >> 6 // 4032     = (2^6 - 1) << 6
+                d = chunk & 63 // 63       = 2^6 - 1
 
-  // Deal with the remaining bytes and padding
-  if (byteRemainder == 1) {
-    chunk = bytes[mainLength]
+                // Convert the raw binary segments to the appropriate ASCII encoding
+                base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d]
+            }
 
-    a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
+            // Deal with the remaining bytes and padding
+            if (byteRemainder == 1) {
+                chunk = bytes[mainLength]
 
-    // Set the 4 least significant bits to zero
-    b = (chunk & 3)   << 4 // 3   = 2^2 - 1
+                a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
 
-    base64 += encodings[a] + encodings[b] + '=='
-  } else if (byteRemainder == 2) {
-    chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
+                // Set the 4 least significant bits to zero
+                b = (chunk & 3) << 4 // 3   = 2^2 - 1
 
-    a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
-    b = (chunk & 1008)  >>  4 // 1008  = (2^6 - 1) << 4
+                base64 += encodings[a] + encodings[b] + '=='
+            } else if (byteRemainder == 2) {
+                chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
 
-    // Set the 2 least significant bits to zero
-    c = (chunk & 15)    <<  2 // 15    = 2^4 - 1
+                a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
+                b = (chunk & 1008) >> 4 // 1008  = (2^6 - 1) << 4
 
-    base64 += encodings[a] + encodings[b] + encodings[c] + '='
-  }
-  
-  return base64
-}
+                // Set the 2 least significant bits to zero
+                c = (chunk & 15) << 2 // 15    = 2^4 - 1
+
+                base64 += encodings[a] + encodings[b] + encodings[c] + '='
+            }
+
+            return base64
+        }
     </script>
+    <!-- Localize Code Block -->
     <script>
-        /*
-                                                                                                                                                                                                                                                        store = new Array();
-                                                                                                                                                                                                                                                        store.push({"url": "/img/icon.png","data-url": "dataurl:XXXXX"});
-                                                                                                                                                                                                                                                        store.push({"url": "/img/icon1.png","data-url": "dataurl:XXXXX"});
-                                                                                                                                                                                                                                                        //Object.defineProperty(HTMLImageElement.prototype,"src",{set: function() {console.log(123);this.set();}});
-                                                                                                                                                                                                                                                        HTMLImageElement.prototype.addEventListener = function(eventName,func,flag) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    if (eventName == "DOMAttrModified") {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        console.log(1);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    console.log(2);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    this(arguments);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //HTMLImageElement.prototype.constructor
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //item.addEventListener("DOMAttrModified", function(event) { console.log(event.target.getAttribute('src'));} );
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //console.log(event.target.src);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                function getResource(url) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    var result = url;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    for (var row in store) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        if (row.url == url) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            result = row.data - url;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    return result;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }*/
+        function _GET(val) {
+            var result = undefined,
+                tmp = [];
+            location.search
+                //.replace ( "?", "" ) 
+                // this is better, there might be a question mark inside
+                .substr(1)
+                .split("&")
+                .forEach(function (item) {
+                    tmp = item.split("=");
+                    if (tmp[0] === val) result = decodeURIComponent(tmp[1]);
+                });
+            return result;
+        }
+
+        function parseLocalizeTable(csv) {
+            var lines = csv.split("\n");
+            var result = {};
+            var headers = lines[0].split(",");
+
+            for (var i = 1; i < lines.length; i++) {
+                var currentline = lines[i].split(",");
+                for (var j = 1; j < currentline.length; j++) {
+                    result[headers[j]] = result[headers[j]] || {};
+                    result[headers[j]][currentline[0]] = currentline[j];
+
+                }
+            }
+            return result;
+        }
+
+        function parseLocalizeAlias(csv) {
+            var lines = csv.split("\n");
+            var result = {};
+            for (var i = 1; i < lines.length; i++) {
+                var currentline = lines[i].split(",");
+                currentline[1] = currentline[1] || "";
+                result[currentline[0]] = currentline[1];
+
+            }
+            return result;
+        }
+
+        var localize = {
+            prefix: 'fiveLoadSub',
+            tableCSV: 'nth,en-US,zh-HK,zh-CN\r\nmenu.importVideo,Import Video,\u532F\u5165\u5F71\u7247,\u6C47\u5165\u5F71\u7247\r\nmenu.importSubtitle,Import Sub,\u532F\u5165\u5B57\u5E55,\u6C47\u5165\u5B57\u5E55\r\nmenu.saveSubtitle,Save Subtitle,\u5132\u5B58\u5B57\u5E55,\u50A8\u5B58\u5B57\u5E55\r\nmenu.settings,Settings,\u8A2D\u5B9A,\u8BBE\u5B9A\r\nvideoPlayer.dropFileHere,Drop video here,\u62D6\u62FD\u5F71\u7247\u5230\u6B64,\u62D6\u62FD\u5F71\u7247\u5230\u6B64\r\ntextEditor.fontSize,Font Size,\u5B57\u9AD4\u5927\u5C0F,\u5B57\u4F53\u5927\u5C0F\r\nsaveDialog.title,Select format to save,\u9078\u64C7\u5B58\u5132\u683C\u5F0F,\u9009\u62E9\u5B58\u50A8\u683C\u5F0F\r\nsaveDialog.xmlInputLabel.fcpx,Choose Final Cut Pro X Title Template(.fcpxml),\u532F\u5165Final Cut Pro X\u6A19\u984C\u6A23\u5F0F(.fcpxml),\u6C47\u5165Final Cut Pro X\u6807\u9898\u6837\u5F0F(.fcpxml)\r\nsaveDialog.xmlInputLabel.fcp7,Choose Final Cut Pro 7 Title Template(.xml),\u532F\u5165Final Cut Pro 7\u6A19\u984C\u6A23\u5F0F(.xml),\u6C47\u5165Final Cut Pro 7\u6807\u9898\u6837\u5F0F(.xml)\r\nsaveDialog.xmlInputLabel.premiere,Choose Adobe Premiere Title Template(.prtl),\u532F\u5165Adobe Premiere\u6A19\u984C\u6A23\u5F0F(.prtl),\u6C47\u5165Adobe Premiere\u6807\u9898\u6837\u5F0F(.prtl)\r\nsaveDialog.xmlInfo.fillLabel,Fill some info of your video,\u8ACB\u8F38\u5165\u5F71\u7247\u7684\u8CC7\u8A0A,\u8BF7\u8F93\u5165\u5F71\u7247\u7684\u8D44\u8BAF\r\nsaveDialog.xmlInfo.width,Width,\u5BEC\u5EA6,\u5BBD\u5EA6\r\nsaveDialog.xmlInfo.height,Height,\u9AD8\u5EA6,\u9AD8\u5EA6\r\nsaveDialog.xmlInfo.frameRate,Frame Rate,\u5E40\u901F,\u5E27\u901F\u7387\r\nsaveDialog.copyFromHereLabel,Copy from here,\u7531\u6B64\u5FA9\u5236,\u7531\u6B64\u590D\u5236\r\nsaveDialog.cacnel,Cacnel,\u53D6\u6D88,\u53D6\u6D88\r\nsaveDialog.saveAs,Save As...,\u5B58\u5132...,\u5B58\u50A8...',
+            aliasCSV: 'Code,Alias,Name\r\naf,,Afrikaans\r\naf-ZA,,Afrikaans (South Africa)\r\nar,ar,Arabic\r\nar-AE,ar,Arabic (U.A.E.)\r\nar-BH,ar,Arabic (Bahrain)\r\nar-DZ,ar,Arabic (Algeria)\r\nar-EG,ar,Arabic (Egypt)\r\nar-IQ,ar,Arabic (Iraq)\r\nar-JO,ar,Arabic (Jordan)\r\nar-KW,ar,Arabic (Kuwait)\r\nar-LB,ar,Arabic (Lebanon)\r\nar-LY,ar,Arabic (Libya)\r\nar-MA,ar,Arabic (Morocco)\r\nar-OM,ar,Arabic (Oman)\r\nar-QA,ar,Arabic (Qatar)\r\nar-SA,ar,Arabic (Saudi Arabia)\r\nar-SY,ar,Arabic (Syria)\r\nar-TN,ar,Arabic (Tunisia)\r\nar-YE,ar,Arabic (Yemen)\r\naz,,Azeri (Latin)\r\naz-AZ,,Azeri (Latin) (Azerbaijan)\r\naz-AZ,,Azeri (Cyrillic) (Azerbaijan)\r\nbe,be,Belarusian\r\nbe-BY,be,Belarusian (Belarus)\r\nbg,,Bulgarian\r\nbg-BG,,Bulgarian (Bulgaria)\r\nbs-BA,,Bosnian (Bosnia and Herzegovina)\r\nca,,Catalan\r\nca-ES,,Catalan (Spain)\r\ncs,,Czech\r\ncs-CZ,,Czech (Czech Republic)\r\ncy,,Welsh\r\ncy-GB,,Welsh (United Kingdom)\r\nda,,Danish\r\nda-DK,,Danish (Denmark)\r\nde,de,German\r\nde-AT,de,German (Austria)\r\nde-CH,de,German (Switzerland)\r\nde-DE,de,German (Germany)\r\nde-LI,de,German (Liechtenstein)\r\nde-LU,de,German (Luxembourg)\r\ndv,,Divehi\r\ndv-MV,,Divehi (Maldives)\r\nel,,Greek\r\nel-GR,,Greek (Greece)\r\nen,en-US,English\r\nen-AU,en-US,English (Australia)\r\nen-BZ,en-US,English (Belize)\r\nen-CA,en-US,English (Canada)\r\nen-CB,en-US,English (Caribbean)\r\nen-GB,en-US,English (United Kingdom)\r\nen-IE,en-US,English (Ireland)\r\nen-JM,en-US,English (Jamaica)\r\nen-NZ,en-US,English (New Zealand)\r\nen-PH,en-US,English (Republic of the Philippines)\r\nen-TT,en-US,English (Trinidad and Tobago)\r\nen-US,en-US,English (United States)\r\nen-ZA,en-US,English (South Africa)\r\nen-ZW,en-US,English (Zimbabwe)\r\neo,,Esperanto\r\nes,es,Spanish\r\nes-AR,es,Spanish (Argentina)\r\nes-BO,es,Spanish (Bolivia)\r\nes-CL,es,Spanish (Chile)\r\nes-CO,es,Spanish (Colombia)\r\nes-CR,es,Spanish (Costa Rica)\r\nes-DO,es,Spanish (Dominican Republic)\r\nes-EC,es,Spanish (Ecuador)\r\nes-ES,es,Spanish (Castilian)\r\nes-ES,es,Spanish (Spain)\r\nes-GT,es,Spanish (Guatemala)\r\nes-HN,es,Spanish (Honduras)\r\nes-MX,es,Spanish (Mexico)\r\nes-NI,es,Spanish (Nicaragua)\r\nes-PA,es,Spanish (Panama)\r\nes-PE,es,Spanish (Peru)\r\nes-PR,es,Spanish (Puerto Rico)\r\nes-PY,es,Spanish (Paraguay)\r\nes-SV,es,Spanish (El Salvador)\r\nes-UY,es,Spanish (Uruguay)\r\nes-VE,es,Spanish (Venezuela)\r\net,,Estonian\r\net-EE,,Estonian (Estonia)\r\neu,,Basque\r\neu-ES,,Basque (Spain)\r\nfa,,Farsi\r\nfa-IR,,Farsi (Iran)\r\nfi,,Finnish\r\nfi-FI,,Finnish (Finland)\r\nfo,,Faroese\r\nfo-FO,,Faroese (Faroe Islands)\r\nfr,fr,French\r\nfr-BE,fr,French (Belgium)\r\nfr-CA,fr,French (Canada)\r\nfr-CH,fr,French (Switzerland)\r\nfr-FR,fr,French (France)\r\nfr-LU,fr,French (Luxembourg)\r\nfr-MC,fr,French (Principality of Monaco)\r\ngl,,Galician\r\ngl-ES,,Galician (Spain)\r\ngu,,Gujarati\r\ngu-IN,,Gujarati (India)\r\nhe,,Hebrew\r\nhe-IL,,Hebrew (Israel)\r\nhi,,Hindi\r\nhi-IN,,Hindi (India)\r\nhr,,Croatian\r\nhr-BA,,Croatian (Bosnia and Herzegovina)\r\nhr-HR,,Croatian (Croatia)\r\nhu,,Hungarian\r\nhu-HU,,Hungarian (Hungary)\r\nhy,,Armenian\r\nhy-AM,,Armenian (Armenia)\r\nid,,Indonesian\r\nid-ID,,Indonesian (Indonesia)\r\nis,,Icelandic\r\nis-IS,,Icelandic (Iceland)\r\nit,it,Italian\r\nit-CH,it,Italian (Switzerland)\r\nit-IT,it,Italian (Italy)\r\nja,,Japanese\r\nja-JP,,Japanese (Japan)\r\nka,,Georgian\r\nka-GE,,Georgian (Georgia)\r\nkk,,Kazakh\r\nkk-KZ,,Kazakh (Kazakhstan)\r\nkn,,Kannada\r\nkn-IN,,Kannada (India)\r\nko,ko,Korean\r\nko-KR,ko,Korean (Korea)\r\nkok,,Konkani\r\nkok-IN,,Konkani (India)\r\nky,,Kyrgyz\r\nky-KG,,Kyrgyz (Kyrgyzstan)\r\nlt,,Lithuanian\r\nlt-LT,,Lithuanian (Lithuania)\r\nlv,,Latvian\r\nlv-LV,,Latvian (Latvia)\r\nmi,,Maori\r\nmi-NZ,,Maori (New Zealand)\r\nmk,,FYRO Macedonian\r\nmk-MK,,FYRO Macedonian (Former Yugoslav Republic of Macedonia)\r\nmn,,Mongolian\r\nmn-MN,,Mongolian (Mongolia)\r\nmr,,Marathi\r\nmr-IN,,Marathi (India)\r\nms,ms,Malay\r\nms-BN,ms,Malay (Brunei Darussalam)\r\nms-MY,ms,Malay (Malaysia)\r\nmt,,Maltese\r\nmt-MT,,Maltese (Malta)\r\nnb,,Norwegian (Bokm?l)\r\nnb-NO,,Norwegian (Bokm?l) (Norway)\r\nnl,,Dutch\r\nnl-BE,,Dutch (Belgium)\r\nnl-NL,,Dutch (Netherlands)\r\nnn-NO,,Norwegian (Nynorsk) (Norway)\r\nns,,Northern Sotho\r\nns-ZA,,Northern Sotho (South Africa)\r\npa,,Punjabi\r\npa-IN,,Punjabi (India)\r\npl,,Polish\r\npl-PL,,Polish (Poland)\r\nps,,Pashto\r\nps-AR,,Pashto (Afghanistan)\r\npt,pt,Portuguese\r\npt-BR,pt,Portuguese (Brazil)\r\npt-PT,pt,Portuguese (Portugal)\r\nqu,,Quechua\r\nqu-BO,,Quechua (Bolivia)\r\nqu-EC,,Quechua (Ecuador)\r\nqu-PE,,Quechua (Peru)\r\nro,,Romanian\r\nro-RO,,Romanian (Romania)\r\nru,,Russian\r\nru-RU,,Russian (Russia)\r\nsa,,Sanskrit\r\nsa-IN,,Sanskrit (India)\r\nse,,Sami (Northern)\r\nse-FI,,Sami (Northern) (Finland)\r\nse-FI,,Sami (Skolt) (Finland)\r\nse-FI,,Sami (Inari) (Finland)\r\nse-NO,,Sami (Northern) (Norway)\r\nse-NO,,Sami (Lule) (Norway)\r\nse-NO,,Sami (Southern) (Norway)\r\nse-SE,,Sami (Northern) (Sweden)\r\nse-SE,,Sami (Lule) (Sweden)\r\nse-SE,,Sami (Southern) (Sweden)\r\nsk,,Slovak\r\nsk-SK,,Slovak (Slovakia)\r\nsl,,Slovenian\r\nsl-SI,,Slovenian (Slovenia)\r\nsq,,Albanian\r\nsq-AL,,Albanian (Albania)\r\nsr-BA,,Serbian (Latin) (Bosnia and Herzegovina)\r\nsr-BA,,Serbian (Cyrillic) (Bosnia and Herzegovina)\r\nsr-SP,,Serbian (Latin) (Serbia and Montenegro)\r\nsr-SP,,Serbian (Cyrillic) (Serbia and Montenegro)\r\nsv,,Swedish\r\nsv-FI,,Swedish (Finland)\r\nsv-SE,,Swedish (Sweden)\r\nsw,,Swahili\r\nsw-KE,,Swahili (Kenya)\r\nsyr,,Syriac\r\nsyr-SY,,Syriac (Syria)\r\nta,,Tamil\r\nta-IN,,Tamil (India)\r\nte,,Telugu\r\nte-IN,,Telugu (India)\r\nth,,Thai\r\nth-TH,,Thai (Thailand)\r\ntl,,Tagalog\r\ntl-PH,,Tagalog (Philippines)\r\ntn,,Tswana\r\ntn-ZA,,Tswana (South Africa)\r\ntr,,Turkish\r\ntr-TR,,Turkish (Turkey)\r\ntt,,Tatar\r\ntt-RU,,Tatar (Russia)\r\nts,,Tsonga\r\nuk,,Ukrainian\r\nuk-UA,,Ukrainian (Ukraine)\r\nur,,Urdu\r\nur-PK,,Urdu (Islamic Republic of Pakistan)\r\nuz,uz,Uzbek (Latin)\r\nuz-UZ,uz,Uzbek (Latin) (Uzbekistan)\r\nuz-UZ,uz,Uzbek (Cyrillic) (Uzbekistan)\r\nvi,,Vietnamese\r\nvi-VN,,Vietnamese (Viet Nam)\r\nxh,,Xhosa\r\nxh-ZA,,Xhosa (South Africa)\r\nzh,zh-HK,Chinese\r\nzh-CN,zh-HK,Chinese (S)\r\nzh-HK,zh-TW,Chinese (Hong Kong)\r\nzh-MO,zh-HK,Chinese (Macau)\r\nzh-SG,zh-CN,Chinese (Singapore)\r\nzh-TW,zh-HK,Chinese (T)\r\nzu,,Zulu\r\nzu-ZA,,Zulu (South Africa)',
+            table: {},
+            alias: {},
+            currentLanguage: _GET('lang') || navigator.language || navigator.userLanguage || "en-US",
+            failBackLanguage: 'en-US',
+        }
+
+        localize.table = parseLocalizeTable(localize.tableCSV.replace(/\r/, ''));
+        localize.alias = parseLocalizeAlias(localize.aliasCSV.replace(/\r/, ''));
+        var stopMonitorMainScrolling = false;
+        var lastMainScrollTo = 0;
+        var slide3Stop = false;
+
+
+
+        function localizedText(str) {
+            str = str || "";
+            result = "";
+            if (str != "") {
+
+                if (localize.table != {}) {
+                    if (localize.currentLanguage in localize.table) {
+                        if (localize.table[localize.currentLanguage][str] != "") {
+                            result = localize.table[localize.currentLanguage][str];
+
+                        }
+                    } else if (localize.alias[localize.currentLanguage] in localize.table) {
+                        if (localize.table[localize.alias[localize.currentLanguage]][str] != "") {
+                            result = localize.table[localize.alias[localize.currentLanguage]][str];
+
+                        }
+                    } else if (localize.alias[localize.alias[localize.currentLanguage]] in localize.table) {
+                        if (localize.table[localize.alias[localize.alias[localize.currentLanguage]]][str] != "") {
+                            result = localize.table[localize.alias[localize.alias[localize.currentLanguage]]][str];
+
+                        }
+                    } else if (localize.table[localize.failBackLanguage][str] != "") {
+                        result = localize.table[localize.failBackLanguage][str];
+
+                    }
+
+                }
+            }
+
+            return result;
+        }
+
+        function replaceLocalizedText() {
+            var doc = document.body;
+            for (key in localize.table["en-US"]) {
+                doc.innerHTML = doc.innerHTML.replace(new RegExp('\{' + localize.prefix + '_' + key + '\}', 'g'), localizedText(key));
+            }
+
+        }
     </script>
     <script>
         //Object definition
@@ -718,7 +789,7 @@
                             this.output = this.output.replace(/\{video\.timeCodeString\}/gi, video.timeCodeString);
                             this.output = this.output.replace(/\{uuid\}/gi, guid());
                             this.outputDoc = parser.parseFromString(this.output, 'text/xml');
-                            for (i=0;i<lines.length;i++) {
+                            for (i = 0; i < lines.length; i++) {
                                 var line = lines[i];
                                 if ((!line.begin.empty) && (!line.end.empty)) {
                                     var subtitleTag = template.cloneNode(true);
@@ -736,8 +807,8 @@
                                 }
                             }
 
-                            
-                            
+
+
                             this.download = _makeTextFile('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><!DOCTYPE xmeml><xmeml version="5">' + this.outputDoc.documentElement.innerHTML + '</xmeml>');
                             //this.download = "data:text/xml;base64," + _arrayBufferToBase64(arrayBuffer);
 
@@ -879,7 +950,7 @@
                             tmp.removeAttribute('lane');
                             this.outputDoc.getElementsByTagName('spine')[1].appendChild(tmp);
                         }
- 
+
                         this.download = _makeTextFile('<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE fcpxml><fcpxml version="1.4">' + this.outputDoc.documentElement.innerHTML + '</fcpxml>');
                     }
                 }
@@ -1071,20 +1142,24 @@
                         zip.file("import.xml", xml);
                         var sub = zip.folder("sub");
 
-                        
+
                         textEncoder = new TextEncoder('UTF-16');
 
                         for (var fileName in prtlFiles) {
                             if (prtlFiles.hasOwnProperty(fileName)) {
                                 var arrayBuffer = textEncoder.encode(prtlFiles[fileName]);
-                                sub.file(fileName, _appendBuffer(new Uint8Array([255, 254]),arrayBuffer), {
+                                sub.file(fileName, _appendBuffer(new Uint8Array([255, 254]), arrayBuffer), {
                                     base64: false,
                                     binary: true
                                 })
                             }
                         }
-                        
-                        this.prXml.download = window.URL.createObjectURL(new Blob([zip.generate({type:'arraybuffer'})],{type:"application/zip"}));                     
+
+                        this.prXml.download = window.URL.createObjectURL(new Blob([zip.generate({
+                            type: 'arraybuffer'
+                        })], {
+                            type: "application/zip"
+                        }));
                     }
 
                     break;
@@ -1231,11 +1306,12 @@
     </script>
     <script>
         function onLoad() {
+            replaceLocalizedText();
             setupKeystroke();
             setupWaveform();
             updateUI();
             // Setup the dnd listeners.
-            var dropZone = document.getElementById('videoPlayer');
+            var dropZone = document.getElementById('videoFrame');
             dropZone.addEventListener('dragover', handleDragOver, false);
             dropZone.addEventListener('drop', handleFileSelect, false);
 
@@ -1329,7 +1405,7 @@
             wavesurfer.init({
                 container: document.getElementById('waveform'),
                 waveColor: "#000",
-                progressColor: '#AFA',
+                progressColor: '#A4EBDF', //131    
                 loaderColor: 'purple',
                 cursorColor: 'yellow',
                 height: 200
@@ -1609,6 +1685,7 @@
                 var URL = window.URL || window.webkitURL;
                 current.videoFile = URL.createObjectURL(files[0]);
                 openMedia();
+                document.getElementById('dropLabel').style.display = 'none';
                 break;
             case "text":
                 var reader = new FileReader();
@@ -1654,29 +1731,29 @@
     <input type="file" hidden="true" id="fileLoader" />
     <div id="mainContainer">
         <div id="headerFrame">
-            <span style="font-size:16px;">FiveLoadSub v0.7.2 by Wilson Luniz</span>
+            <span style="font-size:16px;">FiveLoadSub v0.8 by Wilson Luniz</span>
             <br/>
             <div style="text-align:left">
-                <div class="imgButton" onClick="selectFile('video');"><img src="img/importVideo.png" width="40" height="40" alt="" />
-                    <br/>Import Video</div>
-                <div class="imgButton" onClick="selectFile('text');"><img src="img/importText.png" width="40" height="40" alt="" />
-                    <br/>Import Text</div>
-                <div class="imgButton" onClick="showSaveDialog();"><img name="imageField" type="image" src="img/output.png" width="40" height="40" alt="" />
-                    <br/>Save Subtitle</div>
-                <div class="imgButton"><img name="imageField" type="image" src="img/settings.png" width="40" height="40" alt="" />
-                    <br/>Settings</div>
+                <div class="imgButton" onClick="selectFile('video');"><img src="./img/importVideo.png" width="40" height="40" alt="" />
+                    <br/>{fiveLoadSub_menu.importVideo}</div>
+                <div class="imgButton" onClick="selectFile('text');"><img src="./img/importText.png" width="40" height="40" alt="" />
+                    <br/>{fiveLoadSub_menu.importSubtitle}</div>
+                <div class="imgButton" onClick="showSaveDialog();"><img name="imageField" type="image" src="./img/output.png" width="40" height="40" alt="" />
+                    <br/>{fiveLoadSub_menu.saveSubtitle}</div>
+                <div class="imgButton"><img name="imageField" type="image" src="./img/settings.png" width="40" height="40" alt="" />
+                    <br/>{fiveLoadSub_menu.settings}</div>
             </div>
             <br/>
 
         </div>
         <div id="videoFrame">
             <video id="videoPlayer" src="" width="100%" height="100%" onCanPlay="setupVideoPlayer();" controls></video>
-            <div id="drop_zone" style="width:inherit; height:inherit; float:none; left:0px; top:110px; position:absolute; visibility:hidden;">Drop files here</div>
+            <div id="dropLabel" style="width:100%; font-size:24px; height:inherit; float:none; text-align:center; left:0px; top:50%; position:absolute; color:white;">{fiveLoadSub_videoPlayer.dropFileHere}</div>
             <div id="subtitleOverlay"></div>
         </div>
         <div id="subtitleFrame">
             <div id="subtitleToolbar">
-                <input id="fontSizeSlider" type="range" min="12" max="120" value="12" onChange="javascript:changeFontSizeSlider();" onMouseMove="javascript:changeFontSizeSlider();" onClick="" /> Font Size: <span id="fontSizeSpan">12</span>px
+                <input id="fontSizeSlider" type="range" min="12" max="120" value="12" onChange="javascript:changeFontSizeSlider();" onMouseMove="javascript:changeFontSizeSlider();" onClick="" /> {fiveLoadSub_textEditor.fontSize}: <span id="fontSizeSpan">12</span>px
             </div>
             <div id="subtitleFormContainer">
                 <div id="subtitleLineCount" class="subtitleElements" onLoad="updateSubtitleFrame()">
@@ -1705,13 +1782,13 @@
                 e.target.className += " selectedSaveDialogChoiceBox";
                 current.saveFormat = format;
                 document.querySelector("#saveDialogTextarea").value = subtitleDocument.strVal(current.saveFormat);
-                document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="">Save As...</a>';
+                document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="">' + localizedText('saveDialog.saveAs') + '</a>';
                 document.querySelector("#saveDialogSaveButton").style.color = "#000";
                 switch (format) {
                 case 'prxml':
                     document.getElementById('saveDialogXmlDiv').style.display = 'block';
                     if (subtitleDocument.prXml.download != '') {
-                        document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="color:#36F;" href="' + subtitleDocument.prXml.download + '" download="fiveLoadSub.zip" target="_blank">Save As...</a>';
+                        document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="color:#36F;" href="' + subtitleDocument.prXml.download + '" download="fiveLoadSub.zip" target="_blank">' + localizedText('saveDialog.saveAs') + '</a>';
                         document.querySelector("#saveDialogSaveButton").style.color = "#36F";
                     }
                     document.getElementById('templateInput').onchange = function onchange(event) {
@@ -1720,12 +1797,12 @@
                     document.getElementById('xmlOkButton').onclick = function onclick(event) {
                         clickSaveFormatChoice(event, 'prxml');
                     };
-                    document.getElementById('xmlTemplateInputLabelDiv').innerHTML = 'Choose Premiere Title Template(.prtl):';
+                    document.getElementById('xmlTemplateInputLabelDiv').innerHTML = localizedText('saveDialog.xmlInputLabel.premiere') + ':';
                     break;
                 case 'fcpxxml':
                     document.getElementById('saveDialogXmlDiv').style.display = 'block';
                     if (subtitleDocument.fcpxXml.download != '') {
-                        document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="color:#36F;" href="' + subtitleDocument.fcpxXml.download + '" download="fiveLoadSub.fcpxml" target="_blank">Save As...</a>';
+                        document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="color:#36F;" href="' + subtitleDocument.fcpxXml.download + '" download="fiveLoadSub.fcpxml" target="_blank">' + localizedText('saveDialog.saveAs') + '</a>';
                         document.querySelector("#saveDialogSaveButton").style.color = "#36F";
                     }
                     document.getElementById('templateInput').onchange = function onchange(event) {
@@ -1734,12 +1811,12 @@
                     document.getElementById('xmlOkButton').onclick = function onclick(event) {
                         clickSaveFormatChoice(event, 'fcpxxml');
                     };
-                    document.getElementById('xmlTemplateInputLabelDiv').innerHTML = 'Choose Final Cut Pro X Title Template(.fcpxml):';
+                    document.getElementById('xmlTemplateInputLabelDiv').innerHTML = localizedText('saveDialog.xmlInputLabel.fcpx') + ':';
                     break;
                 case 'fcp7xml':
                     document.getElementById('saveDialogXmlDiv').style.display = 'block';
                     if (subtitleDocument.fcp7Xml.download != '') {
-                        document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="color:#36F;" href="' + subtitleDocument.fcp7Xml.download + '" download="fiveLoadSub.xml" target="_blank">Save As...</a>';
+                        document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="color:#36F;" href="' + subtitleDocument.fcp7Xml.download + '" download="fiveLoadSub.xml" target="_blank">' + localizedText('saveDialog.saveAs') + '</a>';
                         document.querySelector("#saveDialogSaveButton").style.color = "#36F";
                     }
                     document.getElementById('templateInput').onchange = function onchange(event) {
@@ -1748,13 +1825,13 @@
                     document.getElementById('xmlOkButton').onclick = function onclick(event) {
                         clickSaveFormatChoice(event, 'fcp7xml');
                     };
-                    document.getElementById('xmlTemplateInputLabelDiv').innerHTML = 'Choose Final Cut Pro 7 Title Template(.xml):';
+                    document.getElementById('xmlTemplateInputLabelDiv').innerHTML = localizedText('saveDialog.xmlInputLabel.fcp7') + ':';
                     break;
                 default:
                     document.getElementById('saveDialogXmlDiv').style.display = 'none';
                     var download = "data:text/plain;charset=utf-8," + encodeURIComponent(document.querySelector("#saveDialogTextarea").value);
                     var ext = format;
-                    document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="color:#36F;" href="' + download + '" download="fiveLoadSub.' + ext + '" target="_blank">Save As...</a>';
+                    document.querySelector("#saveDialogSaveButton").innerHTML = '<a style="color:#36F;" href="' + download + '" download="fiveLoadSub.' + ext + '" target="_blank">' + localizedText('saveDialog.saveAs') + '</a>';
                     document.querySelector("#saveDialogSaveButton").style.color = "#36F";
                 }
 
@@ -1770,7 +1847,7 @@
         </script>
 
         <div id="saveDialog">
-            <div style="background:#777;color:#FFF; vertical-align:central; line-height:30px; font-size:16px;">Select format to save</div>
+            <div style="background:#777;color:#FFF; vertical-align:central; line-height:30px; font-size:16px;">{fiveLoadSub_saveDialog.title}</div>
             <div style="text-align:center">
                 <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'fls');">.FLS</div>
                 <div class="saveDialogChoiceBox" onclick="clickSaveFormatChoice(event,'srt');">.SRT</div>
@@ -1797,24 +1874,24 @@
             </div>
             <div id="saveDialogXmlDiv" style="display: none;">
                 <br>
-                <div id="xmlTemplateInputLabelDiv">Choose Final Cut Pro X Title Template(.fcpxml):</div>
+                <div id="xmlTemplateInputLabelDiv">{fiveLoadSub_saveDialog.xmlInputLabel.fcpx}:</div>
                 <br>
                 <input type="file" id="templateInput" onchange="subtitleDocument.prXml.updatePrtl();subtitleDocument.fcpxXml.loadInput();subtitleDocument.fcp7Xml.loadInput();">
                 <br>
-                <br> Fill some info of your video:
-                <br> Width:
-                <input type="text" id="saveDialogXml_width" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();subtitleDocument.fcp7Xml.updateConfig();">px &nbsp;Height:
-                <input type="text" id="saveDialogXml_height" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();subtitleDocument.fcp7Xml.updateConfig();">px &nbsp;FrameRate:
+                <br> {fiveLoadSub_saveDialog.xmlInfo.fillLabel}:
+                <br> {fiveLoadSub_saveDialog.xmlInfo.width}:
+                <input type="text" id="saveDialogXml_width" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();subtitleDocument.fcp7Xml.updateConfig();">px &nbsp;{fiveLoadSub_saveDialog.xmlInfo.height}:
+                <input type="text" id="saveDialogXml_height" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();subtitleDocument.fcp7Xml.updateConfig();">px &nbsp;{fiveLoadSub_saveDialog.xmlInfo.frameRate}:
                 <input type="text" id="saveDialogXml_frameRate" size="7" onchange="subtitleDocument.prXml.updateConfig();subtitleDocument.fcpxXml.updateConfig();subtitleDocument.fcp7Xml.updateConfig();">fps
                 <br>
                 <br>
                 <input id="xmlOkButton" type="button" value="OK" onclick="clickSaveFormatChoice(event,'prxml');" class=" selectedSaveDialogChoiceBox selectedSaveDialogChoiceBox selectedSaveDialogChoiceBox selectedSaveDialogChoiceBox selectedSaveDialogChoiceBox">
             </div>
-            <div style="text-align:left;padding:0 10px;">Copy from here:
+            <div style="text-align:left;padding:0 10px;">{fiveLoadSub_saveDialog.copyFromHereLabel}
                 <br>
             </div>
             <textarea cols="50" rows="10" style="margin:0 5px;" id="saveDialogTextarea"></textarea>
-            <div style="text-align:right;padding:0 10px;"><span id="cancelSubtitleDialogCacnelButton" style="color:#36F;" onclick="hideSaveDialog();">Cacnel</span>&nbsp;&nbsp;&nbsp;<span id="saveDialogSaveButton" style="color: rgb(51, 102, 255);"><a style="color:#36F;"  target="_blank">Save As...</a></span>
+            <div style="text-align:right;padding:0 10px;"><span id="cancelSubtitleDialogCacnelButton" style="color:#36F;" onclick="hideSaveDialog();">{fiveLoadSub_saveDialog.cacnel}</span>&nbsp;&nbsp;&nbsp;<span id="saveDialogSaveButton" style="color: rgb(51, 102, 255);"><a style="color:#36F;"  target="_blank">{fiveLoadSub_saveDialog.saveAs}</a></span>
             </div>
         </div>
 </body>
