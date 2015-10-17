@@ -491,7 +491,7 @@
                 <div class="menuItem"><a href="https://github.com/wilsonlmh/fiveLoadSub/archive/master.zip" target="_blank">{menu.download}</a></div>
                 <div class="menuItem"><a href="https://github.com/wilsonlmh/fiveLoadSub/" target="_blank">{menu.github}</a></div>
                 <div class="menuItem"><a href="https://github.com/wilsonlmh/fiveLoadSub/wiki/" target="_blank">{menu.wiki}</a></div>
-                <div class="menuItem" onclick="document.getElementById('donationDialogContainer').style.display = 'block';">{menu.donation}</div>
+                <div class="menuItem" onclick="document.getElementById('donationDialogContainer').style.display = 'block';"><a href="#">{menu.donation}</a></div>
             </div>
         </div>
     </div>
@@ -540,18 +540,19 @@
                 <table style="text-align:center;" align="center">
                     <tr>
                         <td>
-                            {donationDialog.alipay}
+                            {donationDialog.wechat}
                         </td>
                         <td style="width:50px;">&nbsp;</td>
                         <td>{donationDialog.paypal}</td>
                         <td style="width:50px;">&nbsp;</td>
-                        <td>{donationDialog.wechat}</td>
+                        <td>
+                            {donationDialog.alipay}
+                        </td>
+                    
                     </tr>
                     <tr>
-
                         <td>
-                            <img src="img/alipay_qrcode.png" width="200px" height="200px" />
-                            <br/> lu6ni4z-ali@yahoo.com.hk
+                            <img src="img/wechat_qrcode.png" height="200px" width="200px" />
                         </td>
                         <td style="width:50px;">&nbsp;</td>
                         <td>
@@ -565,8 +566,11 @@
                         </td>
                         <td style="width:50px;">&nbsp;</td>
                         <td>
-                            <img src="img/wechat_qrcode.png" height="200px" width="200px" />
+                            <img src="img/alipay_qrcode.png" width="200px" height="200px" />
+                            <br/> lu6ni4z-ali@yahoo.com.hk
                         </td>
+                        
+                        
                     </tr>
 
                 </table>
