@@ -1,0 +1,18 @@
+nth,en-US,zh-HK,zh-CN
+menu.importVideo,Import Video,匯入影片,汇入影片
+menu.importSubtitle,Import Sub,匯入字幕,汇入字幕
+menu.saveSubtitle,Save Subtitle,儲存字幕,储存字幕
+menu.settings,Settings,設定,设定
+videoPlayer.dropFileHere,Drop video here,拖拽影片到此,拖拽影片到此
+textEditor.fontSize,Font Size,字體大小,字体大小
+saveDialog.title,Select format to save,選擇存儲格式,选择存储格式
+saveDialog.xmlInputLabel.fcpx,Choose Final Cut Pro X Title Template(.fcpxml),匯入Final Cut Pro X標題樣式(.fcpxml),汇入Final Cut Pro X标题样式(.fcpxml)
+saveDialog.xmlInputLabel.fcp7,Choose Final Cut Pro 7 Title Template(.xml),匯入Final Cut Pro 7標題樣式(.xml),汇入Final Cut Pro 7标题样式(.xml)
+saveDialog.xmlInputLabel.premiere,Choose Adobe Premiere Title Template(.prtl),匯入Adobe Premiere標題樣式(.prtl),汇入Adobe Premiere标题样式(.prtl)
+saveDialog.xmlInfo.fillLabel,Fill some info of your video,請輸入影片的資訊,请输入影片的资讯
+saveDialog.xmlInfo.width,Width,寬度,宽度
+saveDialog.xmlInfo.height,Height,高度,高度
+saveDialog.xmlInfo.frameRate,Frame Rate,幀速,帧速率
+saveDialog.copyFromHereLabel,Copy from here,由此復制,由此复制
+saveDialog.cacnel,Cacnel,取消,取消
+saveDialog.saveAs,Save As...,存儲...,存储...
