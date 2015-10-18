@@ -18,4 +18,14 @@ saveDialog.xmlInfo.frameRate,Frame Rate,幀速,帧速率
 saveDialog.copyFromHereLabel,Copy from here,由此復制,由此复制
 saveDialog.cacnel,Cacnel,取消,取消
 saveDialog.saveAs,Save As...,存儲...,导出...
+saveDialog.safariPrompt.fcp7,Press ⌘+S and save as 1.xml in the next page!,在下一頁按⌘+S儲存為1.xml !,在下一页按⌘+S保存为1.xml !,
+saveDialog.safariPrompt.fcpx,Press ⌘+S and save as 1.fcpxml in the next page!,在下一頁按⌘+S儲存為1.fcpxml !,在下一页按⌘+S保存为1.fcpxml !,
+saveDialog.safariPrompt.pr,Press ⌘+S and save as 1.zip in the next page!,在下一頁按⌘+S儲存為1.zip !,在下一页按⌘+S保存为1.zip! ,
+importSubtitleDialog.title,Select import format,選擇匯入格式,选择导入格式
+importSubtitleDialog.OK,OK,確定,确定
+importSubtitleDialog.cancel,Cancel,取消,取消
+importSubtitleDialog.selection.removeEmptyLines,remove empty lines,移除空行,移除空行
+importSubtitleDialog.selection.plainText,Plain Text,純文字,纯文本
+importSubtitleDialog.original,Original,原格式,原格式
+importSubtitleDialog.conversionPreview,Conversion Preview,轉換預覽,转换预览
 app.exitConfirmMsg,Save before leave or changes will lost!,離開前任何未儲存之變更將流失,离开前任何未保存之变更将流失
