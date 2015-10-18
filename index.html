@@ -16,6 +16,21 @@
             text-decoration: none;
         }
         
+        a:hover {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        a:active {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
         #mainContainer {
             width: 100%;
             height: 100%;
@@ -34,12 +49,64 @@
             padding-bottom: 5px;
         }
         
+        #ribbonToggleDiv {
+            display: block;
+            line-height: 120px;
+            text-align: right;
+            vertical-align: bottom;
+            float: right;
+        }
+        
         #videoFrame {
             background: #000;
             width: 50%;
             border: 1px solid #666;
             float: left;
             position: relative;
+        }
+        
+        #verticalDragDiv {
+            display: block;
+            width: 100%;
+            float: left;
+            height: 1px;
+            padding: 0;
+            margin: 0;
+            color: white;
+            background: white;
+        }
+        
+        #verticalDragLine {
+            width: 100%;
+            height: 1px;
+            opacity: 0;
+            padding: 0;
+            margin: 0;
+            color: white;
+            background: white;
+        }
+        
+        #horizontalDragDiv {
+            width: 1px;
+            height: 50px;
+            display: inline-block;
+            float: left;
+            padding: 0;
+            margin: 0;
+            color: white;
+            background: white;
+        }
+        
+        #horizontalDragLine {
+            width: 1px;
+            height: 50px;
+            opacity: 0;
+            display: inline-block;
+            float: left;
+            padding: 0;
+            margin: 0;
+            color: white;
+            background: white;
         }
         
         #subtitleFrame {
@@ -64,9 +131,19 @@
             margin: 0;
             border: 0px;
             resize: none;
-            overflow: hidden;
+            overflow-y: hidden;
+            overflow-x: scroll;
             background: #565656;
+            word-wrap: off;
             color: white;
+        }
+        
+        #subtitleTextArea::-webkit-input-placeholder {
+            font-size: 50px;
+        }
+        
+        #subtitleTextArea::-moz-placeholder {
+            font-size: 50px;
         }
         
         #waveformFrame {
@@ -84,9 +161,17 @@
             float: left;
             text-align: center;
             width: 120px;
-            margin-left: 10px;
-            margin-right: 10px;
+            padding: 0;
+            border: 0;
+            margin-left: 5px;
+            margin-right: 5px;
         }
+        
+        .imgButton img {
+            text-align: center;
+        }
+        
+        .imgButton br {}
         
         .imgButton:hover {
             opacity: 0.7;
@@ -375,7 +460,7 @@
 
         var localize = {
             prefix: 'fiveLoadSub',
-            tableCSV: 'nth,en-us,zh-hk,zh-cn\r\nmenu.importVideo,Import Video,\u532F\u5165\u5F71\u7247,\u5BFC\u5165\u5F71\u7247\r\nmenu.importSubtitle,Import Sub,\u532F\u5165\u5B57\u5E55&#47;\u6587\u5B57,\u5BFC\u5165\u5B57\u5E55&#47;\u6587\u672C\r\nmenu.saveSubtitle,Save Subtitle,\u5132\u5B58\u5B57\u5E55,\u5BFC\u51FA\u5B57\u5E55\r\nmenu.settings,Settings,\u8A2D\u5B9A,\u8BBE\u7F6E\r\nvideoPlayer.dropFileHere,Drop video here,\u62D6\u62FD\u5F71\u7247\u6216\u97F3\u983B\u5230\u6B64,\u62D6\u62FD\u5F71\u7247\u6216\u97F3\u9891\u5230\u6B64\r\ntextEditor.fontSize,Font Size,\u5B57\u9AD4\u5927\u5C0F,\u5B57\u4F53\u5927\u5C0F\r\nsaveDialog.title,Select format to save,\u9078\u64C7\u5B58\u5132\u683C\u5F0F,\u9009\u62E9\u5BFC\u51FA\u683C\u5F0F\r\nsaveDialog.xmlInputLabel.fcpx,Choose Final Cut Pro X Title Template(.fcpxml),\u532F\u5165Final Cut Pro X\u6A19\u984C\u6A23\u5F0F(.fcpxml),\u5BFC\u5165Final Cut Pro X\u6807\u9898\u6837\u5F0F(.fcpxml)\r\nsaveDialog.xmlInputLabel.fcp7,Choose Final Cut Pro 7 Title Template(.xml),\u532F\u5165Final Cut Pro 7\u6A19\u984C\u6A23\u5F0F(.xml),\u5BFC\u5165Final Cut Pro 7\u6807\u9898\u6837\u5F0F(.xml)\r\nsaveDialog.xmlInputLabel.premiere,Choose Adobe Premiere Title Template(.prtl),\u532F\u5165Adobe Premiere\u6A19\u984C\u6A23\u5F0F(.prtl),\u5BFC\u5165Adobe Premiere\u6807\u9898\u6837\u5F0F(.prtl)\r\nsaveDialog.xmlInfo.fillLabel,Fill some info of your video,\u8ACB\u8F38\u5165\u5F71\u7247\u7684\u8CC7\u8A0A,\u8BF7\u8F93\u5165\u5F71\u7247\u5C5E\u6027\r\nsaveDialog.xmlInfo.width,Width,\u5BEC\u5EA6,\u5BBD\u5EA6\r\nsaveDialog.xmlInfo.height,Height,\u9AD8\u5EA6,\u9AD8\u5EA6\r\nsaveDialog.xmlInfo.frameRate,Frame Rate,\u5E40\u901F,\u5E27\u901F\u7387\r\nsaveDialog.copyFromHereLabel,Copy from here,\u7531\u6B64\u5FA9\u5236,\u7531\u6B64\u590D\u5236\r\nsaveDialog.cacnel,Cacnel,\u53D6\u6D88,\u53D6\u6D88\r\nsaveDialog.saveAs,Save As...,\u5B58\u5132...,\u5BFC\u51FA...',
+            tableCSV: 'nth,en-us,zh-hk,zh-cn\r\nmenu.importVideo,Import Video,\u532F\u5165\u5F71\u7247,\u5BFC\u5165\u5F71\u7247\r\nmenu.importSubtitle,Import Sub,\u532F\u5165\u5B57\u5E55&#47;\u6587\u5B57,\u5BFC\u5165\u5B57\u5E55&#47;\u6587\u672C\r\nmenu.saveSubtitle,Save Subtitle,\u5132\u5B58\u5B57\u5E55,\u5BFC\u51FA\u5B57\u5E55\r\nmenu.settings,Settings,\u8A2D\u5B9A,\u8BBE\u7F6E\r\nmenu.help,Help,\u8AAA\u660E,\u8BF4\u660E\r\nvideoPlayer.dropFileHere,Drop video here,\u62D6\u62FD\u5F71\u7247\u6216\u97F3\u983B\u5230\u6B64,\u62D6\u62FD\u5F71\u7247\u6216\u97F3\u9891\u5230\u6B64\r\ntextEditor.fontSize,Font Size,\u5B57\u9AD4\u5927\u5C0F,\u5B57\u4F53\u5927\u5C0F\r\ntextEditor.placeHolder,Paste text here,\u5728\u6B64\u8CBC\u4E0A\u6587\u5B57,\u5728\u6B64\u8D34\u4E0A\u6587\u5B57\r\nsaveDialog.title,Select format to save,\u9078\u64C7\u5B58\u5132\u683C\u5F0F,\u9009\u62E9\u5BFC\u51FA\u683C\u5F0F\r\nsaveDialog.xmlInputLabel.fcpx,Choose Final Cut Pro X Title Template(.fcpxml),\u532F\u5165Final Cut Pro X\u6A19\u984C\u6A23\u5F0F(.fcpxml),\u5BFC\u5165Final Cut Pro X\u6807\u9898\u6837\u5F0F(.fcpxml)\r\nsaveDialog.xmlInputLabel.fcp7,Choose Final Cut Pro 7 Title Template(.xml),\u532F\u5165Final Cut Pro 7\u6A19\u984C\u6A23\u5F0F(.xml),\u5BFC\u5165Final Cut Pro 7\u6807\u9898\u6837\u5F0F(.xml)\r\nsaveDialog.xmlInputLabel.premiere,Choose Adobe Premiere Title Template(.prtl),\u532F\u5165Adobe Premiere\u6A19\u984C\u6A23\u5F0F(.prtl),\u5BFC\u5165Adobe Premiere\u6807\u9898\u6837\u5F0F(.prtl)\r\nsaveDialog.xmlInfo.fillLabel,Fill some info of your video,\u8ACB\u8F38\u5165\u5F71\u7247\u7684\u8CC7\u8A0A,\u8BF7\u8F93\u5165\u5F71\u7247\u5C5E\u6027\r\nsaveDialog.xmlInfo.width,Width,\u5BEC\u5EA6,\u5BBD\u5EA6\r\nsaveDialog.xmlInfo.height,Height,\u9AD8\u5EA6,\u9AD8\u5EA6\r\nsaveDialog.xmlInfo.frameRate,Frame Rate,\u5E40\u901F,\u5E27\u901F\u7387\r\nsaveDialog.copyFromHereLabel,Copy from here,\u7531\u6B64\u5FA9\u5236,\u7531\u6B64\u590D\u5236\r\nsaveDialog.cacnel,Cacnel,\u53D6\u6D88,\u53D6\u6D88\r\nsaveDialog.saveAs,Save As...,\u5B58\u5132...,\u5BFC\u51FA...\r\napp.exitConfirmMsg,Save before leave or changes will lost!,\u96E2\u958B\u524D\u4EFB\u4F55\u672A\u5132\u5B58\u4E4B\u8B8A\u66F4\u5C07\u6D41\u5931,\u79BB\u5F00\u524D\u4EFB\u4F55\u672A\u4FDD\u5B58\u4E4B\u53D8\u66F4\u5C06\u6D41\u5931',
             aliasCSV: 'Code,Alias,Name\r\naf,,Afrikaans\r\naf-ZA,,Afrikaans (South Africa)\r\nar,ar,Arabic\r\nar-AE,ar,Arabic (U.A.E.)\r\nar-BH,ar,Arabic (Bahrain)\r\nar-DZ,ar,Arabic (Algeria)\r\nar-EG,ar,Arabic (Egypt)\r\nar-IQ,ar,Arabic (Iraq)\r\nar-JO,ar,Arabic (Jordan)\r\nar-KW,ar,Arabic (Kuwait)\r\nar-LB,ar,Arabic (Lebanon)\r\nar-LY,ar,Arabic (Libya)\r\nar-MA,ar,Arabic (Morocco)\r\nar-OM,ar,Arabic (Oman)\r\nar-QA,ar,Arabic (Qatar)\r\nar-SA,ar,Arabic (Saudi Arabia)\r\nar-SY,ar,Arabic (Syria)\r\nar-TN,ar,Arabic (Tunisia)\r\nar-YE,ar,Arabic (Yemen)\r\naz,,Azeri (Latin)\r\naz-AZ,,Azeri (Latin) (Azerbaijan)\r\naz-AZ,,Azeri (Cyrillic) (Azerbaijan)\r\nbe,be,Belarusian\r\nbe-BY,be,Belarusian (Belarus)\r\nbg,,Bulgarian\r\nbg-BG,,Bulgarian (Bulgaria)\r\nbs-BA,,Bosnian (Bosnia and Herzegovina)\r\nca,,Catalan\r\nca-ES,,Catalan (Spain)\r\ncs,,Czech\r\ncs-CZ,,Czech (Czech Republic)\r\ncy,,Welsh\r\ncy-GB,,Welsh (United Kingdom)\r\nda,,Danish\r\nda-DK,,Danish (Denmark)\r\nde,de,German\r\nde-AT,de,German (Austria)\r\nde-CH,de,German (Switzerland)\r\nde-DE,de,German (Germany)\r\nde-LI,de,German (Liechtenstein)\r\nde-LU,de,German (Luxembourg)\r\ndv,,Divehi\r\ndv-MV,,Divehi (Maldives)\r\nel,,Greek\r\nel-GR,,Greek (Greece)\r\nen,en-US,English\r\nen-AU,en-US,English (Australia)\r\nen-BZ,en-US,English (Belize)\r\nen-CA,en-US,English (Canada)\r\nen-CB,en-US,English (Caribbean)\r\nen-GB,en-US,English (United Kingdom)\r\nen-IE,en-US,English (Ireland)\r\nen-JM,en-US,English (Jamaica)\r\nen-NZ,en-US,English (New Zealand)\r\nen-PH,en-US,English (Republic of the Philippines)\r\nen-TT,en-US,English (Trinidad and Tobago)\r\nen-US,en-US,English (United States)\r\nen-ZA,en-US,English (South Africa)\r\nen-ZW,en-US,English (Zimbabwe)\r\neo,,Esperanto\r\nes,es,Spanish\r\nes-AR,es,Spanish (Argentina)\r\nes-BO,es,Spanish (Bolivia)\r\nes-CL,es,Spanish (Chile)\r\nes-CO,es,Spanish (Colombia)\r\nes-CR,es,Spanish (Costa Rica)\r\nes-DO,es,Spanish (Dominican Republic)\r\nes-EC,es,Spanish (Ecuador)\r\nes-ES,es,Spanish (Castilian)\r\nes-ES,es,Spanish (Spain)\r\nes-GT,es,Spanish (Guatemala)\r\nes-HN,es,Spanish (Honduras)\r\nes-MX,es,Spanish (Mexico)\r\nes-NI,es,Spanish (Nicaragua)\r\nes-PA,es,Spanish (Panama)\r\nes-PE,es,Spanish (Peru)\r\nes-PR,es,Spanish (Puerto Rico)\r\nes-PY,es,Spanish (Paraguay)\r\nes-SV,es,Spanish (El Salvador)\r\nes-UY,es,Spanish (Uruguay)\r\nes-VE,es,Spanish (Venezuela)\r\net,,Estonian\r\net-EE,,Estonian (Estonia)\r\neu,,Basque\r\neu-ES,,Basque (Spain)\r\nfa,,Farsi\r\nfa-IR,,Farsi (Iran)\r\nfi,,Finnish\r\nfi-FI,,Finnish (Finland)\r\nfo,,Faroese\r\nfo-FO,,Faroese (Faroe Islands)\r\nfr,fr,French\r\nfr-BE,fr,French (Belgium)\r\nfr-CA,fr,French (Canada)\r\nfr-CH,fr,French (Switzerland)\r\nfr-FR,fr,French (France)\r\nfr-LU,fr,French (Luxembourg)\r\nfr-MC,fr,French (Principality of Monaco)\r\ngl,,Galician\r\ngl-ES,,Galician (Spain)\r\ngu,,Gujarati\r\ngu-IN,,Gujarati (India)\r\nhe,,Hebrew\r\nhe-IL,,Hebrew (Israel)\r\nhi,,Hindi\r\nhi-IN,,Hindi (India)\r\nhr,,Croatian\r\nhr-BA,,Croatian (Bosnia and Herzegovina)\r\nhr-HR,,Croatian (Croatia)\r\nhu,,Hungarian\r\nhu-HU,,Hungarian (Hungary)\r\nhy,,Armenian\r\nhy-AM,,Armenian (Armenia)\r\nid,,Indonesian\r\nid-ID,,Indonesian (Indonesia)\r\nis,,Icelandic\r\nis-IS,,Icelandic (Iceland)\r\nit,it,Italian\r\nit-CH,it,Italian (Switzerland)\r\nit-IT,it,Italian (Italy)\r\nja,,Japanese\r\nja-JP,,Japanese (Japan)\r\nka,,Georgian\r\nka-GE,,Georgian (Georgia)\r\nkk,,Kazakh\r\nkk-KZ,,Kazakh (Kazakhstan)\r\nkn,,Kannada\r\nkn-IN,,Kannada (India)\r\nko,ko,Korean\r\nko-KR,ko,Korean (Korea)\r\nkok,,Konkani\r\nkok-IN,,Konkani (India)\r\nky,,Kyrgyz\r\nky-KG,,Kyrgyz (Kyrgyzstan)\r\nlt,,Lithuanian\r\nlt-LT,,Lithuanian (Lithuania)\r\nlv,,Latvian\r\nlv-LV,,Latvian (Latvia)\r\nmi,,Maori\r\nmi-NZ,,Maori (New Zealand)\r\nmk,,FYRO Macedonian\r\nmk-MK,,FYRO Macedonian (Former Yugoslav Republic of Macedonia)\r\nmn,,Mongolian\r\nmn-MN,,Mongolian (Mongolia)\r\nmr,,Marathi\r\nmr-IN,,Marathi (India)\r\nms,ms,Malay\r\nms-BN,ms,Malay (Brunei Darussalam)\r\nms-MY,ms,Malay (Malaysia)\r\nmt,,Maltese\r\nmt-MT,,Maltese (Malta)\r\nnb,,Norwegian (Bokm?l)\r\nnb-NO,,Norwegian (Bokm?l) (Norway)\r\nnl,,Dutch\r\nnl-BE,,Dutch (Belgium)\r\nnl-NL,,Dutch (Netherlands)\r\nnn-NO,,Norwegian (Nynorsk) (Norway)\r\nns,,Northern Sotho\r\nns-ZA,,Northern Sotho (South Africa)\r\npa,,Punjabi\r\npa-IN,,Punjabi (India)\r\npl,,Polish\r\npl-PL,,Polish (Poland)\r\nps,,Pashto\r\nps-AR,,Pashto (Afghanistan)\r\npt,pt,Portuguese\r\npt-BR,pt,Portuguese (Brazil)\r\npt-PT,pt,Portuguese (Portugal)\r\nqu,,Quechua\r\nqu-BO,,Quechua (Bolivia)\r\nqu-EC,,Quechua (Ecuador)\r\nqu-PE,,Quechua (Peru)\r\nro,,Romanian\r\nro-RO,,Romanian (Romania)\r\nru,,Russian\r\nru-RU,,Russian (Russia)\r\nsa,,Sanskrit\r\nsa-IN,,Sanskrit (India)\r\nse,,Sami (Northern)\r\nse-FI,,Sami (Northern) (Finland)\r\nse-FI,,Sami (Skolt) (Finland)\r\nse-FI,,Sami (Inari) (Finland)\r\nse-NO,,Sami (Northern) (Norway)\r\nse-NO,,Sami (Lule) (Norway)\r\nse-NO,,Sami (Southern) (Norway)\r\nse-SE,,Sami (Northern) (Sweden)\r\nse-SE,,Sami (Lule) (Sweden)\r\nse-SE,,Sami (Southern) (Sweden)\r\nsk,,Slovak\r\nsk-SK,,Slovak (Slovakia)\r\nsl,,Slovenian\r\nsl-SI,,Slovenian (Slovenia)\r\nsq,,Albanian\r\nsq-AL,,Albanian (Albania)\r\nsr-BA,,Serbian (Latin) (Bosnia and Herzegovina)\r\nsr-BA,,Serbian (Cyrillic) (Bosnia and Herzegovina)\r\nsr-SP,,Serbian (Latin) (Serbia and Montenegro)\r\nsr-SP,,Serbian (Cyrillic) (Serbia and Montenegro)\r\nsv,,Swedish\r\nsv-FI,,Swedish (Finland)\r\nsv-SE,,Swedish (Sweden)\r\nsw,,Swahili\r\nsw-KE,,Swahili (Kenya)\r\nsyr,,Syriac\r\nsyr-SY,,Syriac (Syria)\r\nta,,Tamil\r\nta-IN,,Tamil (India)\r\nte,,Telugu\r\nte-IN,,Telugu (India)\r\nth,,Thai\r\nth-TH,,Thai (Thailand)\r\ntl,,Tagalog\r\ntl-PH,,Tagalog (Philippines)\r\ntn,,Tswana\r\ntn-ZA,,Tswana (South Africa)\r\ntr,,Turkish\r\ntr-TR,,Turkish (Turkey)\r\ntt,,Tatar\r\ntt-RU,,Tatar (Russia)\r\nts,,Tsonga\r\nuk,,Ukrainian\r\nuk-UA,,Ukrainian (Ukraine)\r\nur,,Urdu\r\nur-PK,,Urdu (Islamic Republic of Pakistan)\r\nuz,uz,Uzbek (Latin)\r\nuz-UZ,uz,Uzbek (Latin) (Uzbekistan)\r\nuz-UZ,uz,Uzbek (Cyrillic) (Uzbekistan)\r\nvi,,Vietnamese\r\nvi-VN,,Vietnamese (Viet Nam)\r\nxh,,Xhosa\r\nxh-ZA,,Xhosa (South Africa)\r\nzh,zh-HK,Chinese\r\nzh-CN,zh-HK,Chinese (S)\r\nzh-HK,zh-TW,Chinese (Hong Kong)\r\nzh-MO,zh-HK,Chinese (Macau)\r\nzh-SG,zh-CN,Chinese (Singapore)\r\nzh-TW,zh-HK,Chinese (T)\r\nzu,,Zulu\r\nzu-ZA,,Zulu (South Africa)',
             table: {},
             alias: {},
@@ -445,6 +530,12 @@
             this.saveFormat = "";
             this.editHistory = []; //Store 100 step of history
             this.editHistoryIndex = -1; //Index number starting from 0, sames as the array index
+            this.UI = {
+                horizontalDragRatio: 1.0,
+                verticalDragRatio: 1.0,
+                videoWaveHeightRatio: 0.0,
+                dragging: false
+            }
         }
 
         function settingsObject() {
@@ -1309,7 +1400,7 @@
             replaceLocalizedText();
             setupKeystroke();
             setupWaveform();
-            updateUI();
+            UI$init();
             // Setup the dnd listeners.
             var dropZone = document.getElementById('videoFrame');
             dropZone.addEventListener('dragover', handleDragOver, false);
@@ -1326,14 +1417,54 @@
             };
 
             window.addEventListener("beforeunload", function (e) {
-                var confirmationMessage = 'It looks like you have been editing something.';
-                confirmationMessage += 'If you leave before saving, your changes will be lost.';
+                var confirmationMessage = localizedText('app.exitConfirmMsg');
 
                 if (!current.savedChanges) {
                     (e || window.event).returnValue = confirmationMessage; //Gecko + IE
                     return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
                 }
             });
+        }
+
+        function UI$init() {
+            var w = window,
+                d = document,
+                e = d.documentElement,
+                g = d.getElementsByTagName('body')[0],
+                windowWidth = w.innerWidth || e.clientWidth || g.clientWidth,
+                windowHeight = w.innerHeight || e.clientHeight || g.clientHeight;
+            var videoFrame = document.getElementById('videoFrame');
+            var subtitleFrame = document.getElementById('subtitleFrame');
+            var waveformFrame = document.getElementById('waveformFrame');
+            var subtitleTextArea = document.getElementById("subtitleTextArea");
+            var subtitleFormContainer = document.getElementById('subtitleFormContainer');
+            var ribbon = document.getElementById('headerFrame');
+            var horizontalDragLine = document.getElementById('horizontalDragLine');
+            var horizontalDragDiv = document.getElementById('horizontalDragDiv');
+            videoFrame.style.height = Math.round(videoFrame.offsetWidth / 16 * 9) + "px";
+            subtitleFrame.style.width = (windowWidth - videoFrame.offsetWidth - 5) + "px";
+            subtitleFrame.style.height = videoFrame.style.height;
+            waveformFrame.style.height = (windowHeight - videoFrame.offsetHeight - 1 - ribbon.clientHeight - 2) + "px";
+            subtitleTextArea.style.width = (subtitleFrame.offsetWidth - 56) + "px";
+            subtitleTextArea.style.minHeight = (subtitleFrame.offsetHeight - 45) + "px";
+            subtitleFormContainer.style.height = (subtitleFrame.offsetHeight - 30) + "px";
+            horizontalDragLine.style.height = videoFrame.style.height;
+            horizontalDragDiv.style.height = videoFrame.style.height;
+            current.UI.videoWaveHeightRatio = videoFrame.clientHeight / waveformFrame.clientHeight;
+            updateSubtitleFrame();
+            textareaScrollTo(current.lineNo);
+
+            if (wavesurfer.getDuration() > 0) {
+                wavesurfer.params.height = (waveformFrame.offsetHeight - 30);
+                wavesurfer.drawer.setHeight((waveformFrame.offsetHeight - 30));
+                wavesurfer.drawBuffer();
+            }
+        }
+
+        function UI$mouse$setCursor(cursorStyle) {
+            var elem = document.documentElement;
+            if (elem.style) elem.style.cursor = cursorStyle;
+
         }
 
         function updateUI() {
@@ -1348,18 +1479,25 @@
             var waveformFrame = document.getElementById('waveformFrame');
             var subtitleTextArea = document.getElementById("subtitleTextArea");
             var subtitleFormContainer = document.getElementById('subtitleFormContainer');
+            var ribbon = document.getElementById('headerFrame');
+            var horizontalDragLine = document.getElementById('horizontalDragLine');
 
-            videoFrame.style.height = Math.round(videoFrame.offsetWidth / 16 * 9) + "px";
-            subtitleFrame.style.width = (windowWidth - videoFrame.offsetWidth - 2) + "px";
+            videoFrame.style.width = Math.round(windowWidth * 0.5 * current.UI.horizontalDragRatio) + 'px';
+            videoFrame.style.height = Math.round((windowHeight - ribbon.clientHeight) * (current.UI.videoWaveHeightRatio / (current.UI.videoWaveHeightRatio + 1))) + "px";
+
+            subtitleFrame.style.width = (windowWidth - videoFrame.offsetWidth - 5) + "px";
             subtitleFrame.style.height = videoFrame.style.height;
-            waveformFrame.style.height = (windowHeight - videoFrame.offsetHeight - 101) + "px";
-            subtitleTextArea.style.width = (subtitleFrame.offsetWidth - 69) + "px";
-            subtitleTextArea.style.minHeight = (subtitleFrame.offsetHeight - 50) + "px";
+            waveformFrame.style.height = (windowHeight - videoFrame.offsetHeight - 1 - ribbon.clientHeight - 2) + "px";
+            subtitleTextArea.style.width = (subtitleFrame.offsetWidth - 56) + "px";
+            subtitleTextArea.style.minHeight = (subtitleFrame.offsetHeight - 45) + "px";
             subtitleFormContainer.style.height = (subtitleFrame.offsetHeight - 30) + "px";
+            horizontalDragLine.style.height = videoFrame.style.height;
+            horizontalDragDiv.style.height = videoFrame.style.height;
+
             updateSubtitleFrame();
             textareaScrollTo(current.lineNo);
 
-            if (wavesurfer.getDuration() > 0) {
+            if ((wavesurfer.getDuration() > 0) && (!current.UI.dragging)) {
                 wavesurfer.params.height = (waveformFrame.offsetHeight - 30);
                 wavesurfer.drawer.setHeight((waveformFrame.offsetHeight - 30));
                 wavesurfer.drawBuffer();
@@ -1423,7 +1561,7 @@
                     seekMedia("waveform");
                     current.disableVideoSeekEvent = false;
                 });
-                updateUI();
+                UI$init();
             });
         }
 
@@ -1541,6 +1679,67 @@
         function updateEditHistory() {
             pushEditHistory(document.querySelector("#subtitleTextArea").value);
         }
+
+        function UI$toggleRibbon() {
+            var ribbon = document.getElementById('headerFrame');
+            var imgs = document.getElementById('ribbonMenu').getElementsByTagName('img');
+            var brs = ribbon.getElementsByTagName('br');
+            var toggle = document.getElementById('ribbonToggleDiv');
+            if ((ribbon.style.height == '90px') || (ribbon.style.height == '')) {
+                ribbon.style.height = '48px';
+                toggle.style.lineHeight = '48px';
+                for (var i = 0; i < imgs.length; i++) {
+                    imgs[i].style.height = '16px';
+                    imgs[i].style.width = '16px';
+                }
+                for (var i = 0; i < brs.length; i++) {
+                    brs[i].style.display = 'none';
+                }
+            } else if (ribbon.style.height == '48px') {
+                ribbon.style.height = '90px';
+                toggle.style.lineHeight = '120px';
+                for (var i = 0; i < imgs.length; i++) {
+                    imgs[i].style.height = '40px';
+                    imgs[i].style.width = '40px';
+                }
+                for (var i = 0; i < brs.length; i++) {
+                    brs[i].style.display = 'block';
+                }
+            }
+            updateUI();
+        }
+
+        function UI$horizontalDrag(e) {
+            if (e.clientX > 0) {
+                var w = window,
+                    d = document,
+                    de = d.documentElement,
+                    g = d.getElementsByTagName('body')[0],
+                    windowWidth = w.innerWidth || de.clientWidth || g.clientWidth,
+                    windowHeight = w.innerHeight || de.clientHeight || g.clientHeight;
+                current.UI.horizontalDragRatio = e.clientX * 2 / windowWidth;
+                updateUI();
+            }
+            e.stopPropagation();
+            e.preventDefault();
+
+        }
+
+        function UI$verticalDrag(e) {
+            if (e.clientY > 0) {
+                var w = window,
+                    d = document,
+                    de = d.documentElement,
+                    g = d.getElementsByTagName('body')[0],
+                    windowWidth = w.innerWidth || de.clientWidth || g.clientWidth,
+                    windowHeight = w.innerHeight || de.clientHeight || g.clientHeight;
+                current.UI.videoWaveHeightRatio = (e.clientY - document.getElementById('headerFrame').clientHeight) / (windowHeight - e.clientY);
+                updateUI();
+            }
+            e.stopPropagation();
+            e.preventDefault();
+
+        }
     </script>
     <script>
         function handleFileSelect(evt) {
@@ -1627,8 +1826,6 @@
                     inputLine = inputLine.substr(inputLine.length - 13, 13);
                     this.gotEnd = this.endTime.parseFromString(inputLine);
                 }
-                //[00:01:13.22]aasdsa[00:01:13.23]
-                //0123456789
             }
 
             var result = "";
@@ -1682,10 +1879,14 @@
         function loadFile(type, files) {
             switch (type) {
             case "video":
+
                 var URL = window.URL || window.webkitURL;
-                current.videoFile = URL.createObjectURL(files[0]);
-                openMedia();
-                document.getElementById('dropLabel').style.display = 'none';
+                if (files[0].type.substr(0, 5) == 'video') {
+
+                    current.videoFile = URL.createObjectURL(files[0]);
+                    openMedia();
+                    document.getElementById('dropLabel').style.display = 'none';
+                }
                 break;
             case "text":
                 var reader = new FileReader();
@@ -1731,9 +1932,9 @@
     <input type="file" hidden="true" id="fileLoader" />
     <div id="mainContainer">
         <div id="headerFrame">
-            <span style="font-size:16px;">FiveLoadSub v0.8 by Wilson Luniz</span>
+            <span style="font-size:16px;">FiveLoadSub v0.9 by Wilson Luniz</span>
             <br/>
-            <div style="text-align:left">
+            <div id="ribbonMenu" style="text-align:left">
                 <div class="imgButton" onClick="selectFile('video');"><img src="./img/importVideo.png" width="40" height="40" alt="" />
                     <br/>{fiveLoadSub_menu.importVideo}</div>
                 <div class="imgButton" onClick="selectFile('text');"><img src="./img/importText.png" width="40" height="40" alt="" />
@@ -1742,14 +1943,24 @@
                     <br/>{fiveLoadSub_menu.saveSubtitle}</div>
                 <div class="imgButton"><img name="imageField" type="image" src="./img/settings.png" width="40" height="40" alt="" />
                     <br/>{fiveLoadSub_menu.settings}</div>
+                <a href="https://www.github.com/wilsonlmh/fiveLoadSub/wiki" target="_blank">
+                    <div class="imgButton"><img name="imageField" type="image" src="./img/help.png" width="40" height="40" alt="" />
+                        <br/>{fiveLoadSub_menu.help}</div>
+                </a>
+
             </div>
-            <br/>
+            <div id="ribbonToggleDiv" class="imgButton" onClick="UI$toggleRibbon();">
+                <img src="img/ribbonToggle.png" width="30px" height="30px" />
+            </div>
 
         </div>
         <div id="videoFrame">
             <video id="videoPlayer" src="" width="100%" height="100%" onCanPlay="setupVideoPlayer();" controls></video>
             <div id="dropLabel" style="width:100%; font-size:24px; height:inherit; float:none; text-align:center; left:0px; top:50%; position:absolute; color:white;">{fiveLoadSub_videoPlayer.dropFileHere}</div>
             <div id="subtitleOverlay"></div>
+        </div>
+        <div id="horizontalDragDiv" onmouseover="UI$mouse$setCursor('col-resize')" onmouseout="UI$mouse$setCursor('auto')">
+            <hr id="horizontalDragLine" ondrag="UI$horizontalDrag(event)" draggable="true" ondragstart="current.UI.dragging = true;" ondragend="current.UI.dragging = false;updateUI();" />
         </div>
         <div id="subtitleFrame">
             <div id="subtitleToolbar">
@@ -1760,8 +1971,11 @@
                     <ul class="subtitleElements" id="subtitleLineCount_ui"></ul>
                     &nbsp;
                 </div>
-                <textarea class="subtitleElements" id="subtitleTextArea" onChange="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();updateEditHistory();" onkeyUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();" onMouseUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();updateEditHistory();" onSelect="updateCurrentLineNo();updateSubtitleFrame();"></textarea>
+                <textarea placeholder="{fiveLoadSub_textEditor.placeHolder}" wrap="off" class="subtitleElements" id="subtitleTextArea" onChange="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();updateEditHistory();" onkeyUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();" onMouseUp="updateCurrentLineNo();updateSubtitleFrame();updateSubtitleDocumentObject();updateEditHistory();" onSelect="updateCurrentLineNo();updateSubtitleFrame();"></textarea>
             </div>
+        </div>
+        <div id="verticalDragDiv" onmouseover="UI$mouse$setCursor('row-resize')" onmouseout="UI$mouse$setCursor('auto')">
+            <hr id="verticalDragLine" ondrag="UI$verticalDrag(event)" draggable="true" ondragstart="current.UI.dragging = true;" ondragend="current.UI.dragging = false;updateUI();" />
         </div>
         <div id="waveformFrame">
             <div id="waveform">
