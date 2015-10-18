@@ -3,8 +3,10 @@ menu.importVideo,Import Video,匯入影片,导入影片
 menu.importSubtitle,Import Sub,匯入字幕&#47;文字,导入字幕&#47;文本
 menu.saveSubtitle,Save Subtitle,儲存字幕,导出字幕
 menu.settings,Settings,設定,设置
+menu.help,Help,說明,说明
 videoPlayer.dropFileHere,Drop video here,拖拽影片或音頻到此,拖拽影片或音频到此
 textEditor.fontSize,Font Size,字體大小,字体大小
+textEditor.placeHolder,Paste text here,在此貼上文字,在此贴上文字
 saveDialog.title,Select format to save,選擇存儲格式,选择导出格式
 saveDialog.xmlInputLabel.fcpx,Choose Final Cut Pro X Title Template(.fcpxml),匯入Final Cut Pro X標題樣式(.fcpxml),导入Final Cut Pro X标题样式(.fcpxml)
 saveDialog.xmlInputLabel.fcp7,Choose Final Cut Pro 7 Title Template(.xml),匯入Final Cut Pro 7標題樣式(.xml),导入Final Cut Pro 7标题样式(.xml)
@@ -16,3 +18,4 @@ saveDialog.xmlInfo.frameRate,Frame Rate,幀速,帧速率
 saveDialog.copyFromHereLabel,Copy from here,由此復制,由此复制
 saveDialog.cacnel,Cacnel,取消,取消
 saveDialog.saveAs,Save As...,存儲...,导出...
+app.exitConfirmMsg,Save before leave or changes will lost!,離開前任何未儲存之變更將流失,离开前任何未保存之变更将流失
