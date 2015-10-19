@@ -6,7 +6,7 @@ HTML5/Javascript based, incredibly-easy subtitling software
 
 特點:
 
-  - 用空白鍵切換字幕, 能1:1時間完成字幕工作
+  - 用空白鍵切換字幕, 與國內某著名字幕軟件相似(你懂的)
 
   - 直接Drag&Drop影片到播放器上
 
@@ -16,12 +16,12 @@ HTML5/Javascript based, incredibly-easy subtitling software
 
   - 實時顯示字幕在影片上
 
-  - 輸出srt,sbv及fls(fiveLoadSub原生格式)字幕格式, 亦能輸出至Final Cut Pro X及Adobe Premiere(通過FCPXML)
+  - 輸出srt,sbv及fls(fiveLoadSub原生格式)字幕格式
 
 
 able to:
 
-  - use space key to feed text(subtitles), do subtitling in 1:1 time.
+  - use space key to feed text(subtitles), similar to some other subtitling software in market
 
   - drag n drop(video file)
 
@@ -31,7 +31,7 @@ able to:
 
   - real time display overlay subtitle on video
 
-  - export srt, sbv, fls(fiveLoadSub native format) and Adobe Premiere(via FCPXML)
+  - export srt, sbv and fls(fiveLoadSub native format)
 
 
 編寫中的功能:
@@ -39,37 +39,23 @@ able to:
   - 可自訂按盤
 
   - 在聲音波形圖上顯示字幕的區間
-  
-  - 匯入sbv/srt
-  
-  - 實現復原/重做
-  
-  - 文字處理器
-  
-  - 自制的播放器工具列(取代瀏覽器的)
-  
+
+
+
 working: 
 
   - config keyboard mapping
 
   - draw regions of subtitles
-  
-  - import sbv/srt
 
-  - handling redo/undo
-
-  - text pre-processor
-  
-  - custom player toolbar(replace original one from browser)
-  
 
 瀏覽器支援:
 
   - Chrome:完全無問題
 
-  - Firefox:完全無問題
+  - Firefox:有小問題, 但不影響使用
 
-  - Safari:Premiere 及 Final Cut Pro X尚有問題
+  - Safari:完全無問題
 
   - IE:無計劃支援
 
@@ -78,8 +64,8 @@ browser support:
 
   - chrome/good
 
-  - firefox/good
+  - firefox/minor issue
 
-  - safari/good(issue on Premiere/FCPX output)
+  - safari/good
 
   - ie/no plan to support

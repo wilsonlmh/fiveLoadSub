@@ -3,10 +3,17 @@
 
 <head>
     <style type="text/css">
+        @font-face {
+            font-family: 'OpenSans';
+            src: local('☺'), url('fonts/OpenSans-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        
         body {
             margin: 0;
             padding: 0;
-            font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;
+            font-family: 'OpenSans', Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;
             background: #565656;
             overflow: hidden;
         }
@@ -139,11 +146,11 @@
         }
         
         #subtitleTextArea::-webkit-input-placeholder {
-            font-size: 50px;
+            font-size: 36px;
         }
         
         #subtitleTextArea::-moz-placeholder {
-            font-size: 50px;
+            font-size: 36px;
         }
         
         #waveformFrame {
@@ -235,6 +242,91 @@
         }
     </style>
     <style>
+        /*Pin Tabs*/
+        /* Tabbed example */
+        
+        div.pinTabs {
+            min-height: 7em;
+            /* No height: can grow if :target doesn't work */
+            position: relative;
+            /* Establish a containing block */
+            line-height: 1;
+            /* Easier to calculate with */
+            z-index: 0
+        }
+        /* So that we can put other things behind */
+        
+        div.pinTabs > div {
+            display: inline
+        }
+        /* We want the buttons all on one line */
+        
+        div.pinTabs > div > a {
+            color: black;
+            /* Looks more like a button than a link */
+            background: #CCC;
+            /* Active tabs are light gray */
+            padding: 0.2em;
+            /* Some breathing space */
+            border: 0.1em outset #BBB;
+            /* Make it look like a button */
+            border-bottom: 0.1em solid #CCC
+        }
+        /* Visually connect tab and tab body */
+        
+        div.pinTabs > div:not(:target) > a {
+            border-bottom: none;
+            /* Make the bottom border disappear */
+            background: #EEE;
+        }
+        /* Inactive tabs are dark gray */
+        
+        div.pinTabs > div:target > a,
+        /* Apply to the targeted item or... */
+        
+        :target #default2 > a {
+            /* ... to the default item */
+            border-bottom: 0.1em solid #FFF;
+            /* Visually connect tab and tab body */
+            background: #FFF;
+        }
+        /* Active tab is light gray */
+        
+        div.pinTabs > div > div {
+            background: #FFF;
+            border-top: 0.1em solid #BBB;
+            /* Light gray */
+            z-index: -2;
+            /* Behind, because the borders overlap */
+            left: 0;
+            top: 1.3em;
+            /* The top needs some calculation... */
+            right: 0;
+            /* Scroll bar if needed */
+            padding: 0.3em;
+        }
+        
+        div.pinTabs > div:not(:target) > div {
+            /* Protect CSS1 & CSS2 browsers */
+            position: absolute;
+            visibility: hidden;
+        }
+        /* All these DIVs overlap */
+        
+        div.pinTabs > div:target > div,
+        :target .default2 > div {
+            position: absolute;
+            /* All these DIVs overlap */
+            z-index: -1;
+        }
+        /* Raise it above the others */
+        
+        div.pinTabs:target {
+            outline: none
+        }
+    </style>
+
+    <style>
         /* Save Dialog Style*/
         
         .promptDialog {
@@ -250,21 +342,21 @@
             padding-bottom: 10px;
             min-width: 360px;
             min-height: 150px;
-            
         }
         
-        #importSubtitleDialog {
+        #convertDialog {
             min-width: 800px;
             min-height: 600px;
-            
         }
         
-        #importSubtitleDialogContainer{
+        #convertDialogContainer {
             z-index: 100;
         }
-        #saveDialogContainer{
+        
+        #saveDialogContainer {
             z-index: 90;
         }
+        
         .dialogContainer {
             display: none;
             line-height: 100vh;
@@ -325,6 +417,20 @@
             var jump = (line + 4) * lineHeight - document.getElementById("subtitleFormContainer").offsetHeight;
             document.getElementById("subtitleFormContainer").scrollTop = jump;
         }
+
+        function _string2ArrayBuffer(str) {
+            var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
+            var bufView = new Uint16Array(buf);
+            for (var i = 0, strLen = str.length; i < strLen; i++) {
+                bufView[i] = str.charCodeAt(i);
+            }
+            return buf;
+        }
+
+        function _arrayBuffer2String(buf) {
+            return String.fromCharCode.apply(null, new Uint16Array(buf));
+        }
+
         var _appendBuffer = function (buffer1, buffer2) {
             var tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
             tmp.set(new Uint8Array(buffer1), 0);
@@ -479,7 +585,7 @@
 
         var localize = {
             prefix: 'fiveLoadSub',
-            tableCSV: 'nth,en-us,zh-hk,zh-cn\r\nmenu.importVideo,Import Video,\u532F\u5165\u5F71\u7247,\u5BFC\u5165\u5F71\u7247\r\nmenu.importSubtitle,Import Sub,\u532F\u5165\u5B57\u5E55&#47;\u6587\u5B57,\u5BFC\u5165\u5B57\u5E55&#47;\u6587\u672C\r\nmenu.saveSubtitle,Save Subtitle,\u5132\u5B58\u5B57\u5E55,\u5BFC\u51FA\u5B57\u5E55\r\nmenu.settings,Settings,\u8A2D\u5B9A,\u8BBE\u7F6E\r\nmenu.help,Help,\u8AAA\u660E,\u8BF4\u660E\r\nvideoPlayer.dropFileHere,Drop video here,\u62D6\u62FD\u5F71\u7247\u6216\u97F3\u983B\u5230\u6B64,\u62D6\u62FD\u5F71\u7247\u6216\u97F3\u9891\u5230\u6B64\r\ntextEditor.fontSize,Font Size,\u5B57\u9AD4\u5927\u5C0F,\u5B57\u4F53\u5927\u5C0F\r\ntextEditor.placeHolder,Paste text here,\u5728\u6B64\u8CBC\u4E0A\u6587\u5B57,\u5728\u6B64\u8D34\u4E0A\u6587\u5B57\r\nsaveDialog.title,Select format to save,\u9078\u64C7\u5B58\u5132\u683C\u5F0F,\u9009\u62E9\u5BFC\u51FA\u683C\u5F0F\r\nsaveDialog.xmlInputLabel.fcpx,Choose Final Cut Pro X Title Template(.fcpxml),\u532F\u5165Final Cut Pro X\u6A19\u984C\u6A23\u5F0F(.fcpxml),\u5BFC\u5165Final Cut Pro X\u6807\u9898\u6837\u5F0F(.fcpxml)\r\nsaveDialog.xmlInputLabel.fcp7,Choose Final Cut Pro 7 Title Template(.xml),\u532F\u5165Final Cut Pro 7\u6A19\u984C\u6A23\u5F0F(.xml),\u5BFC\u5165Final Cut Pro 7\u6807\u9898\u6837\u5F0F(.xml)\r\nsaveDialog.xmlInputLabel.premiere,Choose Adobe Premiere Title Template(.prtl),\u532F\u5165Adobe Premiere\u6A19\u984C\u6A23\u5F0F(.prtl),\u5BFC\u5165Adobe Premiere\u6807\u9898\u6837\u5F0F(.prtl)\r\nsaveDialog.xmlInfo.fillLabel,Fill some info of your video,\u8ACB\u8F38\u5165\u5F71\u7247\u7684\u8CC7\u8A0A,\u8BF7\u8F93\u5165\u5F71\u7247\u5C5E\u6027\r\nsaveDialog.xmlInfo.width,Width,\u5BEC\u5EA6,\u5BBD\u5EA6\r\nsaveDialog.xmlInfo.height,Height,\u9AD8\u5EA6,\u9AD8\u5EA6\r\nsaveDialog.xmlInfo.frameRate,Frame Rate,\u5E40\u901F,\u5E27\u901F\u7387\r\nsaveDialog.copyFromHereLabel,Copy from here,\u7531\u6B64\u5FA9\u5236,\u7531\u6B64\u590D\u5236\r\nsaveDialog.cacnel,Cacnel,\u53D6\u6D88,\u53D6\u6D88\r\nsaveDialog.saveAs,Save As...,\u5B58\u5132...,\u5BFC\u51FA...\r\nsaveDialog.safariPrompt.fcp7,Press \u2318+S and save as 1.xml in the next page!,\u5728\u4E0B\u4E00\u9801\u6309\u2318+S\u5132\u5B58\u70BA1.xml !,\u5728\u4E0B\u4E00\u9875\u6309\u2318+S\u4FDD\u5B58\u4E3A1.xml !,\r\nsaveDialog.safariPrompt.fcpx,Press \u2318+S and save as 1.fcpxml in the next page!,\u5728\u4E0B\u4E00\u9801\u6309\u2318+S\u5132\u5B58\u70BA1.fcpxml !,\u5728\u4E0B\u4E00\u9875\u6309\u2318+S\u4FDD\u5B58\u4E3A1.fcpxml !,\r\nsaveDialog.safariPrompt.pr,Press \u2318+S and save as 1.zip in the next page!,\u5728\u4E0B\u4E00\u9801\u6309\u2318+S\u5132\u5B58\u70BA1.zip !,\u5728\u4E0B\u4E00\u9875\u6309\u2318+S\u4FDD\u5B58\u4E3A1.zip! ,\r\nimportSubtitleDialog.title,Select import format,\u9078\u64C7\u532F\u5165\u683C\u5F0F,\u9009\u62E9\u5BFC\u5165\u683C\u5F0F\r\nimportSubtitleDialog.OK,OK,\u78BA\u5B9A,\u786E\u5B9A\r\nimportSubtitleDialog.cancel,Cancel,\u53D6\u6D88,\u53D6\u6D88\r\nimportSubtitleDialog.selection.removeEmptyLines,remove empty lines,\u79FB\u9664\u7A7A\u884C,\u79FB\u9664\u7A7A\u884C\r\nimportSubtitleDialog.selection.plainText,Plain Text,\u7D14\u6587\u5B57,\u7EAF\u6587\u672C\r\nimportSubtitleDialog.original,Original,\u539F\u683C\u5F0F,\u539F\u683C\u5F0F\r\nimportSubtitleDialog.conversionPreview,Conversion Preview,\u8F49\u63DB\u9810\u89BD,\u8F6C\u6362\u9884\u89C8\r\napp.exitConfirmMsg,Save before leave or changes will lost!,\u96E2\u958B\u524D\u4EFB\u4F55\u672A\u5132\u5B58\u4E4B\u8B8A\u66F4\u5C07\u6D41\u5931,\u79BB\u5F00\u524D\u4EFB\u4F55\u672A\u4FDD\u5B58\u4E4B\u53D8\u66F4\u5C06\u6D41\u5931',
+            tableCSV: 'nth,en-us,zh-hk,zh-cn\r\nmenu.importVideo,Import Video,\u532F\u5165\u5F71\u7247,\u5BFC\u5165\u5F71\u7247\r\nmenu.importSubtitle,Import Sub,\u532F\u5165\u5B57\u5E55&#47;\u6587\u5B57,\u5BFC\u5165\u5B57\u5E55&#47;\u6587\u672C\r\nmenu.conversion,Conversion Tools,\u8F49\u63DB\u5DE5\u5177,\u8F6C\u6362\u5DE5\u5177\r\nmenu.saveSubtitle,Save Subtitle,\u5132\u5B58\u5B57\u5E55,\u5BFC\u51FA\u5B57\u5E55\r\nmenu.settings,Settings,\u8A2D\u5B9A,\u8BBE\u7F6E\r\nmenu.help,Help,\u8AAA\u660E,\u8BF4\u660E\r\nvideoPlayer.dropFileHere,Drop video here,\u62D6\u62FD\u5F71\u7247\u6216\u97F3\u983B\u5230\u6B64,\u62D6\u62FD\u5F71\u7247\u6216\u97F3\u9891\u5230\u6B64\r\ntextEditor.fontSize,Font Size,\u5B57\u9AD4\u5927\u5C0F,\u5B57\u4F53\u5927\u5C0F\r\ntextEditor.placeHolder,Paste text here,\u5728\u6B64\u8CBC\u4E0A\u6587\u5B57,\u5728\u6B64\u8D34\u4E0A\u6587\u5B57\r\nsaveDialog.title,Select format to save,\u9078\u64C7\u5B58\u5132\u683C\u5F0F,\u9009\u62E9\u5BFC\u51FA\u683C\u5F0F\r\nsaveDialog.xmlInputLabel.fcpx,Choose Final Cut Pro X Title Template(.fcpxml),\u532F\u5165Final Cut Pro X\u6A19\u984C\u6A23\u5F0F(.fcpxml),\u5BFC\u5165Final Cut Pro X\u6807\u9898\u6837\u5F0F(.fcpxml)\r\nsaveDialog.xmlInputLabel.fcp7,Choose Final Cut Pro 7 Title Template(.xml),\u532F\u5165Final Cut Pro 7\u6A19\u984C\u6A23\u5F0F(.xml),\u5BFC\u5165Final Cut Pro 7\u6807\u9898\u6837\u5F0F(.xml)\r\nsaveDialog.xmlInputLabel.premiere,Choose Adobe Premiere Title Template(.prtl),\u532F\u5165Adobe Premiere\u6A19\u984C\u6A23\u5F0F(.prtl),\u5BFC\u5165Adobe Premiere\u6807\u9898\u6837\u5F0F(.prtl)\r\nsaveDialog.xmlInfo.fillLabel,Fill some info of your video,\u8ACB\u8F38\u5165\u5F71\u7247\u7684\u8CC7\u8A0A,\u8BF7\u8F93\u5165\u5F71\u7247\u5C5E\u6027\r\nsaveDialog.xmlInfo.width,Width,\u5BEC\u5EA6,\u5BBD\u5EA6\r\nsaveDialog.xmlInfo.height,Height,\u9AD8\u5EA6,\u9AD8\u5EA6\r\nsaveDialog.xmlInfo.frameRate,Frame Rate,\u5E40\u901F,\u5E27\u901F\u7387\r\nsaveDialog.copyFromHereLabel,Copy from here,\u7531\u6B64\u5FA9\u5236,\u7531\u6B64\u590D\u5236\r\nsaveDialog.cacnel,Cacnel,\u53D6\u6D88,\u53D6\u6D88\r\nsaveDialog.saveAs,Save As...,\u5B58\u5132...,\u5BFC\u51FA...\r\nsaveDialog.safariPrompt.fcp7,Press \u2318+S and save as 1.xml in the next page!,\u5728\u4E0B\u4E00\u9801\u6309\u2318+S\u5132\u5B58\u70BA1.xml !,\u5728\u4E0B\u4E00\u9875\u6309\u2318+S\u4FDD\u5B58\u4E3A1.xml !,\r\nsaveDialog.safariPrompt.fcpx,Press \u2318+S and save as 1.fcpxml in the next page!,\u5728\u4E0B\u4E00\u9801\u6309\u2318+S\u5132\u5B58\u70BA1.fcpxml !,\u5728\u4E0B\u4E00\u9875\u6309\u2318+S\u4FDD\u5B58\u4E3A1.fcpxml !,\r\nsaveDialog.safariPrompt.pr,Press \u2318+S and save as 1.zip in the next page!,\u5728\u4E0B\u4E00\u9801\u6309\u2318+S\u5132\u5B58\u70BA1.zip !,\u5728\u4E0B\u4E00\u9875\u6309\u2318+S\u4FDD\u5B58\u4E3A1.zip! ,\r\nconvertDialog.title,Convert Tools,\u8F49\u63DB\u5DE5\u5177,\u8F6C\u6362\u5DE5\u5177\r\nconvertDialog.OK,OK,\u78BA\u5B9A,\u786E\u5B9A\r\nconvertDialog.cancel,Cancel,\u53D6\u6D88,\u53D6\u6D88\r\nconvertDialog.selection.removeEmptyLines,remove empty lines,\u79FB\u9664\u7A7A\u884C,\u79FB\u9664\u7A7A\u884C\r\nconvertDialog.selection.splitSpaces,Split lines by spaces,\u5C07\u7A7A\u683C\u8F49\u63DB\u70BA\u5206\u884C,\u5C06\u7A7A\u683C\u8F6C\u6362\u4E3A\u5206\u884C\r\nconvertDialog.selection.removePunctuations,Remove runctuations&#40;and turn comma&#44;periods etc. to space&#41;,\u79FB\u9664\u6A19\u9EDE\u7B26\u865F&#40;\u4E26\u628A\u9017\u865F\u53E5\u865F\u7B49\u8B8A\u70BA\u7A7A\u683C&#41;,\u79FB\u9664\u6807\u70B9\u7B26\u53F7&#40;\u5E76\u628A\u9017\u53F7\u53E5\u53F7\u7B49\u53D8\u4E3A\u7A7A\u683C&#41;\r\nconvertDialog.selection.removeQuotes,Remove Quotes,\u79FB\u9664\u5F15\u865F,\u79FB\u9664\u5F15\u53F7\r\nconvertDialog.selection.charsetImportFile,Import subtitle\/text file to convert,\u532F\u5165\u6587\u5B57\u6216\u5B57\u5E55\u6A94\u6848\u8F49\u63DB,\u5BFC\u5165\u6587\u672C\u6216\u5B57\u5E55\u6863\u6848\u8F6C\u6362\r\nconvertDialog.selection.charsetTo,Convert To,\u8F49\u63DB\u70BA\u7DE8\u78BC,\u8F6C\u6362\u4E3A\u7F16\u7801\r\nconvertDialog.original,Original,\u539F\u683C\u5F0F,\u539F\u683C\u5F0F\r\nconvertDialog.conversionPreview,Conversion Preview,\u8F49\u63DB\u9810\u89BD,\u8F6C\u6362\u9884\u89C8\r\nconvertDialog.tabLabel.text,Text Tool,\u6587\u5B57\u5DE5\u5177,\u6587\u672C\u5DE5\u5177\r\nconvertDialog.tabLabel.subtitle,Subtitle Conversion,\u5B57\u5E55\u683C\u5F0F\u8F49\u63DB,\u5B57\u5E55\u683C\u5F0F\u8F6C\u6362\r\nconvertDialog.tabLabel.charset,Charset,Conversion,\u6587\u5B57\u7DE8\u78BC\u8F49\u63DB,\u6587\u672C\u7F16\u7801\u8F6C\u6362\r\napp.exitConfirmMsg,Save before leave or changes will lost!,\u96E2\u958B\u524D\u4EFB\u4F55\u672A\u5132\u5B58\u4E4B\u8B8A\u66F4\u5C07\u6D41\u5931,\u79BB\u5F00\u524D\u4EFB\u4F55\u672A\u4FDD\u5B58\u4E4B\u53D8\u66F4\u5C06\u6D41\u5931',
             aliasCSV: 'Code,Alias,Name\r\naf,,Afrikaans\r\naf-ZA,,Afrikaans (South Africa)\r\nar,ar,Arabic\r\nar-AE,ar,Arabic (U.A.E.)\r\nar-BH,ar,Arabic (Bahrain)\r\nar-DZ,ar,Arabic (Algeria)\r\nar-EG,ar,Arabic (Egypt)\r\nar-IQ,ar,Arabic (Iraq)\r\nar-JO,ar,Arabic (Jordan)\r\nar-KW,ar,Arabic (Kuwait)\r\nar-LB,ar,Arabic (Lebanon)\r\nar-LY,ar,Arabic (Libya)\r\nar-MA,ar,Arabic (Morocco)\r\nar-OM,ar,Arabic (Oman)\r\nar-QA,ar,Arabic (Qatar)\r\nar-SA,ar,Arabic (Saudi Arabia)\r\nar-SY,ar,Arabic (Syria)\r\nar-TN,ar,Arabic (Tunisia)\r\nar-YE,ar,Arabic (Yemen)\r\naz,,Azeri (Latin)\r\naz-AZ,,Azeri (Latin) (Azerbaijan)\r\naz-AZ,,Azeri (Cyrillic) (Azerbaijan)\r\nbe,be,Belarusian\r\nbe-BY,be,Belarusian (Belarus)\r\nbg,,Bulgarian\r\nbg-BG,,Bulgarian (Bulgaria)\r\nbs-BA,,Bosnian (Bosnia and Herzegovina)\r\nca,,Catalan\r\nca-ES,,Catalan (Spain)\r\ncs,,Czech\r\ncs-CZ,,Czech (Czech Republic)\r\ncy,,Welsh\r\ncy-GB,,Welsh (United Kingdom)\r\nda,,Danish\r\nda-DK,,Danish (Denmark)\r\nde,de,German\r\nde-AT,de,German (Austria)\r\nde-CH,de,German (Switzerland)\r\nde-DE,de,German (Germany)\r\nde-LI,de,German (Liechtenstein)\r\nde-LU,de,German (Luxembourg)\r\ndv,,Divehi\r\ndv-MV,,Divehi (Maldives)\r\nel,,Greek\r\nel-GR,,Greek (Greece)\r\nen,en-US,English\r\nen-AU,en-US,English (Australia)\r\nen-BZ,en-US,English (Belize)\r\nen-CA,en-US,English (Canada)\r\nen-CB,en-US,English (Caribbean)\r\nen-GB,en-US,English (United Kingdom)\r\nen-IE,en-US,English (Ireland)\r\nen-JM,en-US,English (Jamaica)\r\nen-NZ,en-US,English (New Zealand)\r\nen-PH,en-US,English (Republic of the Philippines)\r\nen-TT,en-US,English (Trinidad and Tobago)\r\nen-US,en-US,English (United States)\r\nen-ZA,en-US,English (South Africa)\r\nen-ZW,en-US,English (Zimbabwe)\r\neo,,Esperanto\r\nes,es,Spanish\r\nes-AR,es,Spanish (Argentina)\r\nes-BO,es,Spanish (Bolivia)\r\nes-CL,es,Spanish (Chile)\r\nes-CO,es,Spanish (Colombia)\r\nes-CR,es,Spanish (Costa Rica)\r\nes-DO,es,Spanish (Dominican Republic)\r\nes-EC,es,Spanish (Ecuador)\r\nes-ES,es,Spanish (Castilian)\r\nes-ES,es,Spanish (Spain)\r\nes-GT,es,Spanish (Guatemala)\r\nes-HN,es,Spanish (Honduras)\r\nes-MX,es,Spanish (Mexico)\r\nes-NI,es,Spanish (Nicaragua)\r\nes-PA,es,Spanish (Panama)\r\nes-PE,es,Spanish (Peru)\r\nes-PR,es,Spanish (Puerto Rico)\r\nes-PY,es,Spanish (Paraguay)\r\nes-SV,es,Spanish (El Salvador)\r\nes-UY,es,Spanish (Uruguay)\r\nes-VE,es,Spanish (Venezuela)\r\net,,Estonian\r\net-EE,,Estonian (Estonia)\r\neu,,Basque\r\neu-ES,,Basque (Spain)\r\nfa,,Farsi\r\nfa-IR,,Farsi (Iran)\r\nfi,,Finnish\r\nfi-FI,,Finnish (Finland)\r\nfo,,Faroese\r\nfo-FO,,Faroese (Faroe Islands)\r\nfr,fr,French\r\nfr-BE,fr,French (Belgium)\r\nfr-CA,fr,French (Canada)\r\nfr-CH,fr,French (Switzerland)\r\nfr-FR,fr,French (France)\r\nfr-LU,fr,French (Luxembourg)\r\nfr-MC,fr,French (Principality of Monaco)\r\ngl,,Galician\r\ngl-ES,,Galician (Spain)\r\ngu,,Gujarati\r\ngu-IN,,Gujarati (India)\r\nhe,,Hebrew\r\nhe-IL,,Hebrew (Israel)\r\nhi,,Hindi\r\nhi-IN,,Hindi (India)\r\nhr,,Croatian\r\nhr-BA,,Croatian (Bosnia and Herzegovina)\r\nhr-HR,,Croatian (Croatia)\r\nhu,,Hungarian\r\nhu-HU,,Hungarian (Hungary)\r\nhy,,Armenian\r\nhy-AM,,Armenian (Armenia)\r\nid,,Indonesian\r\nid-ID,,Indonesian (Indonesia)\r\nis,,Icelandic\r\nis-IS,,Icelandic (Iceland)\r\nit,it,Italian\r\nit-CH,it,Italian (Switzerland)\r\nit-IT,it,Italian (Italy)\r\nja,,Japanese\r\nja-JP,,Japanese (Japan)\r\nka,,Georgian\r\nka-GE,,Georgian (Georgia)\r\nkk,,Kazakh\r\nkk-KZ,,Kazakh (Kazakhstan)\r\nkn,,Kannada\r\nkn-IN,,Kannada (India)\r\nko,ko,Korean\r\nko-KR,ko,Korean (Korea)\r\nkok,,Konkani\r\nkok-IN,,Konkani (India)\r\nky,,Kyrgyz\r\nky-KG,,Kyrgyz (Kyrgyzstan)\r\nlt,,Lithuanian\r\nlt-LT,,Lithuanian (Lithuania)\r\nlv,,Latvian\r\nlv-LV,,Latvian (Latvia)\r\nmi,,Maori\r\nmi-NZ,,Maori (New Zealand)\r\nmk,,FYRO Macedonian\r\nmk-MK,,FYRO Macedonian (Former Yugoslav Republic of Macedonia)\r\nmn,,Mongolian\r\nmn-MN,,Mongolian (Mongolia)\r\nmr,,Marathi\r\nmr-IN,,Marathi (India)\r\nms,ms,Malay\r\nms-BN,ms,Malay (Brunei Darussalam)\r\nms-MY,ms,Malay (Malaysia)\r\nmt,,Maltese\r\nmt-MT,,Maltese (Malta)\r\nnb,,Norwegian (Bokm?l)\r\nnb-NO,,Norwegian (Bokm?l) (Norway)\r\nnl,,Dutch\r\nnl-BE,,Dutch (Belgium)\r\nnl-NL,,Dutch (Netherlands)\r\nnn-NO,,Norwegian (Nynorsk) (Norway)\r\nns,,Northern Sotho\r\nns-ZA,,Northern Sotho (South Africa)\r\npa,,Punjabi\r\npa-IN,,Punjabi (India)\r\npl,,Polish\r\npl-PL,,Polish (Poland)\r\nps,,Pashto\r\nps-AR,,Pashto (Afghanistan)\r\npt,pt,Portuguese\r\npt-BR,pt,Portuguese (Brazil)\r\npt-PT,pt,Portuguese (Portugal)\r\nqu,,Quechua\r\nqu-BO,,Quechua (Bolivia)\r\nqu-EC,,Quechua (Ecuador)\r\nqu-PE,,Quechua (Peru)\r\nro,,Romanian\r\nro-RO,,Romanian (Romania)\r\nru,,Russian\r\nru-RU,,Russian (Russia)\r\nsa,,Sanskrit\r\nsa-IN,,Sanskrit (India)\r\nse,,Sami (Northern)\r\nse-FI,,Sami (Northern) (Finland)\r\nse-FI,,Sami (Skolt) (Finland)\r\nse-FI,,Sami (Inari) (Finland)\r\nse-NO,,Sami (Northern) (Norway)\r\nse-NO,,Sami (Lule) (Norway)\r\nse-NO,,Sami (Southern) (Norway)\r\nse-SE,,Sami (Northern) (Sweden)\r\nse-SE,,Sami (Lule) (Sweden)\r\nse-SE,,Sami (Southern) (Sweden)\r\nsk,,Slovak\r\nsk-SK,,Slovak (Slovakia)\r\nsl,,Slovenian\r\nsl-SI,,Slovenian (Slovenia)\r\nsq,,Albanian\r\nsq-AL,,Albanian (Albania)\r\nsr-BA,,Serbian (Latin) (Bosnia and Herzegovina)\r\nsr-BA,,Serbian (Cyrillic) (Bosnia and Herzegovina)\r\nsr-SP,,Serbian (Latin) (Serbia and Montenegro)\r\nsr-SP,,Serbian (Cyrillic) (Serbia and Montenegro)\r\nsv,,Swedish\r\nsv-FI,,Swedish (Finland)\r\nsv-SE,,Swedish (Sweden)\r\nsw,,Swahili\r\nsw-KE,,Swahili (Kenya)\r\nsyr,,Syriac\r\nsyr-SY,,Syriac (Syria)\r\nta,,Tamil\r\nta-IN,,Tamil (India)\r\nte,,Telugu\r\nte-IN,,Telugu (India)\r\nth,,Thai\r\nth-TH,,Thai (Thailand)\r\ntl,,Tagalog\r\ntl-PH,,Tagalog (Philippines)\r\ntn,,Tswana\r\ntn-ZA,,Tswana (South Africa)\r\ntr,,Turkish\r\ntr-TR,,Turkish (Turkey)\r\ntt,,Tatar\r\ntt-RU,,Tatar (Russia)\r\nts,,Tsonga\r\nuk,,Ukrainian\r\nuk-UA,,Ukrainian (Ukraine)\r\nur,,Urdu\r\nur-PK,,Urdu (Islamic Republic of Pakistan)\r\nuz,uz,Uzbek (Latin)\r\nuz-UZ,uz,Uzbek (Latin) (Uzbekistan)\r\nuz-UZ,uz,Uzbek (Cyrillic) (Uzbekistan)\r\nvi,,Vietnamese\r\nvi-VN,,Vietnamese (Viet Nam)\r\nxh,,Xhosa\r\nxh-ZA,,Xhosa (South Africa)\r\nzh,zh-HK,Chinese\r\nzh-CN,zh-HK,Chinese (S)\r\nzh-HK,zh-TW,Chinese (Hong Kong)\r\nzh-MO,zh-HK,Chinese (Macau)\r\nzh-SG,zh-CN,Chinese (Singapore)\r\nzh-TW,zh-HK,Chinese (T)\r\nzu,,Zulu\r\nzu-ZA,,Zulu (South Africa)',
             table: {},
             alias: {},
@@ -554,6 +660,9 @@
                 verticalDragRatio: 1.0,
                 videoWaveHeightRatio: 0.0,
                 dragging: false
+            }
+            this.convertDialog = {
+                lastSelection: 'format',
             }
         }
 
@@ -1158,14 +1267,14 @@
                             output += '\n';
                         }
                         this.parseFromString(output);
-                            delete output;
+                        delete output;
                         break;
                     case 'sbv':
                         function replacer(match, p1, p2, p3, p4, p5, p6, p7, p8, p9, offset, string) {
                             return '[' + _zeroPad(parseInt(p1), 2) + ':' + _zeroPad(parseInt(p2), 2) + ':' + _zeroPad(parseInt(p3), 2) + '.' + _zeroPad(Math.round(parseInt(p4) / 1000 * 30), 2) + ']' + p9 + '[' + _zeroPad(parseInt(p5), 2) + ':' + _zeroPad(parseInt(p6), 2) + ':' + _zeroPad(parseInt(p7), 2) + '.' + _zeroPad(Math.round(parseInt(p8) / 1000 * 30), 2) + ']';
 
                         }
-                        
+
                         var srtRegex = /([0-9]{2})\:([0-9]{2})\:([0-9]{2})\.([0-9]{3})\,([0-9]{2})\:([0-9]{2})\:([0-9]{2})\.([0-9]{3})\n([^\n]+)\n/gi;
                         var output = str;
                         output = output.replace('\n\r', '\n');
@@ -1228,8 +1337,8 @@
                 case "sbv":
                     for (var i = 0; i < this.linesSortedByBegin.length; i++) {
                         if ((!this.linesSortedByBegin[i].begin.empty) && (!this.linesSortedByBegin[i].end.empty)) {
-                            var begin = _zeroPad(this.linesSortedByBegin[i].begin.h.toString(), 2) + ":" + _zeroPad(this.linesSortedByBegin[i].begin.m.toString(), 2) + ":" + _zeroPad(this.linesSortedByBegin[i].begin.s.toString(), 2) + "." + _zeroPad((Math.round(parseInt(this.linesSortedByBegin[i].begin.f) / 30 * 1000)).toString(),3);
-                            var end = _zeroPad(this.linesSortedByBegin[i].end.h.toString(), 2) + ":" + _zeroPad(this.linesSortedByBegin[i].end.m.toString(), 2) + ":" + _zeroPad(this.linesSortedByBegin[i].end.s.toString(), 2) + "." + _zeroPad((Math.round(parseInt(this.linesSortedByBegin[i].end.f) / 30 * 1000)).toString(),3);
+                            var begin = _zeroPad(this.linesSortedByBegin[i].begin.h.toString(), 2) + ":" + _zeroPad(this.linesSortedByBegin[i].begin.m.toString(), 2) + ":" + _zeroPad(this.linesSortedByBegin[i].begin.s.toString(), 2) + "." + _zeroPad((Math.round(parseInt(this.linesSortedByBegin[i].begin.f) / 30 * 1000)).toString(), 3);
+                            var end = _zeroPad(this.linesSortedByBegin[i].end.h.toString(), 2) + ":" + _zeroPad(this.linesSortedByBegin[i].end.m.toString(), 2) + ":" + _zeroPad(this.linesSortedByBegin[i].end.s.toString(), 2) + "." + _zeroPad((Math.round(parseInt(this.linesSortedByBegin[i].end.f) / 30 * 1000)).toString(), 3);
                             result += begin + ',' + end + '\n' + this.linesSortedByBegin[i].text + '\n' + '\n';
                         }
                     }
@@ -1502,6 +1611,7 @@
             replaceLocalizedText();
             setupKeystroke();
             setupWaveform();
+            convertDialogInit();
             UI$init();
             // Setup the dnd listeners.
             var dropZone = document.getElementById('videoFrame');
@@ -1543,11 +1653,17 @@
             var ribbon = document.getElementById('headerFrame');
             var horizontalDragLine = document.getElementById('horizontalDragLine');
             var horizontalDragDiv = document.getElementById('horizontalDragDiv');
+            var isMacLike = navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i) ? true : false;
+
             videoFrame.style.height = Math.round(videoFrame.offsetWidth / 16 * 9) + "px";
             subtitleFrame.style.width = (windowWidth - videoFrame.offsetWidth - 5) + "px";
             subtitleFrame.style.height = videoFrame.style.height;
             waveformFrame.style.height = (windowHeight - videoFrame.offsetHeight - 1 - ribbon.clientHeight - 2) + "px";
-            subtitleTextArea.style.width = (subtitleFrame.offsetWidth - 56) + "px";
+            if (isMacLike) {
+                subtitleTextArea.style.width = (subtitleFrame.offsetWidth - 56) + "px";
+            } else {
+                subtitleTextArea.style.width = (subtitleFrame.offsetWidth - 70) + "px";
+            }
             subtitleTextArea.style.minHeight = (subtitleFrame.offsetHeight - 45) + "px";
             subtitleFormContainer.style.height = (subtitleFrame.offsetHeight - 30) + "px";
             horizontalDragLine.style.height = videoFrame.style.height;
@@ -1583,6 +1699,7 @@
             var subtitleFormContainer = document.getElementById('subtitleFormContainer');
             var ribbon = document.getElementById('headerFrame');
             var horizontalDragLine = document.getElementById('horizontalDragLine');
+            var isMacLike = navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i) ? true : false;
 
             videoFrame.style.width = Math.round(windowWidth * 0.5 * current.UI.horizontalDragRatio) + 'px';
             videoFrame.style.height = Math.round((windowHeight - ribbon.clientHeight) * (current.UI.videoWaveHeightRatio / (current.UI.videoWaveHeightRatio + 1))) + "px";
@@ -1590,7 +1707,11 @@
             subtitleFrame.style.width = (windowWidth - videoFrame.offsetWidth - 5) + "px";
             subtitleFrame.style.height = videoFrame.style.height;
             waveformFrame.style.height = (windowHeight - videoFrame.offsetHeight - 1 - ribbon.clientHeight - 2) + "px";
-            subtitleTextArea.style.width = (subtitleFrame.offsetWidth - 56) + "px";
+            if (isMacLike) {
+                subtitleTextArea.style.width = (subtitleFrame.offsetWidth - 56) + "px";
+            } else {
+                subtitleTextArea.style.width = (subtitleFrame.offsetWidth - 70) + "px";
+            }
             subtitleTextArea.style.minHeight = (subtitleFrame.offsetHeight - 45) + "px";
             subtitleFormContainer.style.height = (subtitleFrame.offsetHeight - 30) + "px";
             horizontalDragLine.style.height = videoFrame.style.height;
@@ -1998,9 +2119,7 @@
             case "text":
                 var reader = new FileReader();
                 reader.onloadend = function (evt) {
-                    document.getElementById("importSubtitleDialogInput").value = evt.target.result;
-                    showImportSubtitleDialog();
-                    updateImportSubtitleDialog();
+                    document.getElementById("subtitleTextArea").value = evt.target.result;
                 }
                 reader.readAsText(files[0]);
                 break;
@@ -2041,7 +2160,7 @@
     <input type="file" hidden="true" id="fileLoader" />
     <div id="mainContainer">
         <div id="headerFrame">
-            <span style="font-size:16px;">FiveLoadSub v1.0 by Wilson Luniz</span>
+            <span style="font-size:16px;">FiveLoadSub v1.1 by Wilson Luniz</span>
             <br/>
             <div id="ribbonMenu" style="text-align:left">
                 <div class="imgButton" onClick="selectFile('video');"><img src="./img/importVideo.png" width="40" height="40" alt="" />
@@ -2050,6 +2169,8 @@
                     <br/>{fiveLoadSub_menu.importSubtitle}</div>
                 <div class="imgButton" onClick="showSaveDialog();"><img name="imageField" type="image" src="./img/output.png" width="40" height="40" alt="" />
                     <br/>{fiveLoadSub_menu.saveSubtitle}</div>
+                <div class="imgButton" onClick="showConvertDialog();"><img name="imageField" type="image" src="./img/conversion.png" width="40" height="40" alt="" />
+                    <br/>{fiveLoadSub_menu.conversion}</div>
                 <!--<div class="imgButton"><img name="imageField" type="image" src="./img/settings.png" width="40" height="40" alt="" />
                     <br/>{fiveLoadSub_menu.settings}</div>-->
                 <a href="https://www.github.com/wilsonlmh/fiveLoadSub/wiki" target="_blank">
@@ -2219,110 +2340,203 @@
         </div>
 
     </div>
-    <div class="dialogContainer" id="importSubtitleDialogContainer">
+    <div class="dialogContainer" id="convertDialogContainer">
         <script>
-            function showImportSubtitleDialog() {
-                document.querySelector("#importSubtitleDialogContainer").style.display = "block";
+            function showConvertDialog() {
+                var convertDialogInput = document.getElementById('convertDialogInput');
+                var subtitleTextArea = document.getElementById('subtitleTextArea');
+                document.querySelector("#convertDialogContainer").style.display = "block";
+                convertDialogInput.value = subtitleTextArea.value;
+                updateConvertDialog();
             }
 
-            function hideImportSubtitleDialog() {
-                document.querySelector("#importSubtitleDialogContainer").style.display = "none";
+            function hideConvertDialog() {
+                var convertDialogInput = document.getElementById('convertDialogInput');
+                var convertDialogOutput = document.getElementById('convertDialogOutput');
+                document.querySelector("#convertDialogContainer").style.display = "none";
+                convertDialogInput.value = '';
+                convertDialogOutput.value = '';
             }
 
-            function updateImportSubtitleDialog() {
-                var importSubtitleDialogInput = document.getElementById('importSubtitleDialogInput');
-                var importSubtitleDialogOutput = document.getElementById('importSubtitleDialogOutput');
-                var selection = '';
-                if (document.getElementById('importSubtitleDialogInputFormat_fls').checked) {
-                    selection = 'fls';
-                } else if (document.getElementById('importSubtitleDialogInputFormat_srt').checked) {
-                    selection = 'srt';
-                } else if (document.getElementById('importSubtitleDialogInputFormat_sbv').checked) {
-                    selection = 'sbv';
-                }
-                switch (selection) {
-                case 'fls':
-                    importSubtitleDialogOutput.value = importSubtitleDialogInput.value;
-                    if (document.getElementById('importSubtitleDialogRemoveEmptyLine').checked) {
-                        var tmp = importSubtitleDialogOutput.value.replace(/\n\n\n/gi, '\n');
-                        tmp = tmp.replace(/\n\n/gi, '\n');
-                        tmp = tmp.split(/\n|\s|\r/);
+            function updateConvertDialog() {
+
+                var convertDialogInput = document.getElementById('convertDialogInput');
+                var convertDialogOutput = document.getElementById('convertDialogOutput');
+                if (current.convertDialog.lastSelection == 'format') {
+
+                    var selection = '';
+
+                    if (document.getElementById('convertDialogInputFormat_srt').checked) {
+                        selection = 'srt';
+                    } else if (document.getElementById('convertDialogInputFormat_sbv').checked) {
+                        selection = 'sbv';
+                    }
+                    switch (selection) {
+                    case 'srt':
+                        subtitleDocument.parseFromString(convertDialogInput.value, 'srt');
+                        convertDialogOutput.value = subtitleDocument.strVal();
+                        break;
+                    case 'sbv':
+                        subtitleDocument.parseFromString(convertDialogInput.value, 'sbv');
+                        convertDialogOutput.value = subtitleDocument.strVal();
+                        break;
+                    default:
+                        convertDialogOutput.value = convertDialogInput.value;
+                    }
+                } else if (current.convertDialog.lastSelection == 'text') {
+
+                    //Text Tool
+                    var pineline = convertDialogInput.value;
+
+                    if (document.getElementById('convertDialogRemovePunctuations').checked) {
+                        pineline = pineline.replace(/\,|\.|\;|\?|\:|\!/g, ' '); //Half width symbol, possible end of sentences
+                        pineline = pineline.replace(/\uFF0C|\u3002|\uFF1F|\uFF01|\uFF1A|\uFF1B|\u3001|\uA143|\uA148|\uA149|\uA147|\uA146|\uA142/g, ' '); //Full width symbol, possible end of sentences。？！：；、
+                        pineline = pineline.replace(/\-|\~/g, '');
+                        pineline = pineline.replace(/\uFF0D|\uFF5E|\u22EF/g, ''); //－ ～ ⋯
+                    }
+
+                    if (document.getElementById('convertDialogRemoveQuotes').checked) {
+                        pineline = pineline.replace(/\'|\"|\`/g, '');
+                        pineline = pineline.replace(/\u2018|\u2019|\u201C|\u201D|\u300C|\u300D/g, ''); // ‘ ’ “ ” 「 」
+                    }
+
+                    if (document.getElementById('convertDialogSplitSpaces').checked) {
+                        pineline = pineline.replace(/\s/gi, '\n');
+                    }
+
+                    if (document.getElementById('convertDialogRemoveEmptyLine').checked) {
+                        var tmp = pineline.replace(/\r/g, '\n');
+                        tmp = tmp.split(/\n/);
                         var output = '';
                         for (pieces of tmp) {
-                            output += pieces + '\n';
+                            if (pieces != '') {
+                                output += pieces + '\n';
+                            }
                         }
-                        importSubtitleDialogOutput.value = output;
+                        pineline = output;
                     }
-                    break;
-                case 'srt':
-                    subtitleDocument.parseFromString(importSubtitleDialogInput.value, 'srt');
-                    importSubtitleDialogOutput.value = subtitleDocument.strVal();
-                    break;
-                case 'sbv':
-                    subtitleDocument.parseFromString(importSubtitleDialogInput.value, 'sbv');
-                    importSubtitleDialogOutput.value = subtitleDocument.strVal();
-                    break;
-                default:
-                    importSubtitleDialogOutput.value = importSubtitleDialogInput.value;
+
+                    convertDialogOutput.value = pineline;
+
+                } else if (current.convertDialog.lastSelection == 'charset') {
+
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        var charset = document.getElementById('convertDialogTabCharsetSelection').options[document.getElementById('convertDialogTabCharsetSelection').selectedIndex].value;
+                        var de = new TextDecoder(charset);
+                        console.log(this.result);
+                        document.getElementById('convertDialogOutput').value = de.decode(this.result);
+                    }
+
+                    //try {
+                    if ((document.getElementById('convertDialogCharsetFileInput').files.length) > 0) {
+                        reader.readAsArrayBuffer(document.getElementById('convertDialogCharsetFileInput').files[0]);
+                    }
+                    //} catch (e) {};
                 }
-
-
             }
 
-            function finishedImportSubtitle() {
-                var importSubtitleDialogInput = document.getElementById('importSubtitleDialogInput');
-                var importSubtitleDialogOutput = document.getElementById('importSubtitleDialogOutput');
-                document.getElementById('subtitleTextArea').value = importSubtitleDialogOutput.value;
-                importSubtitleDialogInput.value = '';
-                importSubtitleDialogOutput.value = '';
-                hideImportSubtitleDialog();
-                
-                
+            function finishConvert() {
+                var convertDialogInput = document.getElementById('convertDialogInput');
+                var convertDialogOutput = document.getElementById('convertDialogOutput');
+                document.getElementById('subtitleTextArea').value = convertDialogOutput.value;
+                convertDialogInput.value = '';
+                convertDialogOutput.value = '';
+                hideConvertDialog();
             }
+            function convertDialogInit(){
+                document.getElementById('convertDialogTab_subtitle_a').click();
+            }            
         </script>
-        <div id="importSubtitleDialog" class="promptDialog">
-            <div style="background:#777;color:#FFF; vertical-align:central; line-height:30px; font-size:16px;">{fiveLoadSub_importSubtitleDialog.title}</div>
-            <div style="text-align:center;">
 
-                <br/>
-                <span style="font-size:24px;">
-                    <input type="radio" id="importSubtitleDialogInputFormat_fls" name="inputFormat" value="fls" checked onchange="updateImportSubtitleDialog();"/> FLS/{fiveLoadSub_importSubtitleDialog.selection.plainText} &nbsp; 
-                    <input type="radio" id="importSubtitleDialogInputFormat_srt" name="inputFormat" value="srt" onchange="updateImportSubtitleDialog();"/>SRT&nbsp;
-                    <input type="radio" id="importSubtitleDialogInputFormat_sbv" name="inputFormat" value="sbv" onchange="updateImportSubtitleDialog();"/>SBV&nbsp;
-                </span>
-                <br/>
-                <input id="importSubtitleDialogRemoveEmptyLine" type="checkbox" name="removeEmptyLine" onchange="updateImportSubtitleDialog();" />{fiveLoadSub_importSubtitleDialog.selection.removeEmptyLines}
-                <br/>
-                <br/>
-                <table width="98%" style="margin: 0 auto;">
-                    <tr>
-                        <td style="width:48%">
-                            {fiveLoadSub_importSubtitleDialog.original}
-                        </td>
-                        <td style="width:4%"></td>
-                        <td style="width:48%">
-                            {fiveLoadSub_importSubtitleDialog.conversionPreview}
+        <div id="convertDialog" class="promptDialog">
+            <div style="background:#777;color:#FFF; vertical-align:central; line-height:30px; font-size:16px;">{fiveLoadSub_convertDialog.title}</div>
+            <br/>
+            <div>
+                <div class="pinTabs">
+                    <div id="convertDialogTab_subtitle"> <a id="convertDialogTab_subtitle_a" href="#convertDialogTab_subtitle" onclick="current.convertDialog.lastSelection ='format';updateConvertDialog();">{fiveLoadSub_convertDialog.tabLabel.subtitle}</a>
+                        <div>
+                            <div style="text-align:center;">
+                                <br/>
+                                <span style="font-size:24px;">
+                                <input type="radio" id="convertDialogInputFormat_srt" name="inputFormat" value="srt" onchange="updateConvertDialog();" checked/>SRT&nbsp;
+                                <input type="radio" id="convertDialogInputFormat_sbv" name="inputFormat" value="sbv" onchange="updateConvertDialog();"/>SBV&nbsp;
+                            </span>
+                                <br/>
 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:48%">
-                            <textarea id="importSubtitleDialogInput" onchange="updateImportSubtitleDialog();" style="width:100%" rows="30" wrap="off"></textarea>
-                        </td>
-                        <td style="width:4%"></td>
-                        <td style="width:48%">
-                            <textarea id="importSubtitleDialogOutput" style="width:100%" rows="30" wrap="off"></textarea>
 
-                        </td>
-                    </tr>
-                </table>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div id="convertDialogTab_text"><a href="#convertDialogTab_text" onclick="current.convertDialog.lastSelection ='text';updateConvertDialog();">{fiveLoadSub_convertDialog.tabLabel.text}</a>
+                        <div>
+                            <span style="font-size:16px;">
+                                <br/>
+                                <input id="convertDialogRemovePunctuations" type="checkbox" name="removePunctuations" onchange="updateConvertDialog();" />{fiveLoadSub_convertDialog.selection.removePunctuations}
+                                <br/><br/>
+                                <input id="convertDialogRemoveQuotes" type="checkbox" name="removeQuotes" onchange="updateConvertDialog();" />{fiveLoadSub_convertDialog.selection.removeQuotes}
+                                <input id="convertDialogSplitSpaces" type="checkbox" name="splitSpaces" onchange="updateConvertDialog();" />{fiveLoadSub_convertDialog.selection.splitSpaces}
+                                <input id="convertDialogRemoveEmptyLine" type="checkbox" name="removeEmptyLine" onchange="updateConvertDialog();" />{fiveLoadSub_convertDialog.selection.removeEmptyLines}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div id="convertDialogTab_charset"><a href="#convertDialogTab_charset" onclick="current.convertDialog.lastSelection='charset';updateConvertDialog();">{fiveLoadSub_convertDialog.tabLabel.charset}</a>
+
+                        <div style="text-align:center;">
+                            <br/> {fiveLoadSub_convertDialog.selection.charsetImportFile}:
+                            <input id="convertDialogCharsetFileInput" type="file" onchange="updateConvertDialog();" />
+                            <br/>
+                            <br/> {fiveLoadSub_convertDialog.selection.charsetTo}:
+                            <select id="convertDialogTabCharsetSelection" onchange="updateConvertDialog();">
+                                <option value="big5">big5</option>
+                                <option value="gbk">gbk</option>
+                                <option value="gb18030">gb18030</option>
+                                <option value="euc-jp">euc-jp</option>
+                                <option value="iso-2022-jp">iso-2022-jp</option>
+                                <option value="shift-jis">shift-jis</option>
+                                <option value="euc-kr">euc-kr</option>
+                                <option value="iso-2022-kr">iso-2022-kr</option>
+                            </select>
+
+                        </div>
+                    </div>
+                </div>
             </div>
 
+            <table width="98%" style="margin: 0 auto;">
+                <tr>
+                    <td style="width:48%">
+                        {fiveLoadSub_convertDialog.original}
+                    </td>
+                    <td style="width:4%"></td>
+                    <td style="width:48%">
+                        {fiveLoadSub_convertDialog.conversionPreview}
 
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:48%">
+                        <textarea id="convertDialogInput" onchange="updateConvertDialog();" style="width:100%" rows="30" wrap="off"></textarea>
+                    </td>
+                    <td style="width:4%"></td>
+                    <td style="width:48%">
+                        <textarea id="convertDialogOutput" style="width:100%" rows="30" wrap="off"></textarea>
 
-            <div style="text-align:right;padding:0 10px;"><span id="cancelSubtitleDialogCacnelButton" style="color:#36F;" onclick="hideImportSubtitleDialog();">{fiveLoadSub_importSubtitleDialog.cancel}</span>&nbsp;&nbsp;&nbsp;<span id="importSubtitleDialogSaveButton" style="color: rgb(51, 102, 255);"><a style="color:#36F;" onclick="finishedImportSubtitle()" href="#">{fiveLoadSub_importSubtitleDialog.OK}</a></span>
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align:right;padding:0 10px;"><span id="cancelSubtitleDialogCacnelButton" style="color:#36F;" onclick="hideConvertDialog();">{fiveLoadSub_convertDialog.cancel}</span>&nbsp;&nbsp;&nbsp;<span id="convertDialogSaveButton" style="color: rgb(51, 102, 255);"><a style="color:#36F;" onclick="finishConvert()" href="#">{fiveLoadSub_convertDialog.OK}</a></span>
             </div>
         </div>
+        <br/>
+
+
+
+
+    </div>
     </div>
 </body>
 

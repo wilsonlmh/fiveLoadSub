@@ -1,6 +1,7 @@
 nth,en-us,zh-hk,zh-cn
 menu.importVideo,Import Video,匯入影片,导入影片
 menu.importSubtitle,Import Sub,匯入字幕&#47;文字,导入字幕&#47;文本
+menu.conversion,Conversion Tools,轉換工具,转换工具
 menu.saveSubtitle,Save Subtitle,儲存字幕,导出字幕
 menu.settings,Settings,設定,设置
 menu.help,Help,說明,说明
@@ -21,11 +22,18 @@ saveDialog.saveAs,Save As...,存儲...,导出...
 saveDialog.safariPrompt.fcp7,Press ⌘+S and save as 1.xml in the next page!,在下一頁按⌘+S儲存為1.xml !,在下一页按⌘+S保存为1.xml !,
 saveDialog.safariPrompt.fcpx,Press ⌘+S and save as 1.fcpxml in the next page!,在下一頁按⌘+S儲存為1.fcpxml !,在下一页按⌘+S保存为1.fcpxml !,
 saveDialog.safariPrompt.pr,Press ⌘+S and save as 1.zip in the next page!,在下一頁按⌘+S儲存為1.zip !,在下一页按⌘+S保存为1.zip! ,
-importSubtitleDialog.title,Select import format,選擇匯入格式,选择导入格式
-importSubtitleDialog.OK,OK,確定,确定
-importSubtitleDialog.cancel,Cancel,取消,取消
-importSubtitleDialog.selection.removeEmptyLines,remove empty lines,移除空行,移除空行
-importSubtitleDialog.selection.plainText,Plain Text,純文字,纯文本
-importSubtitleDialog.original,Original,原格式,原格式
-importSubtitleDialog.conversionPreview,Conversion Preview,轉換預覽,转换预览
+convertDialog.title,Convert Tools,轉換工具,转换工具
+convertDialog.OK,OK,確定,确定
+convertDialog.cancel,Cancel,取消,取消
+convertDialog.selection.removeEmptyLines,remove empty lines,移除空行,移除空行
+convertDialog.selection.splitSpaces,Split lines by spaces,將空格轉換為分行,将空格转换为分行
+convertDialog.selection.removePunctuations,Remove runctuations&#40;and turn comma&#44;periods etc. to space&#41;,移除標點符號&#40;並把逗號句號等變為空格&#41;,移除标点符号&#40;并把逗号句号等变为空格&#41;
+convertDialog.selection.removeQuotes,Remove Quotes,移除引號,移除引号
+convertDialog.selection.charsetImportFile,Import subtitle/text file to convert,匯入文字或字幕檔案轉換,导入文本或字幕档案转换
+convertDialog.selection.charsetTo,Convert To,轉換為編碼,转换为编码
+convertDialog.original,Original,原格式,原格式
+convertDialog.conversionPreview,Conversion Preview,轉換預覽,转换预览
+convertDialog.tabLabel.text,Text Tool,文字工具,文本工具
+convertDialog.tabLabel.subtitle,Subtitle Conversion,字幕格式轉換,字幕格式转换
+convertDialog.tabLabel.charset,Charset,Conversion,文字編碼轉換,文本编码转换
 app.exitConfirmMsg,Save before leave or changes will lost!,離開前任何未儲存之變更將流失,离开前任何未保存之变更将流失
