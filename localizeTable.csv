@@ -28,6 +28,7 @@ convertDialog.cancel,Cancel,取消,取消
 convertDialog.selection.removeEmptyLines,remove empty lines,移除空行,移除空行
 convertDialog.selection.splitSpaces,Split lines by spaces,將空格轉換為分行,将空格转换为分行
 convertDialog.selection.removePunctuations,Remove runctuations&#40;and turn comma&#44;periods etc. to space&#41;,移除標點符號&#40;並把逗號句號等變為空格&#41;,移除标点符号&#40;并把逗号句号等变为空格&#41;
+convertDialog.selection.splitPunctuations,Remove runctuations&#40;and turn comma&#44;periods etc. to new line&#41;,移除標點符號&#40;並把逗號句號等變為換行&#41;,移除标点符号&#40;并把逗号句号等变为換行&#41;
 convertDialog.selection.removeQuotes,Remove Quotes,移除引號,移除引号
 convertDialog.selection.charsetImportFile,Import subtitle/text file to convert,匯入文字或字幕檔案轉換,导入文本或字幕档案转换
 convertDialog.selection.charsetTo,Convert To,轉換為編碼,转换为编码
