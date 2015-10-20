@@ -19,9 +19,9 @@ saveDialog.xmlInfo.frameRate,Frame Rate,幀速,帧速率
 saveDialog.copyFromHereLabel,Copy from here,由此復制,由此复制
 saveDialog.cacnel,Cacnel,取消,取消
 saveDialog.saveAs,Save As...,存儲...,导出...
-saveDialog.safariPrompt.fcp7,Press ⌘+S and save as 1.xml in the next page!,在下一頁按⌘+S儲存為1.xml !,在下一页按⌘+S保存为1.xml !,
-saveDialog.safariPrompt.fcpx,Press ⌘+S and save as 1.fcpxml in the next page!,在下一頁按⌘+S儲存為1.fcpxml !,在下一页按⌘+S保存为1.fcpxml !,
-saveDialog.safariPrompt.pr,Press ⌘+S and save as 1.zip in the next page!,在下一頁按⌘+S儲存為1.zip !,在下一页按⌘+S保存为1.zip! ,
+saveDialog.safariPrompt.fcp7,Press ⌘+S and save as 1.xml in the next page!,在下一頁按⌘+S儲存為1.xml !,在下一页按⌘+S保存为1.xml !
+saveDialog.safariPrompt.fcpx,Press ⌘+S and save as 1.fcpxml in the next page!,在下一頁按⌘+S儲存為1.fcpxml !,在下一页按⌘+S保存为1.fcpxml !
+saveDialog.safariPrompt.pr,Press ⌘+S and save as 1.zip in the next page!,在下一頁按⌘+S儲存為1.zip !,在下一页按⌘+S保存为1.zip! 
 convertDialog.title,Convert Tools,轉換工具,转换工具
 convertDialog.OK,OK,確定,确定
 convertDialog.cancel,Cancel,取消,取消
