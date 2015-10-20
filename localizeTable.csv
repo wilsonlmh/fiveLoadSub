@@ -36,5 +36,5 @@ convertDialog.original,Original,原格式,原格式
 convertDialog.conversionPreview,Conversion Preview,轉換預覽,转换预览
 convertDialog.tabLabel.text,Text Tool,文字工具,文本工具
 convertDialog.tabLabel.subtitle,Subtitle Conversion,字幕格式轉換,字幕格式转换
-convertDialog.tabLabel.charset,Charset,Conversion,文字編碼轉換,文本编码转换
+convertDialog.tabLabel.charset,Charset Conversion,文字編碼轉換,文本编码转换
 app.exitConfirmMsg,Save before leave or changes will lost!,離開前任何未儲存之變更將流失,离开前任何未保存之变更将流失
