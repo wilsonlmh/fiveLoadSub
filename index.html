@@ -1,3 +1,7 @@
+<!--
+/* fiveLoadSub v1.2 (c) 2015 by Wilson Luniz @ Previous Pd. Licensed under the GPLv3 license */
+/* See http://github.com/wilsonlmh/fiveLoadSub/ for license and more info */
+-->
 <!doctype html>
 <html>
 
@@ -174,7 +178,7 @@
         .imgButton {
             float: left;
             text-align: center;
-            width: 130px;
+            min-width: 130px;
             padding: 0;
             border: 0;
             margin-left: 5px;
@@ -412,17 +416,41 @@
     <script src="./inc/wavesurfer.timeline.min.js"></script>
     <script src="./inc/wavesurfer.regions.min.js"></script>
 
-    <script src="./inc/encoding-indexes.min.js"></script>
-    <script src="./inc/encoding.min.js"></script>
-
     <script src="./inc/jszip.min.js"></script>
+
+    <script>
+        //Hacks, non-standard things
+        var __hack = {
+            isOpera: (!!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0),
+            isFirefox: (typeof InstallTrigger !== 'undefined'),
+            isSafari: (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0),
+            isChrome: (!!window.chrome && !isOpera),
+            isIE: (false || !!document.documentMode),
+            safari: {
+                download: {},
+                downloader: {}
+            },
+            chrome: {},
+            firefox: {},
+        };
+        if (__hack.isSafari) {
+            var imported = document.createElement('script');
+            imported.src = getFile('./inc/encoding-indexes.min.js');
+            document.head.appendChild(imported);
+            delete imported;
+            var imported = document.createElement('script');
+            imported.src = getFile('./inc/encoding.min.js');
+            document.head.appendChild(imported);
+            delete imported;
+        }
+    </script>
 
     <script>
         //functions from internet
         function textareaScrollTo(line) {
             var ta = document.getElementById("subtitleTextArea");
             var lineHeight = ta.scrollHeight / (document.getElementById("subtitleTextArea").value.split('\n').length + 1);
-            var jump = (line + 4) * lineHeight - document.getElementById("subtitleFormContainer").offsetHeight;
+            var jump = Math.round(line * lineHeight - (document.getElementById("subtitleFormContainer").clientHeight / 2));
             document.getElementById("subtitleFormContainer").scrollTop = jump;
         }
 
@@ -1461,12 +1489,19 @@
                                 })
                             }
                         }
-
-                        this.prXml.download = window.URL.createObjectURL(new Blob([zip.generate({
-                            type: 'arraybuffer'
-                        })], {
-                            type: "application/zip"
-                        }));
+                        if (__hack.isSafari) {
+                            this.prXml.download = window.URL.createObjectURL(new Blob([zip.generate({
+                                type: 'arraybuffer'
+                            })], {
+                                type: "text/plain"
+                            }));
+                        } else {
+                            this.prXml.download = window.URL.createObjectURL(new Blob([zip.generate({
+                                type: 'arraybuffer'
+                            })], {
+                                type: "application/zip"
+                            }));
+                        }
                     }
 
                     break;
@@ -1726,7 +1761,6 @@
             horizontalDragDiv.style.height = videoFrame.style.height;
 
             updateSubtitleFrame();
-            textareaScrollTo(current.lineNo);
 
             if ((wavesurfer.getDuration() > 0) && (!current.UI.dragging)) {
                 wavesurfer.params.height = (waveformFrame.offsetHeight - 30);
@@ -2094,8 +2128,10 @@
                         resultTxt += subtitleTextAreaLines[i];
                     }
                 }
+                textareaScrollTo(current.lineNo);
                 document.getElementById("subtitleTextArea").value = resultTxt;
                 pushEditHistory(resultTxt);
+
             }
         }
 
