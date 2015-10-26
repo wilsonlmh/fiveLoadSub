@@ -1,5 +1,5 @@
 <!--
-/* fiveLoadSub v1.2 (c) 2015 by Wilson Luniz @ Previous Pd. Licensed under the GPLv3 license */
+/* fiveLoadSub v1.2.1 (c) 2015 by Wilson Luniz @ Previous Production Macau. Licensed under the GPLv3 license */
 /* See http://github.com/wilsonlmh/fiveLoadSub/ for license and more info */
 -->
 <!doctype html>
@@ -2164,6 +2164,10 @@
                 var reader = new FileReader();
                 reader.onloadend = function (evt) {
                     document.getElementById("subtitleTextArea").value = evt.target.result;
+                    updateCurrentLineNo();
+                    updateSubtitleFrame();
+                    updateSubtitleDocumentObject();
+                    updateEditHistory();
                 }
                 reader.readAsText(files[0]);
                 break;
@@ -2204,7 +2208,7 @@
     <input type="file" hidden="true" id="fileLoader" />
     <div id="mainContainer">
         <div id="headerFrame">
-            <span style="font-size:16px;">FiveLoadSub v1.1 by Wilson Luniz</span>
+            <span style="font-size:16px;">FiveLoadSub v1.2.1 by Wilson Luniz</span>
             <br/>
             <div id="ribbonMenu" style="text-align:left">
                 <div class="imgButton" onClick="selectFile('video');"><img src="./img/importVideo.png" width="40" height="40" alt="" />
