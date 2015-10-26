@@ -1,40 +1,40 @@
-nth,en-us,zh-hk,zh-cn
-menu.importVideo,Import Video,匯入影片,导入影片
-menu.importSubtitle,Import Sub,匯入字幕&#47;文字,导入字幕&#47;文本
-menu.conversion,Conversion Tools,轉換工具,转换工具
-menu.saveSubtitle,Save Subtitle,儲存字幕,导出字幕
-menu.settings,Settings,設定,设置
-menu.help,Help,說明,说明
-videoPlayer.dropFileHere,Drop video here,拖拽影片或音頻到此,拖拽影片或音频到此
-textEditor.fontSize,Font Size,字體大小,字体大小
-textEditor.placeHolder,Paste text here,在此貼上文字,在此贴上文字
-saveDialog.title,Select format to save,選擇存儲格式,选择导出格式
-saveDialog.xmlInputLabel.fcpx,Choose Final Cut Pro X Title Template(.fcpxml),匯入Final Cut Pro X標題樣式(.fcpxml),导入Final Cut Pro X标题样式(.fcpxml)
-saveDialog.xmlInputLabel.fcp7,Choose Final Cut Pro 7 Title Template(.xml),匯入Final Cut Pro 7標題樣式(.xml),导入Final Cut Pro 7标题样式(.xml)
-saveDialog.xmlInputLabel.premiere,Choose Adobe Premiere Title Template(.prtl),匯入Adobe Premiere標題樣式(.prtl),导入Adobe Premiere标题样式(.prtl)
-saveDialog.xmlInfo.fillLabel,Fill some info of your video,請輸入影片的資訊,请输入影片属性
-saveDialog.xmlInfo.width,Width,寬度,宽度
-saveDialog.xmlInfo.height,Height,高度,高度
-saveDialog.xmlInfo.frameRate,Frame Rate,幀速,帧速率
-saveDialog.copyFromHereLabel,Copy from here,由此復制,由此复制
-saveDialog.cacnel,Cacnel,取消,取消
-saveDialog.saveAs,Save As...,存儲...,导出...
-saveDialog.safariPrompt.fcp7,Press ⌘+S and save as 1.xml in the next page!,在下一頁按⌘+S儲存為1.xml !,在下一页按⌘+S保存为1.xml !
-saveDialog.safariPrompt.fcpx,Press ⌘+S and save as 1.fcpxml in the next page!,在下一頁按⌘+S儲存為1.fcpxml !,在下一页按⌘+S保存为1.fcpxml !
-saveDialog.safariPrompt.pr,Press ⌘+S and save as 1.zip in the next page!,在下一頁按⌘+S儲存為1.zip !,在下一页按⌘+S保存为1.zip! 
-convertDialog.title,Convert Tools,轉換工具,转换工具
-convertDialog.OK,OK,確定,确定
-convertDialog.cancel,Cancel,取消,取消
-convertDialog.selection.removeEmptyLines,remove empty lines,移除空行,移除空行
-convertDialog.selection.splitSpaces,Split lines by spaces,將空格轉換為分行,将空格转换为分行
-convertDialog.selection.removePunctuations,Remove runctuations&#40;and turn comma&#44;periods etc. to space&#41;,移除標點符號&#40;並把逗號句號等變為空格&#41;,移除标点符号&#40;并把逗号句号等变为空格&#41;
-convertDialog.selection.splitPunctuations,Remove runctuations&#40;and turn comma&#44;periods etc. to new line&#41;,移除標點符號&#40;並把逗號句號等變為換行&#41;,移除标点符号&#40;并把逗号句号等变为換行&#41;
-convertDialog.selection.removeQuotes,Remove Quotes,移除引號,移除引号
-convertDialog.selection.charsetImportFile,Import subtitle/text file to convert,匯入文字或字幕檔案轉換,导入文本或字幕档案转换
-convertDialog.selection.charsetTo,Convert To,轉換為編碼,转换为编码
-convertDialog.original,Original,原格式,原格式
-convertDialog.conversionPreview,Conversion Preview,轉換預覽,转换预览
-convertDialog.tabLabel.text,Text Tool,文字工具,文本工具
-convertDialog.tabLabel.subtitle,Subtitle Conversion,字幕格式轉換,字幕格式转换
-convertDialog.tabLabel.charset,Charset Conversion,文字編碼轉換,文本编码转换
-app.exitConfirmMsg,Save before leave or changes will lost!,離開前任何未儲存之變更將流失,离开前任何未保存之变更将流失
+nth,en-us,zh-hk,zh-cn,FR
+menu.importVideo,Import Video,匯入影片,导入影片,Importer la Vidéo
+menu.importSubtitle,Import Sub,匯入字幕&#47;文字,导入字幕&#47;文本,Importer des Sous-titres
+menu.conversion,Conversion Tools,轉換工具,转换工具,Outils de conversion
+menu.saveSubtitle,Save Subtitle,儲存字幕,导出字幕,Enregistrer des Sous-titres
+menu.settings,Settings,設定,设置,Paramètres
+menu.help,Help,說明,说明,Aide
+videoPlayer.dropFileHere,Drop video here,拖拽影片或音頻到此,拖拽影片或音频到此,Déposer la vidéo ici
+textEditor.fontSize,Font Size,字體大小,字体大小,Taille de police
+textEditor.placeHolder,Paste text here,在此貼上文字,在此贴上文字,Coller le texte ici
+saveDialog.title,Select format to save,選擇存儲格式,选择导出格式,sélectionner le format d'enregistrement
+saveDialog.xmlInputLabel.fcpx,Choose Final Cut Pro X Title Template(.fcpxml),匯入Final Cut Pro X標題樣式(.fcpxml),导入Final Cut Pro X标题样式(.fcpxml),Choisir Final Cut Pro X Titre Template (.fcpxml)
+saveDialog.xmlInputLabel.fcp7,Choose Final Cut Pro 7 Title Template(.xml),匯入Final Cut Pro 7標題樣式(.xml),导入Final Cut Pro 7标题样式(.xml),Choisir Final Cut Pro 7 Titre Template(.xml)
+saveDialog.xmlInputLabel.premiere,Choose Adobe Premiere Title Template(.prtl),匯入Adobe Premiere標題樣式(.prtl),导入Adobe Premiere标题样式(.prtl),Choisir Adobe Premiere Titre Template(.prtl)
+saveDialog.xmlInfo.fillLabel,Fill some info of your video,請輸入影片的資訊,请输入影片属性,Remplissez quelques informations de votre vidéo
+saveDialog.xmlInfo.width,Width,寬度,宽度,Largeur
+saveDialog.xmlInfo.height,Height,高度,高度,Hauteur
+saveDialog.xmlInfo.frameRate,Frame Rate,幀速,帧速率,Fréquence Image
+saveDialog.copyFromHereLabel,Copy from here,由此復制,由此复制,Copier d'ici
+saveDialog.cacnel,Cacnel,取消,取消,Annuler
+saveDialog.saveAs,Save As...,存儲...,导出...,Enregistrer
+saveDialog.safariPrompt.fcp7,Press ⌘+S and save as 1.xml in the next page!,在下一頁按⌘+S儲存為1.xml !,在下一页按⌘+S保存为1.xml !,Appuyez sur ⌘ + S et enregistrer en tant que 1.xml dans la page suivante!
+saveDialog.safariPrompt.fcpx,Press ⌘+S and save as 1.fcpxml in the next page!,在下一頁按⌘+S儲存為1.fcpxml !,在下一页按⌘+S保存为1.fcpxml !,Appuyez sur ⌘ + S et enregistrer en tant que 1.fcpxml dans la page suivante!
+saveDialog.safariPrompt.pr,Press ⌘+S and save as 1.zip in the next page!,在下一頁按⌘+S儲存為1.zip !,在下一页按⌘+S保存为1.zip! ,Appuyez sur ⌘ + S et enregistrer en tant que 1.zip dans la page suivante!
+convertDialog.title,Convert Tools,轉換工具,转换工具,Outil de conversion
+convertDialog.OK,OK,確定,确定,OK
+convertDialog.cancel,Cancel,取消,取消,Annuler
+convertDialog.selection.removeEmptyLines,Remove empty lines,移除空行,移除空行,Supprimer les lignes vides
+convertDialog.selection.splitSpaces,Split lines by spaces,將空格轉換為分行,将空格转换为分行,Séparer les lignes par des espaces
+convertDialog.selection.removePunctuations,Remove punctuations&#40;and turn comma&#44;periods etc. to space&#41;,移除標點符號&#40;並把逗號句號等變為空格&#41;,移除标点符号&#40;并把逗号句号等变为空格&#41;,"Retirer les ponctuations (et changer des virgules, des points etc. à des espaces)"
+convertDialog.selection.splitPunctuations,Remove punctuations&#40;and turn comma&#44;periods etc. to new line&#41;,移除標點符號&#40;並把逗號句號等變為換行&#41;,移除标点符号&#40;并把逗号句号等变为換行&#41;,"Retirer les ponctuations (et changer des virgules, des points etc. à une nouvelle ligne)"
+convertDialog.selection.removeQuotes,Remove Quotes,移除引號,移除引号,Supprimer les guillemets
+convertDialog.selection.charsetImportFile,Import subtitle/text file to convert,匯入文字或字幕檔案轉換,导入文本或字幕档案转换,Importer des sous-titres / fichier texte à convertir
+convertDialog.selection.charsetTo,Convert To,轉換為編碼,转换为编码,Convertir à
+convertDialog.original,Original,原格式,原格式,Format d'origine
+convertDialog.conversionPreview,Conversion Preview,轉換預覽,转换预览,Prévisualiser la conversion
+convertDialog.tabLabel.text,Text Tool,文字工具,文本工具,Outil de Texte
+convertDialog.tabLabel.subtitle,Subtitle Conversion,字幕格式轉換,字幕格式转换,Conversion des Sous-titres
+convertDialog.tabLabel.charset,Charset Conversion,文字編碼轉換,文本编码转换,Conversion de jeux de caractères
+app.exitConfirmMsg,Save before leave or changes will lost!,離開前任何未儲存之變更將流失,离开前任何未保存之变更将流失,Enregistrer avant de quitter sinon les modifications non enregistrées seront perdues !
