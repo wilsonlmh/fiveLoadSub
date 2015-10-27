@@ -421,10 +421,10 @@
     <script>
         //Hacks, non-standard things
         var __hack = {
-            isOpera: (!!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0),
+            isOpera: (!!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0 || false),
             isFirefox: (typeof InstallTrigger !== 'undefined'),
-            isSafari: (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0),
-            isChrome: (!!window.chrome && !isOpera),
+            isSafari: (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0 || false),
+            isChrome: (!!window.chrome && !(!!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0 || false)),
             isIE: (false || !!document.documentMode),
             safari: {
                 download: {},
