@@ -1,0 +1,86 @@
+.richVideoControl-button:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.richVideoControl-button:active {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.richVideoControl-button {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    margin: 0;
+    border: : 0;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    margin-left: 10px;
+    margin-right: 10px;
+    float: left;
+}
+
+.richVideoControl {
+    position: absolute;
+    overflow: hidden;
+    padding: 0px;
+    border: 0px;
+    margin: 0px;
+}
+
+.richVideoControl-buttons {
+    height: 40px;
+    min-width: 190px;
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin: 0;
+    float: left;
+}
+
+.richVideoControl-seeker {
+    background: linear-gradient(to right, rgba(252, 88, 0, 0.7) 0%, rgba(0, 0, 0, 0.2) 0%);
+    height: 10px;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+.richVideoControl-timeCode {
+    width: 230px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    margin: 0;
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+    font-size: 18px;
+    color: rgba(252, 88, 0, 0.9);
+    text-align: center;
+    font-style: bold;
+    line-height: 40px;
+}
+
+.richVideoControl-timeCode_rolling {
+    color: white;
+}
+
+.richVideoControl-playbackRate {
+    border: 1px rgba(252, 88, 0, 0.9) solid;
+    background: rgba(0, 0, 0, 0.5);
+    text-align: center;
+    height: 24px;
+    font-size: 16px;
+    padding: 0;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    color: white;
+    min-width: 50px;
+    width: 50px;
+    float: left;
+    display: inline-block;
+}
