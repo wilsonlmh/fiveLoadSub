@@ -101,6 +101,7 @@
             for (key in localizeTable['en-US']) {
                 doc.innerHTML = doc.innerHTML.replace(new RegExp('\{' + key + '\}', 'g'), localizedText(key));
             }
+            window.location = window.location;
 
         }
 
