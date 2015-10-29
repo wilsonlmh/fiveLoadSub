@@ -4,6 +4,12 @@
 
 HTML5/Javascript based, incredibly-easy subtitling software
 
+
+Contact Info / 聯絡資詢:
+
+ - QQ: 2242060222
+
+
 特點:
 
   - 用空白鍵切換字幕, 能1:1時間完成字幕工作
