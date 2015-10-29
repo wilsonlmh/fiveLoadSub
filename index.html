@@ -101,7 +101,9 @@
             for (key in localizeTable['en-US']) {
                 doc.innerHTML = doc.innerHTML.replace(new RegExp('\{' + key + '\}', 'g'), localizedText(key));
             }
-            window.location = window.location;
+            if (window.location.hash) {
+                window.location = window.location;
+            }
 
         }
 
@@ -365,7 +367,6 @@
             font-family: sans-serif;
         }
         
-        
         #header {
             width: 100%;
             height: 80px;
@@ -479,7 +480,7 @@
         }
         
         .hashLink:target {
-            display:block;
+            display: block;
         }
     </style>
 
