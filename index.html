@@ -575,6 +575,15 @@ See http://github.com/wilsonlmh/fiveLoadSub/ for license and more info
 
             return base64
         }
+        function ajax$load(url, callback, method) {
+			method = method || 'GET';
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function () {
+				callback(xhttp);
+			};
+			xhttp.open(method, url, true);
+			xhttp.send();
+		}
     </script>
 <!-- Updater Code Block -->
 	<script>
