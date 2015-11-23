@@ -8,6 +8,8 @@ HTML5/Javascript based, incredibly-easy subtitling software
 Contact Info / 聯絡資詢:
 
  - QQ: 2242060222
+ - QQ群: 512907352
+ - Email: lu6ni4z-fls@yahoo.com.hk
 
 
 特點:
