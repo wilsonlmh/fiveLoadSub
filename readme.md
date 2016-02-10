@@ -4,9 +4,10 @@
 
 HTML5/Javascript based, incredibly-easy subtitling software
 
+by Wilson Luniz@[Previous Production](http://fb.com/previousproduction "Facebook Page")
 
 Contact Info / 聯絡資詢:
-
+ 
  - QQ: 2242060222
  - QQ群: 512907352
  - Email: lu6ni4z-fls@yahoo.com.hk
