@@ -2118,6 +2118,14 @@ Controller -> Background
                     undoEdit();
                     e.preventDefault();
                 }
+                if ((key == 17 || key == 90) && (pressed[17] == pressed[90] == true)) { //Ctrl+Z
+                    undoEdit();
+                    e.preventDefault();
+                }
+                if ((key == 17 || key == 89) && (pressed[17] == pressed[89] == true)) { //Ctrl+Y
+                    undoEdit();
+                    e.preventDefault();
+                }
                 if ((key == 91 || key == 16 || key == 90) && (pressed[91] == pressed[16] == pressed[90] == true)) { //Cmd+Shift+Z
                     redoEdit();
                     e.preventDefault();
