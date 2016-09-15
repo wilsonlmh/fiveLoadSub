@@ -2,11 +2,18 @@
 fiveLoadSub v1.3.2 (c) 2015 by Wilson Luniz @ Previous Production Macau. Licensed under the GPLv3 license
 See http://github.com/wilsonlmh/fiveLoadSub/ for license and more info
 -->
+<!--
+Some code documentation:
+MVC concept:
+Model -> Proto${modelname}
+View/ViewController -> UI
+Controller -> Background
+-->
 <!doctype html>
 <html>
 <script>
 	//Static Define Variables
-	var $__VERSION = '1.3.2';
+	var $__VERSION = '1.3.3';
 	var $__UPDATEURL = 'http://github.com/wilsonlmh/fiveLoadSub/archive/dist.zip';
 	var $__CHECKURL = 'rawgit.com/wilsonlmh/fiveLoadSub/dist/version'; //without http://
 </script>
@@ -417,7 +424,7 @@ See http://github.com/wilsonlmh/fiveLoadSub/ for license and more info
     <script src="./inc/wavesurfer.regions.min.js"></script>
 
     <script src="./inc/jszip.min.js"></script>
-
+    <script src="./inc/keypress-2.1.4.min.js"></script>
     <script src="./inc/videoControl/richVideoControl.standalone.js"></script>
 
     <script>
@@ -719,6 +726,7 @@ See http://github.com/wilsonlmh/fiveLoadSub/ for license and more info
             this.disableVideoSeekEvent = false;
             this.timerID = 0;
             this.saveFormat = "";
+            this.subtitleTextAreaLock = false;
             this.editHistory = []; //Store 100 step of history
             this.editHistoryIndex = -1; //Index number starting from 0, sames as the array index
             this.UI = {
@@ -2069,10 +2077,130 @@ See http://github.com/wilsonlmh/fiveLoadSub/ for license and more info
             evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
         }
 
+        
+        
         function setupKeystroke() {
+            
+            pressed = new Array();
+            
+            window.onkeydown = function (e) {
+                var key = e.keyCode;
+                
+                if (key == 192 && current.subtitleTextAreaLock && !pressed[key]) {
+                    applyTimeCode();
+                    updateSubtitleDocumentObject();
+                }
+                
+                pressed[key] = true;
+                if ((key == 17 || key == 18) && (pressed[17] == pressed[18] == true)) { //Ctrl+Alt
+                    current.subtitleTextAreaLock = !current.subtitleTextAreaLock;
+                    document.getElementById("subtitleTextArea").disabled = current.subtitleTextAreaLock;
+                    if (current.subtitleTextAreaLock) {
+                        var tmp = document.getElementById("subtitleFormContainer").cloneNode(true);
+                        var tmpParent = document.getElementById("subtitleFormContainer").parentNode
+                        var value = document.getElementById("subtitleTextArea").value;
+                        var selectionStart = document.getElementById("subtitleTextArea").selectionStart;
+                        tmpParent.removeChild(document.getElementById("subtitleFormContainer"));
+                        tmpParent.appendChild(tmp);
+                        document.getElementById("subtitleTextArea").value = value;
+                        document.getElementById("subtitleTextArea").selectionStart = selectionStart;
+                        document.getElementById("videoPlayer").focus();
+                    }
+                }
+                if ((key == 18 || key == 90) && (pressed[18] == pressed[90] == true)) { //Alt+Z
+                    if (document.getElementById('videoPlayer').paused) {
+                        document.getElementById('videoPlayer').play();
+                    } else {
+                        document.getElementById('videoPlayer').pause();
+                    }
+                }
+                if ((key == 91 || key == 90) && (pressed[91] == pressed[90] == true)) { //Cmd+Z
+                    undoEdit();
+                    e.preventDefault();
+                }
+                if ((key == 91 || key == 16 || key == 90) && (pressed[91] == pressed[16] == pressed[90] == true)) { //Cmd+Shift+Z
+                    redoEdit();
+                    e.preventDefault();
+                }
+            }
             window.onkeyup = function (e) {
-                if (document.activeElement != document.getElementById("subtitleTextArea")) {
-                    var key = e.keyCode ? e.keyCode : e.which;
+                var key = e.keyCode;
+                pressed[key] = false;
+                if (current.subtitleTextAreaLock) {
+                    if (key == 32) { 
+                        applyTimeCode();
+                        updateSubtitleDocumentObject();
+                    }
+                    if (key == 13) { 
+                        applyDoubleTimeCode();
+                        updateSubtitleDocumentObject();
+                    }
+                    if (key == 192) {
+                        applyTimeCode();
+                        updateSubtitleDocumentObject();
+                    }
+                    if (key == 187) {
+                        zoomWaveform(10);
+                    }
+                    if (key == 189) {
+                        zoomWaveform(-10);
+                    }
+                }
+            }
+            /*
+            var listener = new window.keypress.Listener();
+            
+            listener.simple_combo("ctrl alt",function () {
+                
+            });
+            
+            listener.simple_combo("=",function () {
+                if (current.subtitleTextAreaLock) {
+                    zoomWaveform(10);
+                }
+            });
+            
+            listener.simple_combo("-",function () {
+                if (current.subtitleTextAreaLock) {
+                    zoomWaveform(-10);
+                }
+            });
+            
+            listener.register_combo({
+                "keys":             "cmd z",
+                "on_keyup":         function () {console.log(2);},
+                "prevent_default":  true,
+                "prevent_repeat":   true,
+                "is_sequence":      true
+            });
+            
+            listener.register_combo({
+                "keys":             "cmd shift z",
+                "on_keyup":         function () {console.log(2);},
+                "prevent_default":  true,
+                "prevent_repeat":   true,
+                "is_sequence":      true
+            });
+            
+            listener.register_combo({
+                "keys":             "ctrl z",
+                "on_keyup":         function () {console.log(2);},
+                "prevent_default":  true,
+                "prevent_repeat":   true,
+                "is_sequence":      true
+            });
+            
+            listener.register_combo({
+                "keys":             "ctrl y",
+                "on_keyup":         function () {console.log(2);},
+                "prevent_default":  true,
+                "prevent_repeat":   true,
+                "is_sequence":      true
+            });
+            
+
+            /*
+            
                     /*
 			8		BKSP
 			9		Tab
@@ -2089,12 +2217,6 @@ See http://github.com/wilsonlmh/fiveLoadSub/ for license and more info
 			192		`
 			187		=
 			189		-
-			*/
-
-                    if (key == 32) {
-                        applyTimeCode();
-                        updateSubtitleDocumentObject();
-                    }
                     if (key == 187) {
                         zoomWaveform(10);
                     }
@@ -2103,6 +2225,7 @@ See http://github.com/wilsonlmh/fiveLoadSub/ for license and more info
                     }
                 }
             }
+            */
         }
 
         function calcTimeCode() {
@@ -2170,6 +2293,16 @@ See http://github.com/wilsonlmh/fiveLoadSub/ for license and more info
                 document.getElementById("subtitleTextArea").value = resultTxt;
                 pushEditHistory(resultTxt);
 
+            }
+        }
+        
+        function applyDoubleTimeCode() {
+            var subtitleTextAreaLines = document.getElementById("subtitleTextArea").value.split('\n');
+            if (readTimeCode(subtitleTextAreaLines[current.lineNo]) == "failed") {
+                applyTimeCode();
+            } else {
+                applyTimeCode();
+                applyTimeCode();
             }
         }
 
@@ -2246,7 +2379,7 @@ See http://github.com/wilsonlmh/fiveLoadSub/ for license and more info
     <input type="file" hidden="true" id="fileLoader" />
     <div id="mainContainer">
         <div id="headerFrame">
-            <div style="font-size:16px;text-align:right;">fiveLoadSub v1.3.1 by Wilson Luniz&nbsp;&nbsp;&nbsp;</div>
+            <div style="font-size:16px;text-align:right;">fiveLoadSub v1.3.3 by Wilson Luniz&nbsp;&nbsp;&nbsp;</div>
             
             <div id="ribbonMenu" style="text-align:left">
                 <div class="imgButton" onClick="selectFile('video');"><img src="./img/importVideo.png" width="40" height="40" alt="" />
