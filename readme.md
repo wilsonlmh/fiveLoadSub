@@ -4,12 +4,14 @@
 
 HTML5/Javascript based, incredibly-easy subtitling software
 
-by Wilson Luniz@[Previous Production](http://fb.com/previousproduction "Facebook Page")
+by Wilson Luniz
+
+
+<a href="https://gogetfunding.com/?p=6646849" target="_blank"><img src="https://wilsonlmh.github.io/fiveLoadSub/img/gogetfunding_.png" height="160"></a>
+
 
 Contact Info / 聯絡資詢:
- 
- - QQ: 2242060222
- - QQ群: 512907352
+
  - Email: lu6ni4z-fls@yahoo.com.hk
 
 
